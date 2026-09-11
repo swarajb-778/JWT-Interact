@@ -1,0 +1,2361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Locksmith&#x27;s Manual</title>
+  <meta name="description" content="The algorithms opened up, and the eight rules that stop every attack. Chapters 6–8 of the JWT Handbook.">
+  <meta name="author" content="Swaraj Bangar">
+  <meta property="og:title" content="The Locksmith&#x27;s Manual">
+  <meta property="og:description" content="The algorithms opened up, and the eight rules that stop every attack. Chapters 6–8 of the JWT Handbook.">
+  <meta property="og:type" content="article">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2756%27%3E%F0%9F%97%9D%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+<style>
+/* ============================================================
+   JWT, Piece by Piece — security-print / pass-office identity
+   ============================================================ */
+
+:root{
+  --paper:#F8FAF8;
+  --paper-2:#FFFFFF;
+  --paper-3:#EDF1EC;
+  --ink:#131B17;
+  --ink-2:#44514B;
+  --ink-3:#6D7A72;
+  --rule:#E2E7E0;
+  --rule-2:#BFC9BC;
+  --engrave:rgba(29,78,74,.12);
+
+  --hdr:#8F5514;
+  --pay:#1B5A52;
+  --sig:#A2372A;
+  --hdr-bg:rgba(143,85,20,.13);
+  --pay-bg:rgba(27,90,82,.13);
+  --sig-bg:rgba(162,55,42,.13);
+  --hdr-ed:rgba(143,85,20,.42);
+  --pay-ed:rgba(27,90,82,.42);
+  --sig-ed:rgba(162,55,42,.42);
+
+  --ok:#2A6A4C;
+  --ok-bg:rgba(42,106,76,.12);
+  --bad:#A2372A;
+  --bad-bg:rgba(162,55,42,.12);
+  --warn:#8F5514;
+  --warn-bg:rgba(143,85,20,.12);
+
+  --shadow:0 1px 2px rgba(21,30,26,.04), 0 10px 26px -20px rgba(21,30,26,.40);
+  --shadow-lift:0 1px 3px rgba(21,30,26,.05), 0 20px 44px -24px rgba(21,30,26,.42);
+
+  --serif:"Bodoni Moda",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1311;
+    --paper-2:#161D1A;
+    --paper-3:#1F2925;
+    --ink:#E7ECE5;
+    --ink-2:#A5B2AA;
+    --ink-3:#76837B;
+    --rule:#28322D;
+    --rule-2:#3A453F;
+    --engrave:rgba(122,204,190,.14);
+
+    --hdr:#E2AB60;
+    --pay:#5FC9B5;
+    --sig:#EE8674;
+    --hdr-bg:rgba(226,171,96,.14);
+    --pay-bg:rgba(95,201,181,.14);
+    --sig-bg:rgba(238,134,116,.14);
+    --hdr-ed:rgba(226,171,96,.45);
+    --pay-ed:rgba(95,201,181,.45);
+    --sig-ed:rgba(238,134,116,.45);
+
+    --ok:#71CE9E;
+    --ok-bg:rgba(113,206,158,.13);
+    --bad:#EE8674;
+    --bad-bg:rgba(238,134,116,.13);
+    --warn:#E2AB60;
+    --warn-bg:rgba(226,171,96,.13);
+
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+    --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+  }
+}
+
+:root[data-theme="dark"]{
+  --paper:#0E1311;
+  --paper-2:#161D1A;
+  --paper-3:#1F2925;
+  --ink:#E7ECE5;
+  --ink-2:#A5B2AA;
+  --ink-3:#76837B;
+  --rule:#28322D;
+  --rule-2:#3A453F;
+  --engrave:rgba(122,204,190,.14);
+
+  --hdr:#E2AB60;
+  --pay:#5FC9B5;
+  --sig:#EE8674;
+  --hdr-bg:rgba(226,171,96,.14);
+  --pay-bg:rgba(95,201,181,.14);
+  --sig-bg:rgba(238,134,116,.14);
+  --hdr-ed:rgba(226,171,96,.45);
+  --pay-ed:rgba(95,201,181,.45);
+  --sig-ed:rgba(238,134,116,.45);
+
+  --ok:#71CE9E;
+  --ok-bg:rgba(113,206,158,.13);
+  --bad:#EE8674;
+  --bad-bg:rgba(238,134,116,.13);
+  --warn:#E2AB60;
+  --warn-bg:rgba(226,171,96,.13);
+
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+  --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+}
+
+*{box-sizing:border-box}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:var(--step);
+  font-weight:400;
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- layout rails ---------- */
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:22px}
+.prose{max-width:63ch;margin-inline:auto}
+.lab{max-width:940px;margin-inline:auto}
+
+section.chapter{padding-block:clamp(48px,7vw,86px);scroll-margin-top:56px}
+h2,h3,h4{scroll-margin-top:64px}
+.stack{display:flex;flex-direction:column;gap:1.05em}
+.stack-lg{display:flex;flex-direction:column;gap:2.1rem}
+.stack-xl{display:flex;flex-direction:column;gap:3.4rem}
+
+/* ---------- type ---------- */
+h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.12}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.018em}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.85rem,4.2vw,2.7rem);letter-spacing:-.012em}
+h3{font-family:var(--sans);font-weight:650;font-size:clamp(1.12rem,2vw,1.32rem);letter-spacing:-.008em;line-height:1.3}
+h4{font-family:var(--sans);font-weight:650;font-size:1rem;letter-spacing:-.004em}
+p{margin:0}
+a{color:inherit}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;
+  letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);
+}
+.lede{font-size:clamp(1.06rem,1.9vw,1.24rem);line-height:1.6;color:var(--ink-2);font-weight:350}
+.dropcap::first-letter{
+  font-family:var(--serif);font-weight:700;float:left;
+  font-size:3.5em;line-height:.82;padding:.06em .1em 0 0;color:var(--pay);
+}
+strong{font-weight:650;color:var(--ink)}
+em.term{font-style:normal;font-weight:600;color:var(--pay);white-space:nowrap}
+code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.12em .38em;border-radius:3px;color:var(--ink)}
+
+/* ---------- perforation rule ---------- */
+.perf{
+  height:1px;border:0;margin:0;
+  background:repeating-linear-gradient(to right,var(--rule-2) 0 7px,transparent 7px 15px);
+}
+.perf-thick{
+  position:relative;height:0;border:0;margin:0;
+  border-top:1px dashed var(--rule-2);
+}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{
+  max-width:1120px;margin-inline:auto;padding:9px 22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.brandmark{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink);white-space:nowrap;
+}
+.brandmark span{color:var(--ink-3)}
+.navlinks{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.navlinks a{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
+  color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
+}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a.on{color:var(--pay);background:var(--pay-bg)}
+.progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+#guilloche{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-in{position:relative;padding-block:clamp(52px,9vw,104px)}
+.hero-grid{display:grid;gap:34px}
+.hero h1{margin-block:.18em .34em}
+.hero h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2)}
+
+/* ---------- token strip ---------- */
+.tokenbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow-lift);overflow:hidden;
+}
+.tokenbox-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+}
+.tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.token{
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  word-break:break-all;padding:16px 14px;margin:0;
+}
+.token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
+.t-h{color:var(--hdr);background:var(--hdr-bg)}
+.t-p{color:var(--pay);background:var(--pay-bg)}
+.t-s{color:var(--sig);background:var(--sig-bg)}
+.t-dot{color:var(--ink-3);font-weight:600}
+.token b.dim{opacity:.3}
+.token[data-clickable] b{cursor:pointer}
+.token[data-clickable] b:hover{box-shadow:0 0 0 1.5px currentColor}
+
+/* ---------- part legend / tabs ---------- */
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+.parts button{
+  all:unset;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px;
+  border-right:1px solid var(--rule);transition:background .16s;
+}
+.parts button:last-child{border-right:0}
+.parts button:hover{background:var(--paper-3)}
+.parts button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
+.parts .pn{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase}
+.parts .pd{font-size:.78rem;color:var(--ink-3);line-height:1.35}
+.parts button[aria-selected="true"]{background:var(--paper-3)}
+.parts button[data-p="h"] .pn{color:var(--hdr)}
+.parts button[data-p="p"] .pn{color:var(--pay)}
+.parts button[data-p="s"] .pn{color:var(--sig)}
+
+/* ---------- panels & cards ---------- */
+.panel{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.panel-head .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.panel-head .sub{font-size:.8rem;color:var(--ink-3)}
+.panel-body{padding:16px}
+
+.callout{
+  border-left:2px solid var(--pay);padding:2px 0 2px 16px;
+  color:var(--ink-2);font-size:.95em;
+}
+.callout.warn{border-left-color:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout .h{display:block;font-weight:650;color:var(--ink);margin-bottom:.2em;font-size:.98em}
+
+.hook{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  padding:20px 22px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.85em;
+}
+.hook .tag{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:8px;
+}
+.hook .tag::after{content:"";height:1px;flex:1;background:var(--rule)}
+.hook p{font-size:1.02em;line-height:1.62}
+
+/* ---------- buttons ---------- */
+.btn{
+  all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--sans);font-size:.83rem;font-weight:600;letter-spacing:.005em;
+  padding:8px 15px;border-radius:5px;border:1px solid var(--rule-2);
+  background:var(--paper-2);color:var(--ink);transition:background .15s,border-color .15s,transform .08s;
+  white-space:nowrap;
+}
+.btn:hover{background:var(--paper-3);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.btn.primary{background:var(--pay);color:var(--paper-2);border-color:var(--pay)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- form bits ---------- */
+label.fld{display:flex;flex-direction:column;gap:5px}
+label.fld .lb{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+input[type=text],textarea{
+  font-family:var(--mono);font-size:.82rem;line-height:1.6;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:9px 11px;width:100%;
+  resize:vertical;
+}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--pay);outline-offset:-1px;border-color:var(--pay)}
+
+/* ---------- status pills ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;border:1px solid currentColor;
+}
+.pill.ok{color:var(--ok);background:var(--ok-bg)}
+.pill.bad{color:var(--bad);background:var(--bad-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.mute{color:var(--ink-3);background:var(--paper-3);border-color:var(--rule-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- code blocks ---------- */
+pre.code{
+  font-family:var(--mono);font-size:.79rem;line-height:1.7;margin:0;
+  background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  padding:13px 15px;overflow-x:auto;color:var(--ink-2);
+}
+pre.code .key{color:var(--pay)}
+pre.code .str{color:var(--hdr)}
+pre.code .num{color:var(--sig)}
+pre.code .cm{color:var(--ink-3);font-style:italic}
+
+/* ---------- chapter opener ---------- */
+.chapnum{
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+}
+.chapnum .n{
+  font-family:var(--serif);font-size:2.6rem;font-weight:700;line-height:1;
+  color:var(--pay);
+}
+.chapnum .l{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.chapnum .rule{flex:1;height:1px;background:var(--rule)}
+
+/* ---------- coat check sim ---------- */
+.sim2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.simcol{border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.simcol h4{padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--paper-3);font-size:.85rem}
+.simcol .simbody{padding:13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.rack{
+  height:74px;border:1px dashed var(--rule-2);border-radius:5px;background:var(--paper-2);
+  display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:5px;overflow:hidden;
+}
+.coat{width:5px;height:11px;border-radius:1px;background:var(--pay);opacity:.75}
+.rack.empty-note{align-items:center;justify-content:center;align-content:center}
+.rack .note{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);letter-spacing:.06em;text-align:center;line-height:1.5}
+.metric{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--ink-3)}
+.metric b{font-family:var(--mono);font-size:1.05rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- ticket ---------- */
+.ticketgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.ticket{
+  position:relative;background:var(--paper-2);border:1px solid var(--rule-2);border-radius:6px;
+  display:grid;grid-template-columns:1fr 88px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ticket-main{padding:14px 15px;display:flex;flex-direction:column;gap:0}
+.ticket-stub{
+  border-left:1px dashed var(--rule-2);padding:14px 10px;
+  display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  background:var(--paper-3);
+}
+.ticket-brand{
+  font-family:var(--serif);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.ticket-brand span{font-family:var(--mono);font-size:.6rem;font-weight:400;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.trow{
+  display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline;
+  padding:4px 6px;margin-inline:-6px;border-radius:4px;cursor:default;
+  transition:background .15s;
+}
+.trow .tk{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.trow .tv{font-family:var(--mono);font-size:.78rem;color:var(--ink);word-break:break-word}
+.trow.hi{background:var(--pay-bg)}
+.trow.hi .tk{color:var(--pay)}
+.claimjson .cl{
+  display:block;padding:1px 6px;margin-inline:-6px;border-radius:3px;transition:background .15s;
+}
+.claimjson .cl.hi{background:var(--pay-bg)}
+.stubcode{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;color:var(--ink-3);writing-mode:vertical-rl;transform:rotate(180deg);margin-inline:auto}
+
+.claimlist{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.claimlist button{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;
+  grid-template-columns:52px 1fr;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
+}
+.claimlist button:last-child{border-bottom:0}
+.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
+.claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
+.claimlist .cx b{color:var(--ink);font-weight:600}
+
+/* ---------- base64 playground ---------- */
+.b64grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.b64arrow{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+  text-align:center;display:flex;flex-direction:column;gap:3px;
+}
+.chipline{display:flex;flex-wrap:wrap;gap:3px;font-family:var(--mono);font-size:.72rem}
+.chip{padding:2px 5px;border-radius:3px;background:var(--paper-3);border:1px solid var(--rule)}
+.chip.b{background:var(--pay-bg);border-color:var(--pay-ed);color:var(--pay)}
+
+/* ---------- flow diagram ---------- */
+.flowwrap{overflow-x:auto}
+.flowsvg{display:block;width:100%;min-width:560px;height:auto;color:var(--ink-2)}
+.flowsvg .node{fill:var(--paper-2);stroke:var(--rule-2)}
+.flowsvg .nlabel{fill:var(--ink);font-family:var(--sans);font-size:12px;font-weight:600}
+.flowsvg .nsub{fill:var(--ink-3);font-family:var(--mono);font-size:9px;letter-spacing:.08em}
+.flowsvg .edge{stroke:var(--rule-2);stroke-width:1.5;fill:none;opacity:.35;transition:opacity .3s,stroke .3s}
+.flowsvg .edge.live{stroke:var(--pay);opacity:1;stroke-width:2.2}
+.flowsvg .elabel{fill:var(--ink-3);font-family:var(--mono);font-size:9px;opacity:0;transition:opacity .3s}
+.flowsvg .elabel.live{fill:var(--pay);opacity:1}
+.flowsvg .node.live{stroke:var(--pay);stroke-width:2;fill:var(--pay-bg)}
+.stepnote{
+  display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;
+  padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;min-height:78px;
+}
+.stepnote .sn{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--paper-2);background:var(--pay);
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+}
+.stepnote .st{font-size:.88rem;line-height:1.55;color:var(--ink-2)}
+
+/* ---------- token life ---------- */
+.lifebar{height:9px;border-radius:100px;background:var(--paper-3);overflow:hidden;border:1px solid var(--rule)}
+.lifebar i{display:block;height:100%;background:var(--ok);width:100%;border-radius:100px}
+.lifebar i.low{background:var(--warn)}
+.lifebar i.out{background:var(--bad)}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.statgrid div{background:var(--paper);padding:10px 12px}
+.statgrid .sv{font-family:var(--mono);font-size:1.25rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.statgrid .sl{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+
+/* ---------- attack lab ---------- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vcard{border:1px solid var(--rule);border-radius:7px;padding:13px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.vcard.ok{border-color:var(--ok);background:var(--ok-bg)}
+.vcard.bad{border-color:var(--bad);background:var(--bad-bg)}
+.vcard h4{font-size:.86rem}
+.vcard p{font-size:.83rem;line-height:1.5;color:var(--ink-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-family:var(--mono);font-size:.76rem;align-items:baseline}
+.kv dt{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:.62rem}
+.kv dd{margin:0;word-break:break-all;color:var(--ink)}
+
+.sigcompare{display:flex;flex-direction:column;gap:7px}
+.sigline{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;font-family:var(--mono);font-size:.74rem}
+.sigline .sl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sigline .sv{word-break:break-all}
+.sigline .sv.match{color:var(--ok)}
+.sigline .sv.miss{color:var(--bad)}
+
+/* ---------- quiz ---------- */
+.quiz{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper-2)}
+.q{padding:18px 20px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:11px}
+.q:last-child{border-bottom:0}
+.q .qq{font-weight:600;font-size:.97rem;line-height:1.5;display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start}
+.q .qn{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);padding-top:.25em}
+.opts{display:flex;flex-direction:column;gap:6px;padding-left:34px}
+.opt{
+  all:unset;box-sizing:border-box;cursor:pointer;padding:9px 13px;border-radius:5px;
+  border:1px solid var(--rule-2);background:var(--paper);font-size:.87rem;line-height:1.45;
+  transition:background .15s,border-color .15s;
+}
+.opt:hover{background:var(--paper-3)}
+.opt:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt[disabled]{cursor:default}
+.qwhy{
+  padding-left:34px;font-size:.85rem;line-height:1.55;color:var(--ink-2);
+  border-left:2px solid var(--pay);margin-left:34px;padding-block:2px;
+}
+
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.minicard{border:1px solid var(--rule);border-radius:7px;padding:13px 14px;background:var(--paper-2);display:flex;flex-direction:column;gap:6px}
+.minicard .mt{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.minicard .mb{font-size:.87rem;line-height:1.5;color:var(--ink-2)}
+.minicard .mb b{color:var(--ink)}
+
+figure{margin:0;display:flex;flex-direction:column;gap:9px}
+figcaption{font-size:.8rem;color:var(--ink-3);line-height:1.5}
+
+footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:var(--paper-2)}
+.byline{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.6vw,1.6rem);font-weight:500;font-style:italic;
+  color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin:0;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.byline strong{font-style:normal;font-weight:700;color:var(--pay)}
+.byline .hb{font-style:normal;font-size:.82em;margin-left:.28em}
+
+.srcnote{font-size:.82rem;color:var(--ink-3);line-height:1.6}
+.srcnote a{color:var(--pay)}
+
+@media (max-width:760px){
+  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
+  .b64arrow{flex-direction:row;justify-content:center;gap:10px}
+  .grid3,.statgrid,.parts{grid-template-columns:1fr}
+  .parts button{border-right:0;border-bottom:1px solid var(--rule)}
+  .ticket{grid-template-columns:1fr}
+  .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
+  .stubcode{writing-mode:horizontal-tb;transform:none;margin:0}
+  .navlinks{display:none}
+  .dropcap::first-letter{font-size:3em}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style><style>
+:root{
+  --key:#6B3A82;  --key-bg:rgba(107,58,130,.13);  --key-ed:rgba(107,58,130,.42);
+  --iv:#2F5680;   --iv-bg:rgba(47,86,128,.13);    --iv-ed:rgba(47,86,128,.42);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --key:#C89BDC; --key-bg:rgba(200,155,220,.15); --key-ed:rgba(200,155,220,.45);
+    --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);  --iv-ed:rgba(134,182,230,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --key:#C89BDC; --key-bg:rgba(200,155,220,.15); --key-ed:rgba(200,155,220,.45);
+  --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);  --iv-ed:rgba(134,182,230,.45);
+}
+.t-k{color:var(--key);background:var(--key-bg)}
+.t-i{color:var(--iv);background:var(--iv-bg)}
+
+/* ---- formula slab ---- */
+.formula{
+  font-family:var(--mono);font-size:clamp(.86rem,2vw,1.05rem);
+  background:var(--paper);border:1px solid var(--rule);border-left:2px solid var(--pay);
+  border-radius:0 6px 6px 0;padding:16px 18px;overflow-x:auto;line-height:2;
+  color:var(--ink);text-align:center;
+}
+.formula .v{color:var(--pay);font-weight:600}
+.formula .w{color:var(--sig);font-weight:600}
+.formula small{display:block;font-family:var(--sans);font-size:.76rem;color:var(--ink-3);
+  margin-top:8px;line-height:1.5;text-align:center}
+
+/* ---- bit grid (SHA avalanche) ---- */
+.bitgrid{
+  display:grid;grid-template-columns:repeat(32,1fr);gap:2px;
+  padding:10px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+}
+.bitgrid i{
+  display:block;aspect-ratio:1;border-radius:1px;background:var(--rule);
+  transition:background .28s ease;
+}
+.bitgrid i.on{background:var(--sig)}
+
+/* ---- bit rows (base64) ---- */
+.bitrows{display:flex;flex-direction:column;gap:9px;overflow-x:auto;padding-bottom:4px}
+.bitrow{display:flex;align-items:center;gap:9px;min-width:max-content}
+.bitrow .rl{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);width:96px;flex:none;text-align:right;
+}
+.bitgroup{
+  display:flex;gap:1px;padding:3px 5px;border-radius:4px;border:1px solid var(--rule-2);
+  background:var(--paper-2);align-items:center;
+}
+.bitgroup.g8{border-color:var(--hdr-ed);background:var(--hdr-bg)}
+.bitgroup.g6{border-color:var(--pay-ed);background:var(--pay-bg)}
+.bitgroup b{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;width:9px;text-align:center;
+  color:var(--ink-2);
+}
+.bitgroup .tail{
+  font-family:var(--mono);font-size:.64rem;margin-left:5px;padding-left:5px;
+  border-left:1px solid var(--rule-2);color:var(--ink);font-weight:600;
+}
+.bitgroup.g8 .tail{color:var(--hdr)}
+.bitgroup.g6 .tail{color:var(--pay)}
+.bitgap{width:8px;flex:none}
+
+/* ---- curve canvas ---- */
+.curvewrap{
+  position:relative;background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  overflow:hidden;
+}
+.curvewrap canvas{display:block;width:100%;height:auto;cursor:crosshair}
+.curvehint{
+  position:absolute;left:12px;top:10px;font-family:var(--mono);font-size:.64rem;
+  letter-spacing:.08em;color:var(--ink-3);pointer-events:none;
+}
+
+/* ---- entropy meter ---- */
+.meter{height:9px;border-radius:100px;background:var(--paper-3);overflow:hidden;border:1px solid var(--rule);display:flex}
+.meter i{display:block;height:100%;transition:width .3s,background .3s}
+.meter i.weak{background:var(--bad)}
+.meter i.mid{background:var(--warn)}
+.meter i.good{background:var(--ok)}
+
+/* ---- checklist ---- */
+.checklist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{
+  border:1px solid var(--rule);border-left:2px solid var(--ok);border-radius:0 7px 7px 0;
+  padding:12px 14px;background:var(--paper-2);display:flex;flex-direction:column;gap:5px;
+}
+.check .cn{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.check .ct{font-weight:650;font-size:.9rem;line-height:1.35}
+.check .cb{font-size:.82rem;line-height:1.5;color:var(--ink-2)}
+
+/* ---- attack row ---- */
+.attackgrid{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.attackrow{
+  display:grid;grid-template-columns:26px 1fr;gap:12px;padding:13px 15px;
+  border-bottom:1px solid var(--rule);
+}
+.attackrow:last-child{border-bottom:0}
+.attackrow .ax{
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  background:var(--bad-bg);color:var(--bad);font-family:var(--mono);font-size:.7rem;font-weight:600;
+}
+.attackrow .an{font-weight:650;font-size:.9rem;margin-bottom:3px}
+.attackrow .ab{font-size:.84rem;line-height:1.55;color:var(--ink-2)}
+.attackrow .af{font-size:.82rem;line-height:1.5;color:var(--ok);margin-top:5px}
+.attackrow .af b{color:var(--ok)}
+
+/* ---- jwks ---- */
+.jwkslot{
+  border:1px solid var(--rule);border-radius:6px;padding:11px 13px;background:var(--paper);
+  transition:border-color .25s,background .25s;
+}
+.jwkslot.hit{border-color:var(--ok);background:var(--ok-bg)}
+.jwkslot.miss{opacity:.45}
+.jwkslot .jk{font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--pay)}
+.jwkslot .jd{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);margin-top:3px}
+
+.numgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.numgrid div{background:var(--paper);padding:9px 11px}
+.numgrid .nv{font-family:var(--mono);font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums;word-break:break-all;line-height:1.3}
+.numgrid .nl{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:3px}
+
+select{
+  font-family:var(--mono);font-size:.82rem;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:8px 11px;
+}
+select:focus{outline:2px solid var(--pay);outline-offset:-1px}
+
+@media (max-width:760px){
+  .checklist{grid-template-columns:1fr}
+  .bitgrid{grid-template-columns:repeat(16,1fr)}
+  .bitrow .rl{width:70px;font-size:.55rem}
+}
+</style>
+<style>
+/* ============ animated flow diagrams ============ */
+.flowbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.flowscroll{overflow-x:auto;padding:14px 10px}
+.flowsvg2{display:block;width:100%;height:auto;margin-inline:auto}
+
+.fn rect,.fn path.shape{
+  fill:var(--paper-2);stroke:var(--rule-2);stroke-width:1.5;
+  transition:stroke .3s,fill .3s,stroke-width .3s;
+}
+.fn text{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;transition:fill .3s}
+.fn text.sub{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.07em}
+.fn.on rect,.fn.on path.shape{stroke:var(--pay);stroke-width:2.4;fill:var(--pay-bg)}
+.fn.pass rect,.fn.pass path.shape{stroke:var(--ok);stroke-width:2;fill:var(--ok-bg)}
+.fn.pass text{fill:var(--ok)}
+.fn.bad rect,.fn.bad path.shape{stroke:var(--bad);stroke-width:2.4;fill:var(--bad-bg)}
+.fn.bad text{fill:var(--bad)}
+.fn.muted rect,.fn.muted path.shape{opacity:.5}
+.fn.muted text{opacity:.5}
+
+.fe{stroke:var(--rule-2);stroke-width:2;fill:none;opacity:.62;transition:stroke .3s,opacity .3s}
+.fe.lit{stroke:var(--pay);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.dead{stroke:var(--bad);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.done{stroke:var(--ok);opacity:.9}
+@keyframes fmarch{to{stroke-dashoffset:-15}}
+
+.fl{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;transition:fill .3s,opacity .3s;opacity:.78}
+.fl.lit{fill:var(--pay);opacity:1}
+.fl.dead{fill:var(--bad);opacity:1}
+.fl.done{fill:var(--ok);opacity:1}
+
+.chip{opacity:0;transition:opacity .2s}
+.chip.show{opacity:1}
+.chip circle{fill:var(--pay);stroke:var(--paper-2);stroke-width:2}
+.chip.bad circle{fill:var(--bad)}
+.chip.ok circle{fill:var(--ok)}
+.chip text{fill:var(--paper-2);font-family:var(--mono);font-size:9px;font-weight:600;text-anchor:middle}
+
+.flowbar{
+  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+  padding:12px 15px;border-top:1px solid var(--rule);background:var(--paper-3);
+}
+.flowbar .btn{font-size:.78rem;padding:6px 12px}
+.flowlog{
+  padding:13px 16px;border-top:1px solid var(--rule);min-height:76px;
+  display:grid;grid-template-columns:22px 1fr;gap:11px;align-items:start;
+}
+.flowlog .fi{
+  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;
+  background:var(--paper-3);color:var(--ink-3);transition:background .25s,color .25s;
+}
+.flowlog .fi.ok{background:var(--ok-bg);color:var(--ok)}
+.flowlog .fi.bad{background:var(--bad-bg);color:var(--bad)}
+.flowlog .ft{font-size:.87rem;line-height:1.55;color:var(--ink-2)}
+.flowlog .ft b{color:var(--ink)}
+.flowlog .ft .why{display:block;margin-top:5px;font-size:.82rem;color:var(--ink-3)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid var(--rule)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.legend i{width:14px;height:3px;border-radius:2px;display:block}
+.legend i.g{background:var(--pay)}
+.legend i.r{background:var(--bad)}
+.legend i.k{background:var(--ok)}
+.legend i.n{background:var(--rule-2)}
+</style>
+
+<script>
+/* ============ shared flow-animation engine ============ */
+window.FlowKit = (function(){
+  "use strict";
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, reduced ? Math.min(ms,40) : ms); }); }
+
+  /* move a chip group along a <path>, returns a promise */
+  function travel(pathEl, chipEl, ms){
+    if (!pathEl || !chipEl) return Promise.resolve();
+    var len = pathEl.getTotalLength();
+    if (reduced){
+      var e = pathEl.getPointAtLength(len);
+      chipEl.setAttribute("transform","translate("+e.x+","+e.y+")");
+      return Promise.resolve();
+    }
+    return new Promise(function(resolve){
+      var t0 = null;
+      function frame(ts){
+        if (t0 === null) t0 = ts;
+        var k = Math.min(1, (ts - t0) / ms);
+        var eased = k < .5 ? 2*k*k : 1 - Math.pow(-2*k+2, 2)/2;
+        var p = pathEl.getPointAtLength(eased * len);
+        chipEl.setAttribute("transform","translate("+p.x+","+p.y+")");
+        if (k < 1) requestAnimationFrame(frame); else resolve();
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function clearAll(root){
+    root.querySelectorAll(".fn").forEach(function(n){ n.classList.remove("on","pass","bad","muted"); });
+    root.querySelectorAll(".fe").forEach(function(e){ e.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".fl").forEach(function(l){ l.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("show","bad","ok"); });
+  }
+
+  function log(box, kind, mark, html){
+    var icon = box.querySelector(".fi"), txt = box.querySelector(".ft");
+    icon.className = "fi" + (kind ? " " + kind : "");
+    icon.innerHTML = mark;
+    txt.innerHTML = html;
+  }
+
+  return { travel: travel, sleep: sleep, clearAll: clearAll, log: log, reduced: reduced };
+})();
+</script>
+
+<nav class="topbar">
+  <div class="topbar-in">
+    <div class="brandmark">JWT <span>/ part three</span></div>
+    <div class="navlinks">
+      <a href="#ch6" data-nav="ch6">6 · Keys</a>
+      <a href="#ch7" data-nav="ch7">7 · The maths</a>
+      <a href="#ch8" data-nav="ch8">8 · Getting it wrong</a>
+      <a href="#rules" data-nav="rules">The checklist</a>
+      <a href="part-1.html" style="color:var(--pay)">Part one</a>
+      <a href="part-2.html" style="color:var(--pay)">Part two</a>
+      <a href="index.html" style="color:var(--pay)">Contents</a>
+    </div>
+  </div>
+  <div class="progressbar" id="progressbar"></div>
+</nav>
+
+<header class="hero">
+  <canvas id="guilloche" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <div class="hero-grid">
+      <div class="prose stack" style="margin-inline:0">
+        <div class="eyebrow">JWT, piece by piece · part three · handbook chapters 6–8</div>
+        <h1>The locksmith's<br><span class="thin">manual</span></h1>
+        <p class="lede">Two parts of hand-waving. Every time a seal was made, something was quietly labelled "the maths" and skipped over. This page opens that box &mdash; and then, having shown you how the locks work, shows you the eight ways people fit them wrongly.</p>
+        <p style="color:var(--ink-3);font-size:.88rem">You do not need this to use JWTs. The handbook says so itself: this chapter is <em>"aimed at curious minds wanting to understand the last piece of the puzzle."</em></p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">What is actually in here</span>
+        </div>
+        <div class="panel-body stack" style="gap:.7rem">
+          <div class="minicard" style="border:0;padding:0;background:transparent">
+            <span class="mt">Chapter 6 · keys as JSON</span>
+            <span class="mb">How a key gets written down so it can be posted, published and looked up.</span>
+          </div>
+          <hr class="perf">
+          <div class="minicard" style="border:0;padding:0;background:transparent">
+            <span class="mt">Chapter 7 · the machinery</span>
+            <span class="mb">Base64 down to the bit. Hashing, and why one changed letter changes everything. HMAC built by hand. RSA with numbers small enough to follow. Elliptic curves you can draw.</span>
+          </div>
+          <hr class="perf">
+          <div class="minicard" style="border:0;padding:0;background:transparent">
+            <span class="mt">Chapter 8 · the mistakes</span>
+            <span class="mb">Six real attacks, and the eight rules that stop all of them.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= CH 6 ============================= -->
+<section class="chapter" id="ch6">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">6</span>
+        <span class="l">JSON Web Keys</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Writing a key down</h2>
+    </div>
+
+    <div class="prose stack">
+      <p class="dropcap">In part two you generated key pairs and the page showed you a few letters &mdash; <code>n</code>, <code>e</code>, <code>x</code>, <code>y</code>. That was a JSON Web Key, and it is the smallest chapter in the handbook because there is genuinely not much to it.</p>
+
+      <div class="hook">
+        <div class="tag">The bank's book of signatures</div>
+        <p>A bank keeps a book. On every page: a customer's name, a sample of their signature, and a note saying what it may be used for.</p>
+        <p>The book is not secret. Showing someone a page does not let them forge anything. But without the book, the cashier has nothing to compare against.</p>
+      </div>
+
+      <p>A <em class="term">JWK</em> is one page of that book: a key, written as ordinary JSON, so it can be posted, published, fetched and looked up like any other data. A <em class="term">JWK Set</em> is the book &mdash; just an object with a <code>keys</code> list in it.</p>
+
+      <p>The fields you will actually meet:</p>
+
+      <div class="claimlist" style="margin-block:.4em">
+        <button type="button"><span class="ck">kty</span><span class="cx"><b>Key type. The only required field.</b> <code>RSA</code>, <code>EC</code> for elliptic curve, or <code>oct</code> for a plain shared secret. Everything else in the key depends on this answer.</span></button>
+        <button type="button"><span class="ck">kid</span><span class="cx"><b>The label on the key.</b> What a token's <code>kid</code> header points at. This is how the right key gets picked out of the book.</span></button>
+        <button type="button"><span class="ck">use</span><span class="cx"><b>What it is for:</b> <code>sig</code> for signing, <code>enc</code> for encryption. Leave it out if the key does both.</span></button>
+        <button type="button"><span class="ck">key_ops</span><span class="cx"><b>The detailed version of <code>use</code>.</b> A list like <code>["sign","verify"]</code>. Some pairings make sense together, some do not &mdash; sign and verify, yes; sign and encrypt, no. Do not use this and <code>use</code> at the same time.</span></button>
+        <button type="button"><span class="ck">alg</span><span class="cx"><b>Which algorithm this key is meant for.</b> <code>RS256</code>, <code>ES256</code> and so on. Optional, and worth setting: it stops a key being used for something it was never intended to do.</span></button>
+        <button type="button"><span class="ck">x5u &nbsp;x5c &nbsp;x5t</span><span class="cx"><b>The certificate versions.</b> A URL to a certificate, the certificate itself, or a fingerprint of one. Everything in them must agree with the rest of the key.</span></button>
+      </div>
+
+      <p>The remaining fields are whatever that particular kind of key needs. An elliptic-curve key carries <code>crv</code>, <code>x</code> and <code>y</code> &mdash; the curve it lives on, and the coordinates of a point on it. An RSA key carries <code>n</code> and <code>e</code>, the two numbers you will meet properly in the next chapter. And a private key carries <code>d</code> as well, which is precisely the field that must never leave your server.</p>
+
+      <div class="callout warn">
+        <span class="h">One field separates public from private</span>
+        Look at the example in the handbook: it has <code>x</code>, <code>y</code> <em>and</em> <code>d</code>. That is a private key. Publish it by accident &mdash; and people do &mdash; and everything built on it is gone. When you publish a key set, publish keys that have no <code>d</code> in them.
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · a real key set, and a token looking for its key</span>
+          <span class="sub">Generated live. The token's <code>kid</code> decides which page of the book gets used.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="btnrow">
+            <button class="btn primary" id="jwkGen">Build a key set</button>
+            <span class="pill mute" id="jwkState"><span class="dot"></span>empty book</span>
+          </div>
+
+          <pre class="code" id="jwkOut" style="max-height:280px;overflow:auto">press the button — two real keys will be generated and written out as JSON</pre>
+
+          <div class="stack" style="gap:.5rem">
+            <span style="font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">A token arrives. Its header says:</span>
+            <div class="btnrow">
+              <button class="btn" id="jwkAsk1" disabled>kid: rsa-2026-spring</button>
+              <button class="btn" id="jwkAsk2" disabled>kid: ec-2026-spring</button>
+              <button class="btn danger" id="jwkAsk3" disabled>kid: something-else</button>
+            </div>
+          </div>
+
+          <div class="grid2" id="jwkSlots"></div>
+          <div id="jwkNote" class="callout" hidden></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CH 7 ============================= -->
+<section class="chapter" id="ch7">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">7</span>
+        <span class="l">JSON Web Algorithms</span>
+        <span class="rule"></span>
+      </div>
+      <h2>What is inside the box</h2>
+      <p class="lede" style="margin-top:.7em">Four pieces of machinery hold everything up: an encoding, a hash, a way to mix a secret into that hash, and two kinds of key pair. None of them is beyond you.</p>
+    </div>
+
+    <!-- 7.1 base64 -->
+    <div class="prose stack">
+      <h3>7.1 &nbsp;Base64, down to the bit</h3>
+      <div class="hook">
+        <div class="tag">Beads on a string</div>
+        <p>Your data is a long string of beads &mdash; ones and zeros. Nothing about Base64 changes a single bead.</p>
+        <p>All it does is decide to read them in groups of <strong>six</strong> instead of groups of <strong>eight</strong>, and give every possible group of six a letter. Sixty-four groups are possible, so sixty-four letters are needed. That is the whole name.</p>
+        <p>Since six is smaller than eight, you end up with more groups than you started with &mdash; about a third more. That is why encoded text is always longer than what went in. Nothing was added. It was just cut into smaller pieces.</p>
+      </div>
+      <p>Three bytes go in as twenty-four bits and come out as four characters. Type below and watch the regrouping happen.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Watch · eight-bit groups become six-bit groups</span>
+          <span class="sub">First three characters shown.</span>
+        </div>
+        <div class="panel-body stack">
+          <label class="fld">
+            <span class="lb">Type something</span>
+            <input type="text" id="b64In" value="Jot" maxlength="24">
+          </label>
+          <div class="bitrows" id="b64Rows"></div>
+          <div style="font-size:.85rem;color:var(--ink-2);line-height:1.6" id="b64Note"></div>
+          <div class="callout">
+            <span class="h">When it does not divide by three</span>
+            Real data rarely comes in neat groups of three bytes. When there is a leftover, zeros are added to fill out the last six-bit group. Ordinary Base64 then pads the result with <code>=</code> signs so the length is a multiple of four. <strong>JWTs throw those away</strong> &mdash; along with swapping <code>+</code> and <code>/</code> for <code>-</code> and <code>_</code>, because the original two are not safe inside a web address. That variant is <code>base64url</code>, and it is what every dot-separated piece you have seen is written in.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7.2 SHA -->
+    <div class="prose stack">
+      <h3>7.2 &nbsp;SHA-256, the fingerprint</h3>
+      <div class="hook">
+        <div class="tag">A fingerprint for anything</div>
+        <p>Feed it a single word or the whole of an encyclopaedia. Either way, out comes exactly 256 bits &mdash; sixty-four characters, no more, no less.</p>
+        <p>Feed it the same thing twice and you get the same answer twice, always.</p>
+        <p>Change one letter anywhere, and the answer does not shift a little. It is completely different, as though you had started from something else entirely. And there is no way back: from the fingerprint you cannot rebuild what went in.</p>
+      </div>
+      <p>That last property has a name &mdash; the <em class="term">avalanche effect</em> &mdash; and it is easier to be shown than told. Below, the same text twice, with one character changed in the second. Each square is one of the 256 bits; a square lights up when the two fingerprints disagree there.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Watch · change one letter, watch half the bits move</span>
+          <span class="sub">Real SHA-256, computed here.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid2">
+            <label class="fld">
+              <span class="lb">Message A</span>
+              <textarea id="shaA" rows="2">the quick brown fox</textarea>
+            </label>
+            <label class="fld">
+              <span class="lb">Message B — change anything</span>
+              <textarea id="shaB" rows="2">the quick brown fox.</textarea>
+            </label>
+          </div>
+          <div class="sigcompare">
+            <div class="sigline"><span class="sl">fingerprint A</span><span class="sv" id="shaHashA">—</span></div>
+            <div class="sigline"><span class="sl">fingerprint B</span><span class="sv" id="shaHashB">—</span></div>
+          </div>
+          <div class="bitgrid" id="shaGrid" role="img" aria-label="A grid of 256 squares, one per bit of the hash; lit squares mark bits where the two fingerprints differ."></div>
+          <div class="statgrid">
+            <div><div class="sv" id="shaDiff">—</div><div class="sl">Bits that differ</div></div>
+            <div><div class="sv" id="shaPct">—</div><div class="sl">Of all 256</div></div>
+            <div><div class="sv" id="shaChars">—</div><div class="sl">Characters you changed</div></div>
+          </div>
+          <div class="callout">
+            <span class="h">Roughly half, every time</span>
+            Change one letter or rewrite the whole sentence &mdash; it makes no difference, you land near 128. That is exactly what you want. If small changes produced small differences, an attacker could nudge their way towards a match. Because they do not, there is nothing to nudge.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <h4>And there is no magic ingredient</h4>
+      <p>SHA-256 looks impenetrable from outside. Inside, it is built from six small functions, and every one of them is just shifting bits sideways and combining them:</p>
+      <pre class="code">function rotr(x, n) { return (x &gt;&gt;&gt; n) | (x &lt;&lt; (32 - n)); }
+
+function ch(x, y, z)   { return (x &amp; y) ^ ((~x) &amp; z); }
+function maj(x, y, z)  { return (x &amp; y) ^ (x &amp; z) ^ (y &amp; z); }
+
+function bsig0(x) { return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22); }
+function bsig1(x) { return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25); }
+function ssig0(x) { return rotr(x, 7) ^ rotr(x, 18) ^ (x &gt;&gt;&gt; 3); }
+function ssig1(x) { return rotr(x, 17) ^ rotr(x, 19) ^ (x &gt;&gt;&gt; 10); }</pre>
+      <p>That is the entire vocabulary. Rotate, and, or, exclusive-or. The message gets chopped into 512-bit blocks, and those seven functions are run over each block sixty-four times, each round stirring the result of the last. The security comes not from any one clever step but from doing something thoroughly ordinary, sixty-four times, so that every input bit ends up touching every output bit.</p>
+      <p style="font-size:.9rem;color:var(--ink-3)">Before any of that, the message is padded: a single <code>1</code> bit is added to the end, then zeros, then the original length written as a 64-bit number &mdash; enough zeros that the whole thing divides neatly into 512-bit blocks. Writing the length in at the end is not decoration; it is what stops two different messages padding out to the same blocks.</p>
+    </div>
+
+    <!-- 7.3 HMAC -->
+    <div class="prose stack">
+      <h3>7.3 &nbsp;HMAC, and why it wraps twice</h3>
+      <p>You have a hash that nobody can reverse. You have a secret. Mixing them ought to be easy &mdash; just hash the secret followed by the message, and you have a code only a secret-holder could produce.</p>
+      <p>That obvious approach is broken, and the reason is worth knowing.</p>
+      <div class="hook">
+        <div class="tag">Signing at the bottom of the page</div>
+        <p>You write a note and sign at the bottom. Someone takes your note, and without touching a word of it, <strong>adds more lines underneath</strong> &mdash; and produces a new, perfectly valid-looking signature for the longer note, without ever knowing how you sign.</p>
+        <p>They can do it because of how the hash works: it processes the message in blocks and carries its state forward, so anyone who knows the answer so far can carry on from there.</p>
+      </div>
+      <p>The fix is to sign the sealed envelope rather than the page inside it. HMAC hashes the message with the key mixed in one way, then <strong>hashes that result again</strong> with the key mixed in a different way. There is nothing left to append to.</p>
+
+      <div class="formula">
+        HMAC(m) = H( K&prime; <span class="w">⊕ opad</span> ‖ H( K&prime; <span class="v">⊕ ipad</span> ‖ m ) )
+        <small><span class="v">ipad</span> is the byte 0x36 repeated; <span class="w">opad</span> is 0x5C repeated. ‖ just means "followed by".<br>
+        K&prime; is your key padded with zeros to the hash's block size — or hashed down first, if it was longer.</small>
+      </div>
+
+      <p>Two constants, two hashes, and that is the whole algorithm. To prove there is nothing hidden, the panel below builds it from those steps by hand and checks the result against your browser's own HMAC.</p>
+    </div>
+
+    <div class="lab stack-lg">
+
+    <div class="flowbox" id="hmacflow">
+      <div class="flowscroll">
+<svg class="flowsvg2" viewBox="0 0 880 330" role="img" aria-label="The secret is padded to a block, XORed two different ways, and hashed twice: the inner hash covers the message, and the outer hash covers the inner result, leaving nothing to append to.">
+<defs><marker id="fa3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><polygon points="0,1 9,5 0,9" fill="currentColor"></polygon></marker></defs>
+
+<g color="var(--rule-2)">
+  <path id="he1" class="fe" d="M158 62 L 214 62" marker-end="url(#fa3)"></path>
+  <path id="he2" class="fe" d="M330 48 L 372 48 L 372 66 L 408 66" marker-end="url(#fa3)"></path>
+  <text id="hl2" class="fl" x="352" y="38" text-anchor="middle">&#8853; 0x36</text>
+
+  <path id="he3" class="fe" d="M158 158 L 300 158 L 300 96 L 408 90" marker-end="url(#fa3)"></path>
+  <text id="hl3" class="fl" x="248" y="150" text-anchor="middle">the message, appended</text>
+
+  <path id="he4" class="fe" d="M471 106 L 471 166" marker-end="url(#fa3)"></path>
+  <text id="hl4" class="fl" x="482" y="142" text-anchor="start">inner hash</text>
+
+  <path id="he5" class="fe" d="M330 66 L 358 66 L 358 202 L 404 202" marker-end="url(#fa3)"></path>
+  <text id="hl5" class="fl" x="364" y="150" text-anchor="start">&#8853; 0x5C</text>
+
+  <path id="he6" class="fe" d="M534 200 L 700 200" marker-end="url(#fa3)"></path>
+  <text id="hl6" class="fl" x="617" y="192" text-anchor="middle">outer hash</text>
+</g>
+
+<g id="hnKey" class="fn"><rect x="14" y="38" width="144" height="48" rx="7"></rect>
+  <text x="86" y="59" text-anchor="middle">Your secret</text>
+  <text class="sub" x="86" y="75" text-anchor="middle">ANY LENGTH</text></g>
+
+<g id="hnPad" class="fn"><rect x="214" y="24" width="116" height="52" rx="7"></rect>
+  <text x="272" y="46" text-anchor="middle">K&#8242;</text>
+  <text class="sub" x="272" y="62" text-anchor="middle">PADDED TO 64</text></g>
+
+<g id="hnMsg" class="fn"><rect x="14" y="134" width="144" height="48" rx="7"></rect>
+  <text x="86" y="155" text-anchor="middle">The message</text>
+  <text class="sub" x="86" y="171" text-anchor="middle">HEADER . PAYLOAD</text></g>
+
+<g id="hnInner" class="fn"><rect x="408" y="46" width="126" height="60" rx="7"></rect>
+  <text x="471" y="72" text-anchor="middle">SHA-256</text>
+  <text class="sub" x="471" y="89" text-anchor="middle">INNER</text></g>
+
+<g id="hnOuter" class="fn"><rect x="408" y="170" width="126" height="60" rx="7"></rect>
+  <text x="471" y="196" text-anchor="middle">SHA-256</text>
+  <text class="sub" x="471" y="213" text-anchor="middle">OUTER</text></g>
+
+<g id="hnOut" class="fn"><rect x="700" y="174" width="166" height="52" rx="7"></rect>
+  <text x="783" y="196" text-anchor="middle">The signature</text>
+  <text class="sub" x="783" y="212" text-anchor="middle">32 BYTES</text></g>
+
+<g id="hnNaive" class="fn"><rect x="14" y="256" width="852" height="54" rx="7" stroke-dasharray="6 4"></rect>
+  <text x="34" y="280" text-anchor="start" font-size="12">The obvious version &#8212; SHA-256( secret &#8214; message ) &#8212; stops at the inner hash, and that is exactly the problem</text>
+  <text class="sub" x="34" y="297" text-anchor="start">A HASH CARRIES ITS STATE FORWARD, SO ANYONE WHO KNOWS THE ANSWER SO FAR CAN CARRY ON FROM THERE AND APPEND TO YOUR MESSAGE</text></g>
+
+<g id="hchip" class="chip"><circle r="11"></circle><text y="3.5">&#9679;</text></g>
+</svg>
+      </div>
+      <div class="legend">
+        <span><i class="g"></i>running now</span>
+        <span><i class="k"></i>done</span>
+        <span><i class="r"></i>where the naive version stops</span>
+        <span><i class="n"></i>waiting</span>
+      </div>
+      <div class="flowbar">
+        <button class="btn primary" data-hm="run">Play the construction</button>
+        <button class="btn danger" data-hm="naive">Show the broken shortcut</button>
+        <button class="btn" data-hm="reset">Reset</button>
+      </div>
+      <div class="flowlog">
+        <span class="fi">&#183;</span>
+        <span class="ft">Two constants, two hashes. Play it through, then look at what happens if you stop after the first one.</span>
+      </div>
+    </div>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Build it · HMAC-SHA256 from scratch</span>
+          <span class="sub">Only SHA-256, XOR and joining bytes together.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid2">
+            <label class="fld"><span class="lb">Secret</span><input type="text" id="hmKey" value="a-string-nobody-else-knows"></label>
+            <label class="fld"><span class="lb">Message</span><input type="text" id="hmMsg" value="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0MDIifQ"></label>
+          </div>
+          <dl class="kv" id="hmSteps"></dl>
+          <div class="sigcompare">
+            <div class="sigline"><span class="sl">built by hand</span><span class="sv" id="hmMine">—</span></div>
+            <div class="sigline"><span class="sl">browser's own</span><span class="sv" id="hmTheirs">—</span></div>
+          </div>
+          <div id="hmVerdict"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7.4 RSA -->
+    <div class="prose stack">
+      <h3>7.4 &nbsp;RSA, with numbers you can follow</h3>
+      <div class="hook">
+        <div class="tag">A sum that only works one way</div>
+        <p>Multiply 61 by 53. Give it a moment and you will get there: 3233.</p>
+        <p>Now the other direction. Which two numbers multiply to make 3233? Same two numbers, same relationship &mdash; and suddenly you are guessing.</p>
+        <p>Now imagine both numbers are three hundred digits long. The multiplication is still a second's work for a computer. The guessing is not: in 2009 a number of 232 digits was finally taken apart, after two years of work by a cluster of machines. Real keys are far bigger than that.</p>
+      </div>
+      <p>That gap &mdash; easy one way, hopeless the other &mdash; is the whole of RSA. Everything else is arithmetic wrapped around it.</p>
+      <p>The rule at the centre is this:</p>
+      <div class="formula">
+        ( m<sup class="v">e</sup> )<sup class="w">d</sup> ≡ m &nbsp; (mod n)
+        <small>Raise a number to the power <span class="v">e</span>, then to the power <span class="w">d</span>, and you get back exactly what you started with.<br>
+        <span class="v">e</span> and n are the public key. <span class="w">d</span> is the private key. Finding <span class="w">d</span> when you only know <span class="v">e</span> and n means factoring n.</small>
+      </div>
+      <p>Build one below with numbers small enough to check by hand, sign something, and watch it come back.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Workshop · a complete RSA key, small enough to read</span>
+          <span class="sub">Exact arithmetic. Same steps as a real 2048-bit key, smaller numbers.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="btnrow">
+            <label class="fld" style="gap:4px">
+              <span class="lb">Two primes</span>
+              <select id="rsaPrimes">
+                <option value="61,53">p = 61, q = 53</option>
+                <option value="11,17">p = 11, q = 17</option>
+                <option value="101,113">p = 101, q = 113</option>
+                <option value="277,311">p = 277, q = 311</option>
+              </select>
+            </label>
+            <label class="fld" style="gap:4px">
+              <span class="lb">Message (a number)</span>
+              <input type="text" id="rsaMsg" value="65" style="width:110px">
+            </label>
+          </div>
+
+          <div class="numgrid">
+            <div><div class="nv" id="rsaN">—</div><div class="nl">n = p × q &nbsp;(public)</div></div>
+            <div><div class="nv" id="rsaPhi">—</div><div class="nl">φ(n) = n − (p+q−1)</div></div>
+            <div><div class="nv" id="rsaE" style="color:var(--ok)">—</div><div class="nl">e &nbsp;(public)</div></div>
+            <div><div class="nv" id="rsaD" style="color:var(--sig)">—</div><div class="nl">d &nbsp;(private — never share)</div></div>
+          </div>
+
+          <div class="grid2">
+            <div class="vcard">
+              <h4>Sign it &nbsp;<span style="font-weight:400;color:var(--ink-3);font-size:.8rem">private key</span></h4>
+              <div class="formula" style="font-size:.86rem;padding:10px;text-align:left">s = m<sup>d</sup> mod n</div>
+              <div class="kv"><dt>m</dt><dd id="rsaMOut">—</dd><dt>signature</dt><dd id="rsaSig" style="color:var(--sig)">—</dd></div>
+            </div>
+            <div class="vcard">
+              <h4>Check it &nbsp;<span style="font-weight:400;color:var(--ink-3);font-size:.8rem">public key</span></h4>
+              <div class="formula" style="font-size:.86rem;padding:10px;text-align:left">m = s<sup>e</sup> mod n</div>
+              <div class="kv"><dt>recovered</dt><dd id="rsaBack" style="color:var(--ok)">—</dd><dt>match</dt><dd id="rsaMatch">—</dd></div>
+            </div>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn danger" id="rsaCrack">Break it — factor n and work out d</button>
+            <span style="font-size:.83rem;color:var(--ink-3)" id="rsaCrackNote">These numbers are tiny. A laptop takes no time at all.</span>
+          </div>
+          <div id="rsaCrackOut"></div>
+
+          <div class="callout warn">
+            <span class="h">The only thing that changes at full size</span>
+            Every step above is exactly what a real RSA key does. The one difference is the size of the numbers &mdash; and that difference is everything. Factoring 3233 took your browser under a millisecond. Factoring a 2048-bit <code>n</code> has never been done by anyone.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7.5 EC -->
+    <div class="prose stack">
+      <h3>7.5 &nbsp;Elliptic curves, drawn</h3>
+      <p>RSA rests on factoring being hard. Elliptic curves rest on a different hard problem &mdash; and unlike factoring, this one is genuinely easier to <em>see</em> than to describe.</p>
+      <p>Start with a curve. Just a shape:</p>
+      <div class="formula">y² = x³ + <span class="v">a</span>x + <span class="w">b</span></div>
+      <div class="hook">
+        <div class="tag">A strange kind of adding</div>
+        <p>Pick two points on the curve. Draw a straight line through them. That line will cross the curve at exactly one more place. Flip that third point across the horizontal axis, and where you land is called <strong>the sum of the first two</strong>.</p>
+        <p>It is not adding as you know it. But it obeys the same rules adding does, and &mdash; this is the useful part &mdash; the answer is always another point on the same curve. So you can do it again. And again.</p>
+      </div>
+      <p>Place a point below and keep adding it to itself. Watch where you land.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · hop along the curve</span>
+          <span class="sub">Click the curve to place your starting point.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="curvewrap">
+            <canvas id="curve" width="880" height="440"></canvas>
+            <span class="curvehint" id="curveHint">y² = x³ − 2x + 4 &nbsp;·&nbsp; click anywhere near the curve</span>
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" id="curveHop" disabled>Add the starting point again</button>
+            <button class="btn ghost" id="curveClear">Clear</button>
+            <span class="pill mute" id="curveCount"><span class="dot"></span>no point yet</span>
+          </div>
+          <div id="curveNote" style="font-size:.86rem;line-height:1.6;color:var(--ink-2);min-height:3em"></div>
+        </div>
+      </div>
+
+      <div class="prose stack">
+        <h4>And now the hard problem</h4>
+        <p>Hopping is easy. Hop a thousand times and a computer barely notices &mdash; there is a shortcut that gets there in about ten steps instead of a thousand.</p>
+        <p>Now the reverse. Here is where I landed. <strong>How many hops did I take?</strong></p>
+        <p>Nobody knows a fast way to answer that. Not "it takes a while" &mdash; there is no known efficient method at all. That question is the <em class="term">elliptic-curve discrete logarithm problem</em>, and it is the entire foundation. Your private key is the number of hops. Your public key is where you landed.</p>
+        <div class="callout">
+          <span class="h">One picture, one correction</span>
+          Real cryptography does not use the smooth curve above. It uses the same equation over a <strong>finite field</strong> &mdash; all arithmetic done modulo a large prime, so every coordinate is a whole number in a fixed range. The curve stops being a curve and becomes a scattering of dots with no shape at all. Every rule still holds; the line through two points wraps around instead of running off. Here is what that actually looks like:
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">The same curve, as a computer sees it</span>
+          <span class="sub">y² = x³ − 2x + 4 &nbsp;(mod 97)</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="curvewrap"><canvas id="field" width="880" height="440"></canvas></div>
+          <p style="font-size:.85rem;color:var(--ink-2);line-height:1.6">
+            Same equation, same rules, no shape. Notice the mirror symmetry across the middle &mdash; that is the same "flip it over the axis" step as before, because if <code>y</code> works then so does <code>−y</code>. This is what your <code>ES256</code> key is a point on, except that the prime is not 97 but a number with 78 digits.
+          </p>
+        </div>
+      </div>
+
+      <div class="prose stack">
+        <div class="grid2">
+          <div class="minicard"><span class="mt">Why bother</span><span class="mb">A <b>256-bit</b> elliptic-curve key is about as strong as a <b>3072-bit</b> RSA key. Twelve times less to store and send, for the same protection.</span></div>
+          <div class="minicard" style="border-color:var(--warn)"><span class="mt">Why be careful</span><span class="mb">The maths only holds for carefully chosen parameters. Elliptic curves <b>have been broken in the wild</b> by implementations that skipped checking their inputs — see chapter 8.</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CH 8 ============================= -->
+<section class="chapter" id="ch8">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">8</span>
+        <span class="l">Best current practices</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Six ways this goes wrong</h2>
+      <p class="lede" style="margin-top:.7em">Almost none of these are flaws in JWTs. They are flaws in how libraries were written and how people used them &mdash; which does not make them any less real.</p>
+    </div>
+
+    <!-- RS256 as HS256 -->
+    <div class="prose stack">
+      <h3>8.1 &nbsp;The one that catches everyone</h3>
+      <div class="hook">
+        <div class="tag">Two very different things that look identical</div>
+        <p>A doorman is handed something and told: <em>"check the letter against this."</em></p>
+        <p>Sometimes it is a signature sample &mdash; compare, do not copy. Sometimes it is a rubber stamp &mdash; anyone holding it can also make letters. From across the room, both are just <em>a thing you were handed</em>.</p>
+        <p>Now let the letter itself say which kind it is.</p>
+      </div>
+      <p>This is a real attack, and it is elegant enough to be worth walking through.</p>
+      <p>Your server signs with <code>RS256</code>. Its public key is published &mdash; that is the point of a public key. The verify function in your library looks like this:</p>
+      <pre class="code">function jwtDecode(token, <span class="str">secretOrPublicKey</span>) { <span class="cm">/* ... */</span> }</pre>
+      <p>One parameter for both. It makes a sort of sense &mdash; a public key is a string, and an HMAC secret is a string.</p>
+      <p>So the attacker takes your <strong>public key</strong>, changes the header to <code>"alg": "HS256"</code>, and signs a forged token using that public key <em>as the shared secret</em>. Your server passes the same public key in, the library reads <code>alg</code> from the token, decides this is an HMAC token, and checks it against the string it was given. It matches. Of course it matches.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Attack lab · a public key used as a shared secret</span>
+          <span class="sub">Real RSA key, real HMAC. Watch a naive verifier fall for it.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="btnrow">
+            <button class="btn primary" id="conGen">Set up the server</button>
+            <button class="btn danger" id="conAttack" disabled>Forge an admin token</button>
+            <span class="pill mute" id="conState"><span class="dot"></span>not running</span>
+          </div>
+          <div class="tokenbox" style="box-shadow:none">
+            <div class="tokenbox-head"><span class="tokenbox-title" id="conLabel">The honest token</span></div>
+            <p class="token" id="conToken">press "Set up the server"</p>
+          </div>
+          <div class="verdict" id="conVerdict" hidden>
+            <div class="vcard bad">
+              <h4>Naive verifier</h4>
+              <p><code>jwtDecode(token, publicKey)</code> — reads <code>alg</code> from the token, sees <code>HS256</code>, treats the public key as a shared secret, and finds a perfect match.</p>
+              <span class="pill bad"><span class="dot"></span>admin granted</span>
+            </div>
+            <div class="vcard ok">
+              <h4>Strict verifier</h4>
+              <p><code>jwtDecode(token, publicKey, {algorithms:["RS256"]})</code> — was told which algorithm to expect. The token says <code>HS256</code>. Rejected without ever looking at the signature.</p>
+              <span class="pill ok"><span class="dot"></span>refused</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- weak keys -->
+    <div class="prose stack">
+      <h3>8.2 &nbsp;A secret is not a password</h3>
+      <div class="hook">
+        <div class="tag">Two very different doors</div>
+        <p>A password guards a door that fights back. Get it wrong three times and it locks you out, calls someone, makes you wait.</p>
+        <p>An HMAC secret guards nothing of the kind. An attacker takes your token home and tries guesses <em>on their own machine</em>, as fast as their hardware allows, with nobody watching and no limit. Billions per second.</p>
+      </div>
+      <p>Which is why the specification is blunt about it: <em>"A key of the same size as the hash output (for instance, 256 bits for HS256) or larger MUST be used."</em> Two hundred and fifty-six bits of real randomness &mdash; not a memorable phrase, not your company name with a number after it.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · how strong is that secret?</span>
+          <span class="sub">A rough guide, not a certificate.</span>
+        </div>
+        <div class="panel-body stack">
+          <label class="fld"><span class="lb">Your HS256 secret</span><input type="text" id="entIn" value="my-secret"></label>
+          <div class="meter"><i id="entBar"></i></div>
+          <div class="statgrid">
+            <div><div class="sv" id="entBits">—</div><div class="sl">Bits of guessing needed</div></div>
+            <div><div class="sv" id="entLen">—</div><div class="sl">Characters</div></div>
+            <div><div class="sv" id="entTime" style="font-size:1rem">—</div><div class="sl">To try them all</div></div>
+          </div>
+          <div id="entNote" class="callout"></div>
+          <div class="btnrow">
+            <button class="btn" id="entGen">Generate a proper one</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- the rest -->
+    <div class="prose stack">
+      <h3>8.3 &nbsp;And four more</h3>
+    </div>
+
+    <div class="lab">
+      <div class="attackgrid">
+        <div class="attackrow">
+          <span class="ax">1</span>
+          <div>
+            <div class="an">alg: none</div>
+            <div class="ab">Covered in part one, and still worth naming here. Cut the signature off, relabel the token as unsigned, and hope the reader believes the label.</div>
+            <div class="af"><b>Fix:</b> the same fix as above — name the algorithms you accept, in your own code.</div>
+          </div>
+        </div>
+        <div class="attackrow">
+          <span class="ax">2</span>
+          <div>
+            <div class="an">Assuming encryption stops tampering</div>
+            <div class="ab">"If they cannot read it, how could they change it usefully?" &mdash; by trying, over and over, until a flipped bit lands somewhere that matters. <code>"admin": false</code> is one bit away from something else. An attacker with time and no rate limit can afford to be patient.</div>
+            <div class="af"><b>Fix:</b> every JWE algorithm carries an authentication tag, which is why this mostly cannot happen. But if you nest tokens, <b>validate every layer</b> — decrypting the outside proves nothing about the signature inside.</div>
+          </div>
+        </div>
+        <div class="attackrow">
+          <span class="ax">3</span>
+          <div>
+            <div class="an">Invalid curve attacks</div>
+            <div class="ab">Elliptic-curve maths only behaves if the points really are on the curve. Hand a library a "public key" that is not a valid point, and the operations still produce <em>something</em> &mdash; something that can be used, step by step, to work backwards to the private key. This has been done to real software.</div>
+            <div class="af"><b>Fix:</b> check that any public key you are given is a genuine point on the expected curve. Good libraries do this; confirm yours is one of them.</div>
+          </div>
+        </div>
+        <div class="attackrow">
+          <span class="ax">4</span>
+          <div>
+            <div class="an">Substitution — wrong recipient</div>
+            <div class="ab">A token says only <em>"joe is an admin"</em>. It is perfectly signed. But there is a <em>joe</em> at the other service too, and that service shares your signing key. The same token, sent somewhere it was never meant to go, works.</div>
+            <div class="af"><b>Fix:</b> <code>aud</code> and <code>iss</code>, and check them. A ticket should name its line and its railway.</div>
+          </div>
+        </div>
+        <div class="attackrow">
+          <span class="ax">5</span>
+          <div>
+            <div class="an">Substitution — right recipient, wrong door</div>
+            <div class="ab">The subtle one. A token for <code>aud: "cool-company/user-database"</code>. A second service checks the audience by asking whether it <em>contains</em> "cool-company" &mdash; and it does. A token meant to write to one database now writes to another.</div>
+            <div class="af"><b>Fix:</b> compare the audience <b>exactly</b>. "Starts with" and "contains" are not checks; they are near-misses waiting to happen.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= RULES ============================= -->
+<section class="chapter" id="rules">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">✓</span>
+        <span class="l">The list worth keeping</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Eight rules</h2>
+      <p class="lede" style="margin-top:.6em">Every attack in this handbook &mdash; all three parts of it &mdash; is stopped by something on this list.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="checklist">
+        <div class="check"><span class="cn">Rule 01</span><span class="ct">Name the algorithms yourself</span><span class="cb">Never let the token choose how it gets checked. This one rule alone kills two of the attacks above.</span></div>
+        <div class="check"><span class="cn">Rule 02</span><span class="ct">Pick the right algorithm for the situation</span><span class="cb">A shared secret is fine inside one server. It is the wrong answer the moment other parties need to verify. And a token signed with an algorithm your application did not ask for is invalid, even if the maths checks out.</span></div>
+        <div class="check"><span class="cn">Rule 03</span><span class="ct">Validate every layer</span><span class="cb">A nested token has two sets of rules. Passing the outer one is not passing.</span></div>
+        <div class="check"><span class="cn">Rule 04</span><span class="ct">Validate cryptographic inputs</span><span class="cb">Public keys must be real points on the real curve. Numbers must sit in their proper range. Bad inputs do not fail loudly — they leak.</span></div>
+        <div class="check"><span class="cn">Rule 05</span><span class="ct">Use strong keys</span><span class="cb">256 bits minimum for HS256, from a proper random source. Length without randomness is not strength — a long memorable phrase is still guessable.</span></div>
+        <div class="check"><span class="cn">Rule 06</span><span class="ct">Check every claim you have</span><span class="cb"><code>iss</code>, <code>sub</code>, <code>aud</code>, <code>exp</code>, <code>nbf</code>, <code>iat</code>. A valid signature on a token meant for someone else is still a token meant for someone else. Exact matches only.</span></div>
+        <div class="check"><span class="cn">Rule 07</span><span class="ct">Use <code>typ</code> to tell your tokens apart</span><span class="cb">If your system issues several kinds, say which is which. It costs nothing and closes a door.</span></div>
+        <div class="check"><span class="cn">Rule 08</span><span class="ct">Different rules for different tokens</span><span class="cb">Separate keys per subsystem. Specific issuer names — a URL, not a company name. The more precisely a token describes where it belongs, the less it can be reused somewhere it does not.</span></div>
+      </div>
+
+      <div class="prose stack">
+        <div class="callout">
+          <span class="h">And the one the handbook closes on</span>
+          <em>"Don't roll your own crypto."</em> Everything in chapter 7 was shown so you would understand what your library is doing &mdash; not so you would write it yourself. The people who wrote those libraries have been broken in public, learned from it, and fixed it. That history is the thing you are actually installing.
+        </div>
+        <p style="color:var(--ink-2)">Which is the honest note to end on. JWTs look simple, and the simplicity is real &mdash; three pieces, two dots, a seal. But every part of this handbook that went wrong went wrong because someone reasonable made a reasonable assumption. Read the header. Name your algorithms. Check your claims. Keep your secrets long and your tokens short-lived.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= QUIZ ============================= -->
+<section class="chapter" id="quiz">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">?</span>
+        <span class="l">Check yourself</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Last six questions</h2>
+    </div>
+    <div class="lab"><div class="quiz" id="quizBox"></div></div>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="wrap prose stack">
+    <div class="eyebrow">Colophon</div>
+    <p class="byline">Recreated by <strong>Swaraj Bangar</strong><span class="hb" role="img" aria-label="love">❤️</span></p>
+    <p class="srcnote">
+      Part three of a hands-on reading of <strong>The JWT Handbook</strong> (v0.14.2) by Sebastián E. Peyrott, published by Auth0 &mdash; following chapters 6, 7 and Annex A. The best-practice material there is drawn from the IETF OAuth Working Group's JWT Best Current Practices draft. The signature books, bead strings and doormen are this page's own.
+    </p>
+    <p class="srcnote">
+      The hashing, HMAC, RSA arithmetic and curve drawing all run in your browser. The RSA workshop uses deliberately tiny primes so the numbers stay readable &mdash; it is a teaching model, not a key.
+    </p>
+    <p class="srcnote" style="color:var(--ink-3)">
+      Set in Bodoni Moda, Public&nbsp;Sans and IBM Plex Mono. &nbsp;·&nbsp;
+      <a href="part-1.html" style="color:var(--pay)">Part one</a> &nbsp;·&nbsp;
+      <a href="part-2.html" style="color:var(--pay)">Part two</a> &nbsp;·&nbsp; <a href="index.html" style="color:var(--pay)">All three parts</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var box = document.getElementById("hmacflow");
+  if (!box || !window.FlowKit) return;
+  var FK = window.FlowKit, svg = box.querySelector("svg"), chip = svg.querySelector("#hchip");
+  var running = false;
+
+  function on(id){ var n = svg.querySelector(id); if(n){ n.classList.remove("muted"); n.classList.add("on"); } }
+  function done(id){ var n = svg.querySelector(id); if(n){ n.classList.remove("on","muted"); n.classList.add("pass"); } }
+  function reset(){
+    FK.clearAll(box);
+    svg.querySelectorAll(".fn").forEach(function(n){ n.classList.add("muted"); });
+    svg.querySelector("#hnNaive").classList.add("muted");
+  }
+
+  var STEPS = [
+    { e:"#he1", l:null, from:"#hnKey", to:"#hnPad",
+      m:"<b>Step 1 &mdash; make the key exactly one block long.</b> Shorter than 64 bytes, and zeros are added. Longer, and it is hashed down first. Either way you end up with K&#8242;." },
+    { e:"#he2", l:"#hl2", to:"#hnInner",
+      m:"<b>Step 2 &mdash; mix the key one way.</b> Every byte of K&#8242; is XORed with 0x36. That is <code>ipad</code>, and it is a constant, not a secret." },
+    { e:"#he3", l:"#hl3", from:"#hnMsg", to:"#hnInner",
+      m:"<b>Step 3 &mdash; append the message and hash it.</b> This is the inner hash, and on its own it would already look like a working signature." },
+    { e:"#he4", l:"#hl4", finish:"#hnInner", to:"#hnOuter",
+      m:"<b>Step 4 &mdash; but do not stop there.</b> The inner result is not the answer. It becomes the <em>input</em> to a second hash." },
+    { e:"#he5", l:"#hl5", to:"#hnOuter",
+      m:"<b>Step 5 &mdash; mix the key the other way.</b> The same K&#8242;, this time XORed with 0x5C &mdash; <code>opad</code>. A different mask, so the two hashes never see the same key bytes." },
+    { e:"#he6", l:"#hl6", finish:"#hnOuter", to:"#hnOut",
+      m:"<b>Step 6 &mdash; hash again.</b> Thirty-two bytes out, and that is the third piece of every HS256 token you have ever seen." }
+  ];
+
+  async function run(){
+    if (running) return;
+    running = true; reset(); chip.classList.add("show");
+    for (var i=0;i<STEPS.length;i++){
+      var s = STEPS[i];
+      if (s.from) on(s.from);
+      var e = svg.querySelector(s.e), l = s.l ? svg.querySelector(s.l) : null;
+      e.classList.add("lit"); if (l) l.classList.add("lit");
+      on(s.to);
+      FK.log(box, "", String(i+1), s.m);
+      await FK.travel(e, chip, 620);
+      e.classList.remove("lit"); e.classList.add("done");
+      if (l){ l.classList.remove("lit"); l.classList.add("done"); }
+      if (s.from) done(s.from);
+      if (s.finish) done(s.finish);
+      await FK.sleep(600);
+    }
+    done("#hnOut"); chip.classList.add("ok");
+    FK.log(box, "ok", "&#10003;",
+      "<b>Two constants, two hashes, one XOR.</b> Nothing exotic anywhere in it &mdash; and the panel below builds exactly these six steps by hand and checks the result against your browser."+
+      "<span class='why'>Now press the red button to see why step 4 is not optional.</span>");
+    running = false;
+  }
+
+  async function naive(){
+    if (running) return;
+    running = true; reset(); chip.classList.add("show");
+    on("#hnKey"); on("#hnMsg");
+    var seq = ["#he1","#he2","#he3"];
+    for (var i=0;i<seq.length;i++){
+      var e = svg.querySelector(seq[i]);
+      e.classList.add("lit");
+      await FK.travel(e, chip, 480);
+      e.classList.remove("lit"); e.classList.add("done");
+    }
+    done("#hnKey"); done("#hnMsg"); done("#hnPad");
+    var inner = svg.querySelector("#hnInner");
+    inner.classList.remove("muted","on"); inner.classList.add("bad");
+    chip.classList.add("bad");
+    var naiveBox = svg.querySelector("#hnNaive");
+    naiveBox.classList.remove("muted"); naiveBox.classList.add("bad");
+    FK.log(box, "bad", "&#10007;",
+      "<b>Stopping here is the broken version.</b> SHA-256( secret &#8214; message ) looks fine and is not."+
+      "<span class='why'>A hash works through the message in blocks and carries its state forward. Someone who has your answer knows that state &mdash; so they can carry on from it, add their own text to the end of your message, and produce a valid code for the longer version. They never learn your secret; they do not need to. The second hash removes the loose end there was to pull on.</span>");
+    running = false;
+  }
+
+  box.querySelector('[data-hm="run"]').addEventListener("click", run);
+  box.querySelector('[data-hm="naive"]').addEventListener("click", naive);
+  box.querySelector('[data-hm="reset"]').addEventListener("click", function(){
+    if (running) return;
+    reset();
+    FK.log(box, "", "&#183;", "Two constants, two hashes. Play it through, then look at what happens if you stop after the first one.");
+  });
+  reset();
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+
+var TE = new TextEncoder(), TD = new TextDecoder();
+
+function bytesToB64url(b){
+  var s=""; for (var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]);
+  return btoa(s).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
+}
+function b64url(str){ return bytesToB64url(TE.encode(str)); }
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function shorten(s,n){ s=String(s); return s.length<=n?s:s.slice(0,n)+"…"; }
+function hex(bytes){
+  var o=""; for (var i=0;i<bytes.length;i++) o += bytes[i].toString(16).padStart(2,"0");
+  return o;
+}
+function prettyJson(obj){
+  return JSON.stringify(obj,null,2)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/"([^"]+)":/g,'<span class="key">"$1"</span>:')
+    .replace(/:\s*"([^"]*)"/g,': <span class="str">"$1"</span>')
+    .replace(/:\s*(-?\d+(\.\d+)?)/g,': <span class="num">$1</span>')
+    .replace(/:\s*(true|false|null)/g,': <span class="num">$1</span>');
+}
+async function sha256(bytes){ return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes)); }
+function concat(a,b){ var o=new Uint8Array(a.length+b.length); o.set(a,0); o.set(b,a.length); return o; }
+function tokenColor(name){ return "var(--"+name+")"; }
+
+/* ---------------- guilloche ---------------- */
+(function(){
+  var cv = document.getElementById("guilloche");
+  if (!cv) return;
+  function draw(){
+    var host = cv.parentElement, w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    cv.width = w*dpr; cv.height = h*dpr;
+    var g = cv.getContext("2d"); g.scale(dpr,dpr); g.clearRect(0,0,w,h);
+    g.strokeStyle = getComputedStyle(document.body).getPropertyValue("--engrave").trim() || "rgba(0,0,0,.1)";
+    g.lineWidth = 0.6;
+    var cx = w*0.92, cy = h*0.46, scale = Math.min(w,h)*0.62;
+    var R = scale, r = scale*0.1379, d = scale*0.118;
+    for (var pass=0; pass<16; pass++){
+      var phase = pass*0.0393, rr = r*(1+pass*0.0042), k = (R-rr)/rr;
+      g.beginPath();
+      for (var i=0;i<=720;i++){
+        var t = (i/720)*Math.PI*2*8 + phase;
+        var x = cx + (R-rr)*Math.cos(t) + d*Math.cos(k*t);
+        var y = cy + (R-rr)*Math.sin(t) - d*Math.sin(k*t);
+        if (i===0) g.moveTo(x,y); else g.lineTo(x,y);
+      }
+      g.stroke();
+    }
+  }
+  draw();
+  var t=null;
+  window.addEventListener("resize", function(){ clearTimeout(t); t=setTimeout(draw,180); });
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+  }
+})();
+
+/* ---------------- JWK set ---------------- */
+(function jwks(){
+  var gen = document.getElementById("jwkGen");
+  if (!gen) return;
+  var out = document.getElementById("jwkOut"), state = document.getElementById("jwkState");
+  var slots = document.getElementById("jwkSlots"), note = document.getElementById("jwkNote");
+  var b1 = document.getElementById("jwkAsk1"), b2 = document.getElementById("jwkAsk2"), b3 = document.getElementById("jwkAsk3");
+  var keys = [];
+
+  gen.addEventListener("click", async function(){
+    state.className = "pill warn";
+    state.innerHTML = '<span class="dot"></span>generating…';
+    try {
+      var rsa = await crypto.subtle.generateKey(
+        {name:"RSASSA-PKCS1-v1_5", modulusLength:2048, publicExponent:new Uint8Array([1,0,1]), hash:"SHA-256"},
+        true, ["sign","verify"]);
+      var ec = await crypto.subtle.generateKey({name:"ECDSA", namedCurve:"P-256"}, true, ["sign","verify"]);
+      var jr = await crypto.subtle.exportKey("jwk", rsa.publicKey);
+      var je = await crypto.subtle.exportKey("jwk", ec.publicKey);
+      keys = [
+        {kty:"RSA", n:shorten(jr.n,52), e:jr.e, alg:"RS256", use:"sig", kid:"rsa-2026-spring"},
+        {kty:"EC", crv:"P-256", x:shorten(je.x,30), y:shorten(je.y,30), alg:"ES256", use:"sig", kid:"ec-2026-spring"}
+      ];
+      out.innerHTML = prettyJson({keys:keys});
+      state.className = "pill ok";
+      state.innerHTML = '<span class="dot"></span>two keys published';
+      b1.disabled = false; b2.disabled = false; b3.disabled = false;
+      renderSlots(null);
+    } catch(e){
+      state.className = "pill bad";
+      state.innerHTML = '<span class="dot"></span>this browser refused';
+    }
+  });
+
+  function renderSlots(want){
+    slots.innerHTML = keys.map(function(k){
+      var cls = want === null ? "jwkslot" : (k.kid === want ? "jwkslot hit" : "jwkslot miss");
+      return '<div class="'+cls+'"><div class="jk">'+k.kid+'</div><div class="jd">'+k.kty+
+             (k.crv ? " · "+k.crv : " · 2048 bit")+' · '+k.alg+'</div></div>';
+    }).join("");
+  }
+  function ask(kid){
+    renderSlots(kid);
+    note.hidden = false;
+    var found = keys.some(function(k){ return k.kid === kid; });
+    if (found){
+      note.style.borderLeftColor = "var(--ok)";
+      note.innerHTML = '<span class="h">Found it</span>The server reads <code>kid: '+kid+
+        '</code> from the header, walks the list once, and pulls out that key. No guessing, no trying each one in turn — which matters when the book has thirty pages in it.';
+    } else {
+      note.style.borderLeftColor = "var(--bad)";
+      note.innerHTML = '<span class="h">No such key</span>The token names a key that is not in the set. There is nothing to check it against, so it is refused — and correctly so. This is also what a token signed with a retired key looks like from the server\'s side.';
+    }
+  }
+  b1.addEventListener("click", function(){ ask("rsa-2026-spring"); });
+  b2.addEventListener("click", function(){ ask("ec-2026-spring"); });
+  b3.addEventListener("click", function(){ ask("something-else"); });
+})();
+
+/* ---------------- base64 bit view ---------------- */
+(function b64bits(){
+  var input = document.getElementById("b64In");
+  if (!input) return;
+  var rows = document.getElementById("b64Rows"), note = document.getElementById("b64Note");
+  var TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+  function bitsHtml(bits, cls, tail){
+    return '<span class="bitgroup '+cls+'">' +
+      bits.split("").map(function(b){ return "<b>"+b+"</b>"; }).join("") +
+      '<span class="tail">'+esc(tail)+'</span></span>';
+  }
+  function render(){
+    var bytes = Array.from(TE.encode(input.value)).slice(0,3);
+    if (!bytes.length){ rows.innerHTML = ""; note.textContent = ""; return; }
+    var bits = bytes.map(function(b){ return b.toString(2).padStart(8,"0"); }).join("");
+    var padded = bits;
+    while (padded.length % 6) padded += "0";
+
+    var eight = "", six = "";
+    for (var i=0;i<bytes.length;i++){
+      var ch = String.fromCharCode(bytes[i]);
+      eight += bitsHtml(bits.slice(i*8, i*8+8), "g8", (ch.trim() ? ch : "·") + " " + bytes[i]);
+      if (i < bytes.length-1) eight += '<span class="bitgap"></span>';
+    }
+    for (var j=0;j*6<padded.length;j++){
+      var g = padded.slice(j*6, j*6+6);
+      var v = parseInt(g,2);
+      six += bitsHtml(g, "g6", TABLE[v] + " " + v);
+      if ((j+1)*6 < padded.length) six += '<span class="bitgap"></span>';
+    }
+
+    rows.innerHTML =
+      '<div class="bitrow"><span class="rl">read by 8s</span>'+eight+'</div>' +
+      '<div class="bitrow"><span class="rl">the same bits</span>'+
+        '<span class="bitgroup" style="background:transparent;border-color:var(--rule)">'+
+        bits.split("").map(function(b){ return "<b>"+b+"</b>"; }).join("")+'</span></div>' +
+      '<div class="bitrow"><span class="rl">read by 6s</span>'+six+'</div>';
+
+    var outChars = padded.length/6;
+    note.innerHTML = '<strong>'+bytes.length+'</strong> character'+(bytes.length===1?"":"s")+
+      ' → <strong>'+bits.length+'</strong> bits → <strong>'+outChars+'</strong> base64 characters. '+
+      (padded.length > bits.length
+        ? 'The last group came up '+(padded.length-bits.length)+' bits short, so zeros filled it out.'
+        : 'This one divided by three exactly, so nothing had to be padded.') +
+      ' The bits themselves never changed — only where the cuts fall.';
+  }
+  input.addEventListener("input", render);
+  render();
+})();
+
+/* ---------------- SHA avalanche ---------------- */
+(function avalanche(){
+  var a = document.getElementById("shaA");
+  if (!a) return;
+  var b = document.getElementById("shaB"), grid = document.getElementById("shaGrid");
+  var hA = document.getElementById("shaHashA"), hB = document.getElementById("shaHashB");
+  var dEl = document.getElementById("shaDiff"), pEl = document.getElementById("shaPct"), cEl = document.getElementById("shaChars");
+
+  var cells = [];
+  for (var i=0;i<256;i++){ var el = document.createElement("i"); grid.appendChild(el); cells.push(el); }
+
+  async function run(){
+    var ha = await sha256(TE.encode(a.value));
+    var hb = await sha256(TE.encode(b.value));
+    hA.textContent = hex(ha); hA.className = "sv";
+    hB.textContent = hex(hb); hB.className = "sv";
+    var diff = 0;
+    for (var i=0;i<32;i++){
+      var x = ha[i] ^ hb[i];
+      for (var bit=7;bit>=0;bit--){
+        var on = (x >> bit) & 1;
+        if (on) diff++;
+        cells[i*8 + (7-bit)].classList.toggle("on", !!on);
+      }
+    }
+    dEl.textContent = diff;
+    pEl.textContent = Math.round(diff/256*100) + "%";
+    var s1 = a.value, s2 = b.value, changed = Math.abs(s1.length - s2.length);
+    for (var k=0;k<Math.min(s1.length,s2.length);k++) if (s1[k] !== s2[k]) changed++;
+    cEl.textContent = changed;
+  }
+  a.addEventListener("input", run);
+  b.addEventListener("input", run);
+  run();
+})();
+
+/* ---------------- HMAC by hand ---------------- */
+(function hmacHand(){
+  var kEl = document.getElementById("hmKey");
+  if (!kEl) return;
+  var mEl = document.getElementById("hmMsg"), steps = document.getElementById("hmSteps");
+  var mine = document.getElementById("hmMine"), theirs = document.getElementById("hmTheirs");
+  var verdict = document.getElementById("hmVerdict");
+  var BLOCK = 64;
+
+  async function run(){
+    var keyBytes = TE.encode(kEl.value);
+    var note = "used as-is";
+    if (keyBytes.length > BLOCK){ keyBytes = await sha256(keyBytes); note = "was longer than 64 bytes, so it was hashed down first"; }
+    var kp = new Uint8Array(BLOCK);
+    kp.set(keyBytes.slice(0, BLOCK), 0);
+    if (keyBytes.length < BLOCK && note === "used as-is") note = "padded with zeros out to 64 bytes";
+
+    var ipad = new Uint8Array(BLOCK), opad = new Uint8Array(BLOCK);
+    for (var i=0;i<BLOCK;i++){ ipad[i] = kp[i] ^ 0x36; opad[i] = kp[i] ^ 0x5c; }
+
+    var msg = TE.encode(mEl.value);
+    var inner = await sha256(concat(ipad, msg));
+    var outer = await sha256(concat(opad, inner));
+
+    steps.innerHTML =
+      '<dt>step 1 · K&prime;</dt><dd>'+esc(shorten(hex(kp),64))+' <span style="color:var(--ink-3)">— '+note+'</span></dd>'+
+      '<dt>step 2 · K&prime;⊕ipad</dt><dd style="color:var(--pay)">'+esc(shorten(hex(ipad),64))+'</dd>'+
+      '<dt>step 3 · inner hash</dt><dd>'+esc(hex(inner))+'</dd>'+
+      '<dt>step 4 · K&prime;⊕opad</dt><dd style="color:var(--sig)">'+esc(shorten(hex(opad),64))+'</dd>';
+
+    mine.textContent = bytesToB64url(outer);
+
+    var key = await crypto.subtle.importKey("raw", TE.encode(kEl.value), {name:"HMAC", hash:"SHA-256"}, false, ["sign"]);
+    var ref = new Uint8Array(await crypto.subtle.sign("HMAC", key, msg));
+    theirs.textContent = bytesToB64url(ref);
+
+    var same = bytesToB64url(outer) === bytesToB64url(ref);
+    mine.className = "sv " + (same ? "match" : "miss");
+    theirs.className = "sv " + (same ? "match" : "miss");
+    verdict.innerHTML = same
+      ? '<div class="vcard ok"><h4>Identical</h4><p>Two constants, two hashes, one XOR. Nothing was left out — the thing sealing every <code>HS256</code> token you have seen in this handbook is exactly the four steps above.</p><span class="pill ok"><span class="dot"></span>matches the browser</span></div>'
+      : '<div class="vcard bad"><h4>Mismatch</h4><p>Something is off in the hand-built version.</p></div>';
+  }
+  kEl.addEventListener("input", run);
+  mEl.addEventListener("input", run);
+  run();
+})();
+
+/* ---------------- RSA small numbers ---------------- */
+(function rsa(){
+  var sel = document.getElementById("rsaPrimes");
+  if (!sel) return;
+  var msgEl = document.getElementById("rsaMsg");
+  var nEl = document.getElementById("rsaN"), phiEl = document.getElementById("rsaPhi");
+  var eEl = document.getElementById("rsaE"), dEl = document.getElementById("rsaD");
+  var mOut = document.getElementById("rsaMOut"), sigEl = document.getElementById("rsaSig");
+  var backEl = document.getElementById("rsaBack"), matchEl = document.getElementById("rsaMatch");
+  var crackBtn = document.getElementById("rsaCrack"), crackOut = document.getElementById("rsaCrackOut");
+  var crackNote = document.getElementById("rsaCrackNote");
+
+  function gcd(a,b){ while (b) { var t=a%b; a=b; b=t; } return a; }
+  function egcd(a,b){
+    if (b === 0n) return [a, 1n, 0n];
+    var r = egcd(b, a % b);
+    return [r[0], r[2], r[1] - (a/b)*r[2]];
+  }
+  function modinv(e, phi){
+    var r = egcd(e, phi);
+    if (r[0] !== 1n) return null;
+    return ((r[1] % phi) + phi) % phi;
+  }
+  function modpow(base, exp, mod){
+    var result = 1n; base %= mod;
+    while (exp > 0n){
+      if (exp & 1n) result = (result * base) % mod;
+      base = (base * base) % mod;
+      exp >>= 1n;
+    }
+    return result;
+  }
+
+  var state = {};
+
+  function build(){
+    var parts = sel.value.split(",");
+    var p = BigInt(parts[0]), q = BigInt(parts[1]);
+    var n = p*q;
+    var phi = n - (p + q - 1n);
+    var e = 17n;
+    while (gcd(Number(e), Number(phi)) !== 1) e += 2n;
+    var d = modinv(e, phi);
+
+    state = {p:p, q:q, n:n, phi:phi, e:e, d:d};
+    nEl.textContent = n.toString();
+    phiEl.textContent = phi.toString();
+    eEl.textContent = e.toString();
+    dEl.textContent = d === null ? "—" : d.toString();
+
+    var m;
+    try { m = BigInt(msgEl.value.replace(/\D/g,"") || "0"); } catch(err){ m = 0n; }
+    if (m >= n){
+      mOut.textContent = m.toString() + " (too big for n)";
+      sigEl.textContent = "—"; backEl.textContent = "—";
+      matchEl.innerHTML = '<span class="pill warn"><span class="dot"></span>m must be smaller than n</span>';
+      return;
+    }
+    var s = modpow(m, d, n);
+    var back = modpow(s, e, n);
+    mOut.textContent = m.toString();
+    sigEl.textContent = s.toString();
+    backEl.textContent = back.toString();
+    matchEl.innerHTML = (back === m)
+      ? '<span class="pill ok"><span class="dot"></span>came back exactly</span>'
+      : '<span class="pill bad"><span class="dot"></span>no</span>';
+    crackOut.innerHTML = "";
+    crackNote.textContent = "These numbers are tiny. A laptop takes no time at all.";
+  }
+
+  crackBtn.addEventListener("click", function(){
+    var n = state.n, e = state.e;
+    var t0 = performance.now();
+    var found = null;
+    for (var i = 2n; i*i <= n; i++){
+      if (n % i === 0n){ found = i; break; }
+    }
+    var t1 = performance.now();
+    if (!found){ crackOut.innerHTML = ""; return; }
+    var q = n / found;
+    var phi = n - (found + q - 1n);
+    var d = modinv(e, phi);
+    crackOut.innerHTML = '<div class="vcard bad"><h4>Broken in '+ (t1-t0).toFixed(2) +' milliseconds</h4>'+
+      '<p>Factoring <code>n = '+n+'</code> gave back <code>p = '+found+'</code> and <code>q = '+q+
+      '</code>. From those, φ(n) falls out, and from φ(n) the private key <code>d = '+d+
+      '</code> follows in one step. Compare it with the <code>d</code> above — the same number.</p>'+
+      '<p>This is the <em>only</em> thing standing between a public key and a private one. The arithmetic is identical at 2048 bits; the search simply never finishes.</p>'+
+      '<span class="pill bad"><span class="dot"></span>private key recovered</span></div>';
+  });
+
+  sel.addEventListener("change", build);
+  msgEl.addEventListener("input", build);
+  build();
+})();
+
+/* ---------------- elliptic curve (real) ---------------- */
+(function curve(){
+  var cv = document.getElementById("curve");
+  if (!cv) return;
+  var hop = document.getElementById("curveHop"), clear = document.getElementById("curveClear");
+  var count = document.getElementById("curveCount"), note = document.getElementById("curveNote");
+
+  var A = -2, B = 4;
+  var VX = 5.2, VY = 2.6;     // half-widths of the view
+  var P = null, pts = [], lastLine = null;
+
+  function css(v){ return getComputedStyle(document.body).getPropertyValue(v).trim(); }
+  function sx(x){ return (x + VX) / (2*VX) * cv.width; }
+  function sy(y){ return cv.height - (y + VY) / (2*VY) * cv.height; }
+  function fy(x){ var v = x*x*x + A*x + B; return v < 0 ? null : Math.sqrt(v); }
+
+  function draw(){
+    var g = cv.getContext("2d");
+    g.clearRect(0,0,cv.width,cv.height);
+    g.fillStyle = css("--paper"); g.fillRect(0,0,cv.width,cv.height);
+
+    // axes
+    g.strokeStyle = css("--rule"); g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(0, sy(0)); g.lineTo(cv.width, sy(0)); g.stroke();
+    g.beginPath(); g.moveTo(sx(0), 0); g.lineTo(sx(0), cv.height); g.stroke();
+    g.fillStyle = css("--ink-3");
+    g.font = "10px ui-monospace, monospace";
+    g.textAlign = "center";
+    for (var tk=-4; tk<=4; tk+=2){
+      if (tk === 0) continue;
+      g.beginPath(); g.moveTo(sx(tk), sy(0)-4); g.lineTo(sx(tk), sy(0)+4); g.stroke();
+      g.fillText(String(tk), sx(tk), sy(0)+17);
+    }
+
+    // curve
+    g.strokeStyle = css("--ink-3"); g.lineWidth = 2.5;
+    var started = false;
+    g.beginPath();
+    for (var px = 0; px <= cv.width; px++){
+      var x = px/cv.width * 2*VX - VX;
+      var y = fy(x);
+      if (y === null){ started = false; continue; }
+      if (!started){ g.moveTo(sx(x), sy(y)); started = true; } else g.lineTo(sx(x), sy(y));
+    }
+    g.stroke();
+    started = false;
+    g.beginPath();
+    for (var px2 = 0; px2 <= cv.width; px2++){
+      var x2 = px2/cv.width * 2*VX - VX;
+      var y2 = fy(x2);
+      if (y2 === null){ started = false; continue; }
+      if (!started){ g.moveTo(sx(x2), sy(-y2)); started = true; } else g.lineTo(sx(x2), sy(-y2));
+    }
+    g.stroke();
+
+    // construction line for the most recent step
+    if (lastLine){
+      g.strokeStyle = css("--sig"); g.lineWidth = 1.4; g.setLineDash([5,4]);
+      g.beginPath();
+      g.moveTo(sx(lastLine.x0), sy(lastLine.y0));
+      g.lineTo(sx(lastLine.x1), sy(lastLine.y1));
+      g.stroke();
+      // reflection drop
+      g.beginPath();
+      g.moveTo(sx(lastLine.rx), sy(-lastLine.ry));
+      g.lineTo(sx(lastLine.rx), sy(lastLine.ry));
+      g.stroke();
+      g.setLineDash([]);
+      // the third crossing, before it is flipped
+      g.strokeStyle = css("--sig"); g.lineWidth = 2;
+      g.beginPath(); g.arc(sx(lastLine.rx), sy(-lastLine.ry), 5.5, 0, Math.PI*2); g.stroke();
+      g.fillStyle = css("--sig");
+      g.font = "500 10px ui-monospace, monospace";
+      g.textAlign = "left";
+      g.fillText("third crossing", sx(lastLine.rx) + 10, sy(-lastLine.ry) + 4);
+      g.textAlign = "center";
+    }
+
+    // points
+    pts.forEach(function(pt, i){
+      var isP = i === 0;
+      g.fillStyle = isP ? css("--sig") : css("--pay");
+      g.beginPath(); g.arc(sx(pt.x), sy(pt.y), isP ? 6 : 5, 0, Math.PI*2); g.fill();
+      g.fillStyle = css("--ink");
+      g.font = "600 12px ui-monospace, monospace";
+      g.textAlign = "center";
+      g.fillText((i+1) + "P", sx(pt.x), sy(pt.y) - 12);
+    });
+  }
+
+  function add(p, q){
+    var lam;
+    if (Math.abs(p.x - q.x) < 1e-12 && Math.abs(p.y - q.y) < 1e-12){
+      if (Math.abs(p.y) < 1e-12) return null;
+      lam = (3*p.x*p.x + A) / (2*p.y);
+    } else {
+      if (Math.abs(q.x - p.x) < 1e-12) return null;
+      lam = (q.y - p.y) / (q.x - p.x);
+    }
+    var xr = lam*lam - p.x - q.x;
+    var yr = lam*(p.x - xr) - p.y;
+    return {x:xr, y:yr, lam:lam};
+  }
+
+  cv.addEventListener("click", function(ev){
+    var rect = cv.getBoundingClientRect();
+    var mx = (ev.clientX - rect.left) / rect.width * 2*VX - VX;
+    var my = VY - (ev.clientY - rect.top) / rect.height * 2*VY;
+    var y = fy(mx);
+    if (y === null){
+      note.innerHTML = '<span style="color:var(--warn)">There is no curve at that x.</span> The gap in the middle is real — for those values of x, x³ − 2x + 4 goes negative and no real y can square to it.';
+      return;
+    }
+    P = {x: mx, y: my >= 0 ? y : -y};
+    pts = [P]; lastLine = null;
+    hop.disabled = false;
+    count.className = "pill ok";
+    count.innerHTML = '<span class="dot"></span>1 hop';
+    note.innerHTML = 'Your starting point sits at <strong>x = '+P.x.toFixed(2)+'</strong>. In real cryptography this is a fixed, published point that everybody uses — it is part of the curve\'s definition, not a secret.';
+    draw();
+  });
+
+  hop.addEventListener("click", function(){
+    var last = pts[pts.length-1];
+    var r = add(last, P);
+    if (!r || !isFinite(r.x) || Math.abs(r.x) > VX*3 || Math.abs(r.y) > VY*4){
+      note.innerHTML = '<span style="color:var(--warn)">That hop landed off the edge of the picture.</span> Nothing broke — the point is still perfectly valid, just far away. Over a finite field there is no "far away": everything wraps back into range, which is exactly why real cryptography uses one.';
+      return;
+    }
+    lastLine = {x0:last.x, y0:last.y, x1:P.x, y1:P.y, rx:r.x, ry:r.y};
+    pts.push({x:r.x, y:r.y});
+    count.innerHTML = '<span class="dot"></span>'+pts.length+' hops';
+    var msgs = [
+      'The dashed line joins the last point to your starting point. It crosses the curve once more — and the answer is that crossing, flipped to the other side of the axis.',
+      'Again. Same rule, new point. Notice there is no pattern to where it lands.',
+      'Each hop is cheap. A computer does a thousand of these without noticing.',
+      'By now, guessing the number of hops from the final position would be pure luck — and luck is all anybody has.'
+    ];
+    note.innerHTML = msgs[Math.min(pts.length-2, msgs.length-1)] +
+      (pts.length >= 4 ? ' <strong>This is your public key: a point. Your private key is the number of hops that got you there.</strong>' : '');
+    draw();
+  });
+
+  clear.addEventListener("click", function(){
+    P = null; pts = []; lastLine = null; hop.disabled = true;
+    count.className = "pill mute";
+    count.innerHTML = '<span class="dot"></span>no point yet';
+    note.textContent = "";
+    draw();
+  });
+
+  draw();
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+  }
+})();
+
+/* ---------------- elliptic curve over F_97 ---------------- */
+(function field(){
+  var cv = document.getElementById("field");
+  if (!cv) return;
+  var P = 97, A = -2, B = 4;
+  function css(v){ return getComputedStyle(document.body).getPropertyValue(v).trim(); }
+  function draw(){
+    var g = cv.getContext("2d");
+    g.clearRect(0,0,cv.width,cv.height);
+    g.fillStyle = css("--paper"); g.fillRect(0,0,cv.width,cv.height);
+    var pad = 26;
+    var w = cv.width - pad*2, h = cv.height - pad*2;
+
+    g.strokeStyle = css("--rule"); g.lineWidth = 1;
+    for (var t=0;t<=4;t++){
+      var gx = pad + w*t/4, gy = pad + h*t/4;
+      g.beginPath(); g.moveTo(gx, pad); g.lineTo(gx, pad+h); g.stroke();
+      g.beginPath(); g.moveTo(pad, gy); g.lineTo(pad+w, gy); g.stroke();
+    }
+    g.fillStyle = css("--ink-3");
+    g.font = "10px ui-monospace, monospace";
+    g.textAlign = "center";
+    g.fillText("0", pad, pad+h+16);
+    g.fillText("96", pad+w, pad+h+16);
+    g.textAlign = "right";
+    g.fillText("96", pad-8, pad+4);
+    g.fillText("0", pad-8, pad+h+4);
+
+    var n = 0;
+    g.fillStyle = css("--pay");
+    for (var x=0;x<P;x++){
+      var rhs = (((x*x % P)*x % P) + A*x + B) % P;
+      rhs = ((rhs % P) + P) % P;
+      for (var y=0;y<P;y++){
+        if ((y*y) % P === rhs){
+          n++;
+          var px = pad + (x/(P-1))*w, py = pad + h - (y/(P-1))*h;
+          g.beginPath(); g.arc(px, py, 3.2, 0, Math.PI*2); g.fill();
+        }
+      }
+    }
+    g.fillStyle = css("--ink-3");
+    g.font = "10px ui-monospace, monospace";
+    g.textAlign = "left";
+    g.fillText(n + " points on this curve", pad, pad - 10);
+  }
+  draw();
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+  }
+})();
+
+/* ---------------- confusion attack: RSA public key as HMAC secret ---------------- */
+(function confusion(){
+  var gen = document.getElementById("conGen");
+  if (!gen) return;
+  var attack = document.getElementById("conAttack"), state = document.getElementById("conState");
+  var tok = document.getElementById("conToken"), label = document.getElementById("conLabel");
+  var verdict = document.getElementById("conVerdict");
+  var pair = null, pubPem = "";
+
+  gen.addEventListener("click", async function(){
+    state.className = "pill warn"; state.innerHTML = '<span class="dot"></span>generating…';
+    verdict.hidden = true;
+    try {
+      pair = await crypto.subtle.generateKey(
+        {name:"RSASSA-PKCS1-v1_5", modulusLength:2048, publicExponent:new Uint8Array([1,0,1]), hash:"SHA-256"},
+        true, ["sign","verify"]);
+      var spki = new Uint8Array(await crypto.subtle.exportKey("spki", pair.publicKey));
+      pubPem = "-----BEGIN PUBLIC KEY-----\n" + bytesToB64url(spki) + "\n-----END PUBLIC KEY-----";
+
+      var h = b64url(JSON.stringify({alg:"RS256", typ:"JWT"}));
+      var p = b64url(JSON.stringify({sub:"joe", role:"user"}));
+      var sig = new Uint8Array(await crypto.subtle.sign("RSASSA-PKCS1-v1_5", pair.privateKey, TE.encode(h+"."+p)));
+      tok.innerHTML = '<b class="t-h">'+h+'</b><b class="t-dot">.</b><b class="t-p">'+p+
+                      '</b><b class="t-dot">.</b><b class="t-s">'+shorten(bytesToB64url(sig), 96)+'</b>';
+      label.textContent = "The honest token — signed RS256, role: user";
+      state.className = "pill ok"; state.innerHTML = '<span class="dot"></span>public key published';
+      attack.disabled = false;
+    } catch(e){
+      state.className = "pill bad"; state.innerHTML = '<span class="dot"></span>this browser refused';
+    }
+  });
+
+  attack.addEventListener("click", async function(){
+    var h = b64url(JSON.stringify({alg:"HS256", typ:"JWT"}));
+    var p = b64url(JSON.stringify({sub:"joe", role:"admin"}));
+    var key = await crypto.subtle.importKey("raw", TE.encode(pubPem), {name:"HMAC", hash:"SHA-256"}, false, ["sign"]);
+    var sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, TE.encode(h+"."+p)));
+    tok.innerHTML = '<b class="t-h">'+h+'</b><b class="t-dot">.</b><b class="t-p">'+p+
+                    '</b><b class="t-dot">.</b><b class="t-s">'+bytesToB64url(sig)+'</b>';
+    label.innerHTML = 'Forged &mdash; <code>alg</code> switched to HS256, role: admin, signed with the public key';
+    state.className = "pill bad"; state.innerHTML = '<span class="dot"></span>forged';
+    verdict.hidden = false;
+  });
+})();
+
+/* ---------------- entropy meter ---------------- */
+(function entropy(){
+  var input = document.getElementById("entIn");
+  if (!input) return;
+  var bar = document.getElementById("entBar"), bits = document.getElementById("entBits");
+  var lenEl = document.getElementById("entLen"), timeEl = document.getElementById("entTime");
+  var note = document.getElementById("entNote");
+  var genBtn = document.getElementById("entGen");
+
+  function estimate(s){
+    var pool = 0;
+    if (/[a-z]/.test(s)) pool += 26;
+    if (/[A-Z]/.test(s)) pool += 26;
+    if (/[0-9]/.test(s)) pool += 10;
+    if (/[^a-zA-Z0-9]/.test(s)) pool += 33;
+    if (!pool) return 0;
+    return Math.round(s.length * Math.log2(pool));
+  }
+  function human(b){
+    if (b < 40) return "instant";
+    var secs = Math.pow(2, b - 1) / 1e10;   // ~10 billion guesses/sec
+    if (secs < 60) return Math.round(secs) + " seconds";
+    if (secs < 3600) return Math.round(secs/60) + " minutes";
+    if (secs < 86400) return Math.round(secs/3600) + " hours";
+    if (secs < 3.15e7) return Math.round(secs/86400) + " days";
+    var yrs = secs/3.15e7;
+    if (yrs < 1e6) return Math.round(yrs).toLocaleString() + " years";
+    if (yrs < 1e15) return (yrs/1e9).toPrecision(2) + " billion years";
+    return "longer than the universe has existed";
+  }
+  function render(){
+    var s = input.value, b = estimate(s);
+    lenEl.textContent = s.length;
+    bits.textContent = b;
+    timeEl.textContent = human(b);
+    var pct = Math.min(100, b/256*100);
+    bar.style.width = pct + "%";
+    bar.className = b < 128 ? "weak" : b < 256 ? "mid" : "good";
+    if (b < 128){
+      bits.style.color = "var(--bad)";
+      note.style.borderLeftColor = "var(--bad)";
+      note.innerHTML = '<span class="h">Far too short</span>The specification requires at least 256 bits for HS256 — that is 32 characters of genuine randomness, or more if the alphabet is small. A secret like this can be recovered from a single captured token, offline, on ordinary hardware. This has been done for real.';
+    } else if (b < 256){
+      bits.style.color = "var(--warn)";
+      note.style.borderLeftColor = "var(--warn)";
+      note.innerHTML = '<span class="h">Better, still under the bar</span>Getting there, but the spec asks for a key at least as large as the hash output — 256 bits for HS256. And length is not the whole story: this estimate assumes every character was picked at random. If it is a phrase you can remember, the real number is much lower than the one shown.';
+    } else {
+      bits.style.color = "var(--ok)";
+      note.style.borderLeftColor = "var(--ok)";
+      note.innerHTML = '<span class="h">Long enough — if it is really random</span>The count above assumes every character came from a proper random source. A 40-character sentence you invented is not 250 bits of anything; it is a sentence. Generate secrets with a cryptographic random generator and never with your own imagination.';
+    }
+  }
+  genBtn.addEventListener("click", function(){
+    var b = crypto.getRandomValues(new Uint8Array(32));
+    input.value = bytesToB64url(b);
+    render();
+  });
+  input.addEventListener("input", render);
+  render();
+})();
+
+/* ---------------- claim list tap ---------------- */
+document.querySelectorAll(".claimlist button").forEach(function(b){
+  b.addEventListener("click", function(){
+    b.classList.add("hi");
+    setTimeout(function(){ b.classList.remove("hi"); }, 1200);
+  });
+});
+
+/* ---------------- quiz ---------------- */
+(function quiz(){
+  var box = document.getElementById("quizBox");
+  if (!box) return;
+  var QS = [
+    { q:"Why is Base64 output about a third longer than what went in?",
+      a:["Extra checksum characters are added","The same bits are read in groups of 6 instead of 8","It compresses badly"],
+      c:1,
+      why:"Not one bead is added or removed. Six-bit groups are smaller than eight-bit ones, so the same string of bits produces more groups — four characters for every three bytes. That is the entire reason." },
+    { q:"You change one letter of a message. How much of its SHA-256 fingerprint changes?",
+      a:["A character or two","About half of all 256 bits","Nothing, if the message is long"],
+      c:1,
+      why:"The avalanche effect, and it is the point of the design. If small changes made small differences, an attacker could feel their way towards a match one nudge at a time. Because roughly half the bits move regardless, there is nothing to feel towards." },
+    { q:"Why does HMAC hash twice instead of just hashing the key followed by the message?",
+      a:["Two hashes are twice as strong","Because the simple version lets someone append to your message","To make the output shorter"],
+      c:1,
+      why:"A hash carries its state forward as it works, so someone who knows the answer so far can continue from there — adding to your message and producing a valid-looking code without knowing your key. Hashing the result again, with the key mixed in differently, leaves nothing to append to." },
+    { q:"What single thing stands between an RSA public key and its private key?",
+      a:["A password on the key file","Factoring n back into its two primes","The kid header"],
+      c:1,
+      why:"Nothing else. Get p and q and everything else falls out in one step — the workshop above does it in under a millisecond on tiny numbers. At 2048 bits the arithmetic is identical and the search simply never ends." },
+    { q:"In elliptic-curve cryptography, what is your private key?",
+      a:["A point on the curve","The number of times you added the starting point to itself","The curve's equation"],
+      c:1,
+      why:"The hop count. Where you landed is the public key, and it can be shared freely — because working backwards from the landing point to the number of hops is the problem nobody has solved." },
+    { q:"Your server signs with RS256 and publishes its public key. An attacker forges a token. How?",
+      a:["They factored the key","They switched alg to HS256 and used the public key as the shared secret","They stripped the signature"],
+      c:1,
+      why:"Both a public key and an HMAC secret are just strings, and a library that reads <code>alg</code> from the token will happily treat one as the other. The published key becomes the forging key. Naming your accepted algorithms in your own code stops it dead." }
+  ];
+  var html = "";
+  QS.forEach(function(item, qi){
+    html += '<div class="q" data-q="'+qi+'"><div class="qq"><span class="qn">'+String(qi+1).padStart(2,"0")+'</span><span>'+item.q+'</span></div><div class="opts">';
+    item.a.forEach(function(opt, ai){ html += '<button class="opt" type="button" data-a="'+ai+'">'+opt+'</button>'; });
+    html += '</div><div class="qwhy" hidden></div></div>';
+  });
+  box.innerHTML = html;
+  box.addEventListener("click", function(e){
+    var btn = e.target.closest(".opt");
+    if (!btn || btn.disabled) return;
+    var w = btn.closest(".q"), qi = +w.dataset.q, pick = +btn.dataset.a, item = QS[qi];
+    w.querySelectorAll(".opt").forEach(function(b){
+      b.disabled = true;
+      var ai = +b.dataset.a;
+      if (ai === item.c) b.classList.add("right"); else if (ai === pick) b.classList.add("wrong");
+    });
+    var why = w.querySelector(".qwhy");
+    why.innerHTML = (pick === item.c ? "<strong>Yes. </strong>" : "<strong>Not quite. </strong>") + item.why;
+    why.hidden = false;
+  });
+})();
+
+/* ---------------- nav ---------------- */
+(function nav(){
+  var barEl = document.getElementById("progressbar");
+  var links = Array.prototype.slice.call(document.querySelectorAll("[data-nav]"));
+  var secs = links.map(function(a){ return document.getElementById(a.dataset.nav); }).filter(Boolean);
+  function onScroll(){
+    var doc = document.documentElement, max = doc.scrollHeight - doc.clientHeight;
+    barEl.style.width = (max > 0 ? (doc.scrollTop/max)*100 : 0) + "%";
+    var y = doc.scrollTop + 140, active = null;
+    secs.forEach(function(s){ if (s.offsetTop <= y) active = s.id; });
+    links.forEach(function(a){ a.classList.toggle("on", a.dataset.nav === active); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+})();
+
+})();
+</script>
+</body>
+</html>

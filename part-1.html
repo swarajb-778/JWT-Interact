@@ -1,0 +1,2454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JWT, Piece by Piece</title>
+  <meta name="description" content="What a token is, where you meet one, and what its three pieces hold. Chapters 1–3 of the JWT Handbook.">
+  <meta name="author" content="Swaraj Bangar">
+  <meta property="og:title" content="JWT, Piece by Piece">
+  <meta property="og:description" content="What a token is, where you meet one, and what its three pieces hold. Chapters 1–3 of the JWT Handbook.">
+  <meta property="og:type" content="article">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2756%27%3E%F0%9F%8E%9F%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+<style>
+/* ============================================================
+   JWT, Piece by Piece — security-print / pass-office identity
+   ============================================================ */
+
+:root{
+  --paper:#F8FAF8;
+  --paper-2:#FFFFFF;
+  --paper-3:#EDF1EC;
+  --ink:#131B17;
+  --ink-2:#44514B;
+  --ink-3:#6D7A72;
+  --rule:#E2E7E0;
+  --rule-2:#BFC9BC;
+  --engrave:rgba(29,78,74,.12);
+
+  --hdr:#8F5514;
+  --pay:#1B5A52;
+  --sig:#A2372A;
+  --hdr-bg:rgba(143,85,20,.13);
+  --pay-bg:rgba(27,90,82,.13);
+  --sig-bg:rgba(162,55,42,.13);
+  --hdr-ed:rgba(143,85,20,.42);
+  --pay-ed:rgba(27,90,82,.42);
+  --sig-ed:rgba(162,55,42,.42);
+
+  --ok:#2A6A4C;
+  --ok-bg:rgba(42,106,76,.12);
+  --bad:#A2372A;
+  --bad-bg:rgba(162,55,42,.12);
+  --warn:#8F5514;
+  --warn-bg:rgba(143,85,20,.12);
+
+  --shadow:0 1px 2px rgba(21,30,26,.04), 0 10px 26px -20px rgba(21,30,26,.40);
+  --shadow-lift:0 1px 3px rgba(21,30,26,.05), 0 20px 44px -24px rgba(21,30,26,.42);
+
+  --serif:"Bodoni Moda",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1311;
+    --paper-2:#161D1A;
+    --paper-3:#1F2925;
+    --ink:#E7ECE5;
+    --ink-2:#A5B2AA;
+    --ink-3:#76837B;
+    --rule:#28322D;
+    --rule-2:#3A453F;
+    --engrave:rgba(122,204,190,.14);
+
+    --hdr:#E2AB60;
+    --pay:#5FC9B5;
+    --sig:#EE8674;
+    --hdr-bg:rgba(226,171,96,.14);
+    --pay-bg:rgba(95,201,181,.14);
+    --sig-bg:rgba(238,134,116,.14);
+    --hdr-ed:rgba(226,171,96,.45);
+    --pay-ed:rgba(95,201,181,.45);
+    --sig-ed:rgba(238,134,116,.45);
+
+    --ok:#71CE9E;
+    --ok-bg:rgba(113,206,158,.13);
+    --bad:#EE8674;
+    --bad-bg:rgba(238,134,116,.13);
+    --warn:#E2AB60;
+    --warn-bg:rgba(226,171,96,.13);
+
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+    --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+  }
+}
+
+:root[data-theme="dark"]{
+  --paper:#0E1311;
+  --paper-2:#161D1A;
+  --paper-3:#1F2925;
+  --ink:#E7ECE5;
+  --ink-2:#A5B2AA;
+  --ink-3:#76837B;
+  --rule:#28322D;
+  --rule-2:#3A453F;
+  --engrave:rgba(122,204,190,.14);
+
+  --hdr:#E2AB60;
+  --pay:#5FC9B5;
+  --sig:#EE8674;
+  --hdr-bg:rgba(226,171,96,.14);
+  --pay-bg:rgba(95,201,181,.14);
+  --sig-bg:rgba(238,134,116,.14);
+  --hdr-ed:rgba(226,171,96,.45);
+  --pay-ed:rgba(95,201,181,.45);
+  --sig-ed:rgba(238,134,116,.45);
+
+  --ok:#71CE9E;
+  --ok-bg:rgba(113,206,158,.13);
+  --bad:#EE8674;
+  --bad-bg:rgba(238,134,116,.13);
+  --warn:#E2AB60;
+  --warn-bg:rgba(226,171,96,.13);
+
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+  --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+}
+
+*{box-sizing:border-box}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:var(--step);
+  font-weight:400;
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- layout rails ---------- */
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:22px}
+.prose{max-width:63ch;margin-inline:auto}
+.lab{max-width:940px;margin-inline:auto}
+
+section.chapter{padding-block:clamp(48px,7vw,86px);scroll-margin-top:56px}
+h2,h3,h4{scroll-margin-top:64px}
+.stack{display:flex;flex-direction:column;gap:1.05em}
+.stack-lg{display:flex;flex-direction:column;gap:2.1rem}
+.stack-xl{display:flex;flex-direction:column;gap:3.4rem}
+
+/* ---------- type ---------- */
+h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.12}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.018em}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.85rem,4.2vw,2.7rem);letter-spacing:-.012em}
+h3{font-family:var(--sans);font-weight:650;font-size:clamp(1.12rem,2vw,1.32rem);letter-spacing:-.008em;line-height:1.3}
+h4{font-family:var(--sans);font-weight:650;font-size:1rem;letter-spacing:-.004em}
+p{margin:0}
+a{color:inherit}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;
+  letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);
+}
+.lede{font-size:clamp(1.06rem,1.9vw,1.24rem);line-height:1.6;color:var(--ink-2);font-weight:350}
+.dropcap::first-letter{
+  font-family:var(--serif);font-weight:700;float:left;
+  font-size:3.5em;line-height:.82;padding:.06em .1em 0 0;color:var(--pay);
+}
+strong{font-weight:650;color:var(--ink)}
+em.term{font-style:normal;font-weight:600;color:var(--pay);white-space:nowrap}
+code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.12em .38em;border-radius:3px;color:var(--ink)}
+
+/* ---------- perforation rule ---------- */
+.perf{
+  height:1px;border:0;margin:0;
+  background:repeating-linear-gradient(to right,var(--rule-2) 0 7px,transparent 7px 15px);
+}
+.perf-thick{
+  position:relative;height:0;border:0;margin:0;
+  border-top:1px dashed var(--rule-2);
+}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{
+  max-width:1120px;margin-inline:auto;padding:9px 22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.brandmark{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink);white-space:nowrap;
+}
+.brandmark span{color:var(--ink-3)}
+.navlinks{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.navlinks a{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
+  color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
+}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a.on{color:var(--pay);background:var(--pay-bg)}
+.progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+#guilloche{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-in{position:relative;padding-block:clamp(52px,9vw,104px)}
+.hero-grid{display:grid;gap:34px}
+.hero h1{margin-block:.18em .34em}
+.hero h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2)}
+
+/* ---------- token strip ---------- */
+.tokenbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow-lift);overflow:hidden;
+}
+.tokenbox-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+}
+.tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.token{
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  word-break:break-all;padding:16px 14px;margin:0;
+}
+.token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
+.t-h{color:var(--hdr);background:var(--hdr-bg)}
+.t-p{color:var(--pay);background:var(--pay-bg)}
+.t-s{color:var(--sig);background:var(--sig-bg)}
+.t-dot{color:var(--ink-3);font-weight:600}
+.token b.dim{opacity:.3}
+.token[data-clickable] b{cursor:pointer}
+.token[data-clickable] b:hover{box-shadow:0 0 0 1.5px currentColor}
+
+/* ---------- part legend / tabs ---------- */
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+.parts button{
+  all:unset;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px;
+  border-right:1px solid var(--rule);transition:background .16s;
+}
+.parts button:last-child{border-right:0}
+.parts button:hover{background:var(--paper-3)}
+.parts button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
+.parts .pn{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase}
+.parts .pd{font-size:.78rem;color:var(--ink-3);line-height:1.35}
+.parts button[aria-selected="true"]{background:var(--paper-3)}
+.parts button[data-p="h"] .pn{color:var(--hdr)}
+.parts button[data-p="p"] .pn{color:var(--pay)}
+.parts button[data-p="s"] .pn{color:var(--sig)}
+
+/* ---------- panels & cards ---------- */
+.panel{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.panel-head .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.panel-head .sub{font-size:.8rem;color:var(--ink-3)}
+.panel-body{padding:16px}
+
+.callout{
+  border-left:2px solid var(--pay);padding:2px 0 2px 16px;
+  color:var(--ink-2);font-size:.95em;
+}
+.callout.warn{border-left-color:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout .h{display:block;font-weight:650;color:var(--ink);margin-bottom:.2em;font-size:.98em}
+
+.hook{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  padding:20px 22px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.85em;
+}
+.hook .tag{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:8px;
+}
+.hook .tag::after{content:"";height:1px;flex:1;background:var(--rule)}
+.hook p{font-size:1.02em;line-height:1.62}
+
+/* ---------- buttons ---------- */
+.btn{
+  all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--sans);font-size:.83rem;font-weight:600;letter-spacing:.005em;
+  padding:8px 15px;border-radius:5px;border:1px solid var(--rule-2);
+  background:var(--paper-2);color:var(--ink);transition:background .15s,border-color .15s,transform .08s;
+  white-space:nowrap;
+}
+.btn:hover{background:var(--paper-3);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.btn.primary{background:var(--pay);color:var(--paper-2);border-color:var(--pay)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- form bits ---------- */
+label.fld{display:flex;flex-direction:column;gap:5px}
+label.fld .lb{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+input[type=text],textarea{
+  font-family:var(--mono);font-size:.82rem;line-height:1.6;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:9px 11px;width:100%;
+  resize:vertical;
+}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--pay);outline-offset:-1px;border-color:var(--pay)}
+
+/* ---------- status pills ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;border:1px solid currentColor;
+}
+.pill.ok{color:var(--ok);background:var(--ok-bg)}
+.pill.bad{color:var(--bad);background:var(--bad-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.mute{color:var(--ink-3);background:var(--paper-3);border-color:var(--rule-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- code blocks ---------- */
+pre.code{
+  font-family:var(--mono);font-size:.79rem;line-height:1.7;margin:0;
+  background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  padding:13px 15px;overflow-x:auto;color:var(--ink-2);
+}
+pre.code .key{color:var(--pay)}
+pre.code .str{color:var(--hdr)}
+pre.code .num{color:var(--sig)}
+pre.code .cm{color:var(--ink-3);font-style:italic}
+
+/* ---------- chapter opener ---------- */
+.chapnum{
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+}
+.chapnum .n{
+  font-family:var(--serif);font-size:2.6rem;font-weight:700;line-height:1;
+  color:var(--pay);
+}
+.chapnum .l{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.chapnum .rule{flex:1;height:1px;background:var(--rule)}
+
+/* ---------- coat check sim ---------- */
+.sim2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.simcol{border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.simcol h4{padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--paper-3);font-size:.85rem}
+.simcol .simbody{padding:13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.rack{
+  height:74px;border:1px dashed var(--rule-2);border-radius:5px;background:var(--paper-2);
+  display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:5px;overflow:hidden;
+}
+.coat{width:5px;height:11px;border-radius:1px;background:var(--pay);opacity:.75}
+.rack.empty-note{align-items:center;justify-content:center;align-content:center}
+.rack .note{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);letter-spacing:.06em;text-align:center;line-height:1.5}
+.metric{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--ink-3)}
+.metric b{font-family:var(--mono);font-size:1.05rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- ticket ---------- */
+.ticketgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.ticket{
+  position:relative;background:var(--paper-2);border:1px solid var(--rule-2);border-radius:6px;
+  display:grid;grid-template-columns:1fr 88px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ticket-main{padding:14px 15px;display:flex;flex-direction:column;gap:0}
+.ticket-stub{
+  border-left:1px dashed var(--rule-2);padding:14px 10px;
+  display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  background:var(--paper-3);
+}
+.ticket-brand{
+  font-family:var(--serif);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.ticket-brand span{font-family:var(--mono);font-size:.6rem;font-weight:400;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.trow{
+  display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline;
+  padding:4px 6px;margin-inline:-6px;border-radius:4px;cursor:default;
+  transition:background .15s;
+}
+.trow .tk{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.trow .tv{font-family:var(--mono);font-size:.78rem;color:var(--ink);word-break:break-word}
+.trow.hi{background:var(--pay-bg)}
+.trow.hi .tk{color:var(--pay)}
+.claimjson .cl{
+  display:block;padding:1px 6px;margin-inline:-6px;border-radius:3px;transition:background .15s;
+}
+.claimjson .cl.hi{background:var(--pay-bg)}
+.stubcode{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;color:var(--ink-3);writing-mode:vertical-rl;transform:rotate(180deg);margin-inline:auto}
+
+.claimlist{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.claimlist button{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;
+  grid-template-columns:52px 1fr;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
+}
+.claimlist button:last-child{border-bottom:0}
+.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
+.claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
+.claimlist .cx b{color:var(--ink);font-weight:600}
+
+/* ---------- base64 playground ---------- */
+.b64grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.b64arrow{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+  text-align:center;display:flex;flex-direction:column;gap:3px;
+}
+.chipline{display:flex;flex-wrap:wrap;gap:3px;font-family:var(--mono);font-size:.72rem}
+.chip{padding:2px 5px;border-radius:3px;background:var(--paper-3);border:1px solid var(--rule)}
+.chip.b{background:var(--pay-bg);border-color:var(--pay-ed);color:var(--pay)}
+
+/* ---------- flow diagram ---------- */
+.flowwrap{overflow-x:auto}
+.flowsvg{display:block;width:100%;min-width:560px;height:auto;color:var(--ink-2)}
+.flowsvg .node{fill:var(--paper-2);stroke:var(--rule-2)}
+.flowsvg .nlabel{fill:var(--ink);font-family:var(--sans);font-size:12px;font-weight:600}
+.flowsvg .nsub{fill:var(--ink-3);font-family:var(--mono);font-size:9px;letter-spacing:.08em}
+.flowsvg .edge{stroke:var(--rule-2);stroke-width:1.5;fill:none;opacity:.35;transition:opacity .3s,stroke .3s}
+.flowsvg .edge.live{stroke:var(--pay);opacity:1;stroke-width:2.2;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.flowsvg .elabel{fill:var(--ink-3);font-family:var(--mono);font-size:9px;opacity:0;transition:opacity .3s}
+.flowsvg .elabel.live{fill:var(--pay);opacity:1}
+.flowsvg .node.live{stroke:var(--pay);stroke-width:2;fill:var(--pay-bg)}
+.stepnote{
+  display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;
+  padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;min-height:78px;
+}
+.stepnote .sn{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--paper-2);background:var(--pay);
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+}
+.stepnote .st{font-size:.88rem;line-height:1.55;color:var(--ink-2)}
+
+/* ---------- token life ---------- */
+.lifebar{height:9px;border-radius:100px;background:var(--paper-3);overflow:hidden;border:1px solid var(--rule)}
+.lifebar i{display:block;height:100%;background:var(--ok);width:100%;border-radius:100px}
+.lifebar i.low{background:var(--warn)}
+.lifebar i.out{background:var(--bad)}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.statgrid div{background:var(--paper);padding:10px 12px}
+.statgrid .sv{font-family:var(--mono);font-size:1.25rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.statgrid .sl{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+
+/* ---------- attack lab ---------- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vcard{border:1px solid var(--rule);border-radius:7px;padding:13px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.vcard.ok{border-color:var(--ok);background:var(--ok-bg)}
+.vcard.bad{border-color:var(--bad);background:var(--bad-bg)}
+.vcard h4{font-size:.86rem}
+.vcard p{font-size:.83rem;line-height:1.5;color:var(--ink-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-family:var(--mono);font-size:.76rem;align-items:baseline}
+.kv dt{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:.62rem}
+.kv dd{margin:0;word-break:break-all;color:var(--ink)}
+
+.sigcompare{display:flex;flex-direction:column;gap:7px}
+.sigline{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;font-family:var(--mono);font-size:.74rem}
+.sigline .sl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sigline .sv{word-break:break-all}
+.sigline .sv.match{color:var(--ok)}
+.sigline .sv.miss{color:var(--bad)}
+
+/* ---------- quiz ---------- */
+.quiz{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper-2)}
+.q{padding:18px 20px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:11px}
+.q:last-child{border-bottom:0}
+.q .qq{font-weight:600;font-size:.97rem;line-height:1.5;display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start}
+.q .qn{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);padding-top:.25em}
+.opts{display:flex;flex-direction:column;gap:6px;padding-left:34px}
+.opt{
+  all:unset;box-sizing:border-box;cursor:pointer;padding:9px 13px;border-radius:5px;
+  border:1px solid var(--rule-2);background:var(--paper);font-size:.87rem;line-height:1.45;
+  transition:background .15s,border-color .15s;
+}
+.opt:hover{background:var(--paper-3)}
+.opt:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt[disabled]{cursor:default}
+.qwhy{
+  padding-left:34px;font-size:.85rem;line-height:1.55;color:var(--ink-2);
+  border-left:2px solid var(--pay);margin-left:34px;padding-block:2px;
+}
+
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.minicard{border:1px solid var(--rule);border-radius:7px;padding:13px 14px;background:var(--paper-2);display:flex;flex-direction:column;gap:6px}
+.minicard .mt{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.minicard .mb{font-size:.87rem;line-height:1.5;color:var(--ink-2)}
+.minicard .mb b{color:var(--ink)}
+
+figure{margin:0;display:flex;flex-direction:column;gap:9px}
+figcaption{font-size:.8rem;color:var(--ink-3);line-height:1.5}
+
+footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:var(--paper-2)}
+.byline{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.6vw,1.6rem);font-weight:500;font-style:italic;
+  color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin:0;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.byline strong{font-style:normal;font-weight:700;color:var(--pay)}
+.byline .hb{font-style:normal;font-size:.82em;margin-left:.28em}
+
+.srcnote{font-size:.82rem;color:var(--ink-3);line-height:1.6}
+.srcnote a{color:var(--pay)}
+
+@media (max-width:760px){
+  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
+  .b64arrow{flex-direction:row;justify-content:center;gap:10px}
+  .grid3,.statgrid,.parts{grid-template-columns:1fr}
+  .parts button{border-right:0;border-bottom:1px solid var(--rule)}
+  .ticket{grid-template-columns:1fr}
+  .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
+  .stubcode{writing-mode:horizontal-tb;transform:none;margin:0}
+  .navlinks{display:none}
+  .dropcap::first-letter{font-size:3em}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+
+<style>
+/* ============ animated flow diagrams ============ */
+.flowbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.flowscroll{overflow-x:auto;padding:14px 10px}
+.flowsvg2{display:block;width:100%;height:auto;margin-inline:auto}
+
+.fn rect,.fn path.shape{
+  fill:var(--paper-2);stroke:var(--rule-2);stroke-width:1.5;
+  transition:stroke .3s,fill .3s,stroke-width .3s;
+}
+.fn text{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;transition:fill .3s}
+.fn text.sub{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.07em}
+.fn.on rect,.fn.on path.shape{stroke:var(--pay);stroke-width:2.4;fill:var(--pay-bg)}
+.fn.pass rect,.fn.pass path.shape{stroke:var(--ok);stroke-width:2;fill:var(--ok-bg)}
+.fn.pass text{fill:var(--ok)}
+.fn.bad rect,.fn.bad path.shape{stroke:var(--bad);stroke-width:2.4;fill:var(--bad-bg)}
+.fn.bad text{fill:var(--bad)}
+.fn.muted rect,.fn.muted path.shape{opacity:.5}
+.fn.muted text{opacity:.5}
+
+.fe{stroke:var(--rule-2);stroke-width:2;fill:none;opacity:.62;transition:stroke .3s,opacity .3s}
+.fe.lit{stroke:var(--pay);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.dead{stroke:var(--bad);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.done{stroke:var(--ok);opacity:.9}
+@keyframes fmarch{to{stroke-dashoffset:-15}}
+
+.fl{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;transition:fill .3s,opacity .3s;opacity:.78}
+.fl.lit{fill:var(--pay);opacity:1}
+.fl.dead{fill:var(--bad);opacity:1}
+.fl.done{fill:var(--ok);opacity:1}
+
+.chip{opacity:0;transition:opacity .2s}
+.chip.show{opacity:1}
+.chip circle{fill:var(--pay);stroke:var(--paper-2);stroke-width:2}
+.chip.bad circle{fill:var(--bad)}
+.chip.ok circle{fill:var(--ok)}
+.chip text{fill:var(--paper-2);font-family:var(--mono);font-size:9px;font-weight:600;text-anchor:middle}
+
+.flowbar{
+  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+  padding:12px 15px;border-top:1px solid var(--rule);background:var(--paper-3);
+}
+.flowbar .btn{font-size:.78rem;padding:6px 12px}
+.flowlog{
+  padding:13px 16px;border-top:1px solid var(--rule);min-height:76px;
+  display:grid;grid-template-columns:22px 1fr;gap:11px;align-items:start;
+}
+.flowlog .fi{
+  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;
+  background:var(--paper-3);color:var(--ink-3);transition:background .25s,color .25s;
+}
+.flowlog .fi.ok{background:var(--ok-bg);color:var(--ok)}
+.flowlog .fi.bad{background:var(--bad-bg);color:var(--bad)}
+.flowlog .ft{font-size:.87rem;line-height:1.55;color:var(--ink-2)}
+.flowlog .ft b{color:var(--ink)}
+.flowlog .ft .why{display:block;margin-top:5px;font-size:.82rem;color:var(--ink-3)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid var(--rule)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.legend i{width:14px;height:3px;border-radius:2px;display:block}
+.legend i.g{background:var(--pay)}
+.legend i.r{background:var(--bad)}
+.legend i.k{background:var(--ok)}
+.legend i.n{background:var(--rule-2)}
+</style>
+
+<script>
+/* ============ shared flow-animation engine ============ */
+window.FlowKit = (function(){
+  "use strict";
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, reduced ? Math.min(ms,40) : ms); }); }
+
+  /* move a chip group along a <path>, returns a promise */
+  function travel(pathEl, chipEl, ms){
+    if (!pathEl || !chipEl) return Promise.resolve();
+    var len = pathEl.getTotalLength();
+    if (reduced){
+      var e = pathEl.getPointAtLength(len);
+      chipEl.setAttribute("transform","translate("+e.x+","+e.y+")");
+      return Promise.resolve();
+    }
+    return new Promise(function(resolve){
+      var t0 = null;
+      function frame(ts){
+        if (t0 === null) t0 = ts;
+        var k = Math.min(1, (ts - t0) / ms);
+        var eased = k < .5 ? 2*k*k : 1 - Math.pow(-2*k+2, 2)/2;
+        var p = pathEl.getPointAtLength(eased * len);
+        chipEl.setAttribute("transform","translate("+p.x+","+p.y+")");
+        if (k < 1) requestAnimationFrame(frame); else resolve();
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function clearAll(root){
+    root.querySelectorAll(".fn").forEach(function(n){ n.classList.remove("on","pass","bad","muted"); });
+    root.querySelectorAll(".fe").forEach(function(e){ e.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".fl").forEach(function(l){ l.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("show","bad","ok"); });
+  }
+
+  function log(box, kind, mark, html){
+    var icon = box.querySelector(".fi"), txt = box.querySelector(".ft");
+    icon.className = "fi" + (kind ? " " + kind : "");
+    icon.innerHTML = mark;
+    txt.innerHTML = html;
+  }
+
+  return { travel: travel, sleep: sleep, clearAll: clearAll, log: log, reduced: reduced };
+})();
+</script>
+
+<!-- ============================= NAV ============================= -->
+<nav class="topbar">
+  <div class="topbar-in">
+    <div class="brandmark">JWT <span>/ piece by piece</span></div>
+    <div class="navlinks">
+      <a href="#ch1" data-nav="ch1">1 · Introduction</a>
+      <a href="#ch2" data-nav="ch2">2 · In the wild</a>
+      <a href="#ch3" data-nav="ch3">3 · In detail</a>
+      <a href="#flow" data-nav="flow">The six gates</a>
+      <a href="#quiz" data-nav="quiz">Check yourself</a>
+      <a href="part-2.html" style="color:var(--pay)">Part two</a>
+      <a href="part-3.html" style="color:var(--pay)">Part three</a>
+      <a href="index.html" style="color:var(--pay)">Contents</a>
+    </div>
+  </div>
+  <div class="progressbar" id="progressbar"></div>
+</nav>
+
+<!-- ============================= HERO ============================= -->
+<header class="hero">
+  <canvas id="guilloche" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <div class="hero-grid">
+      <div class="prose stack" style="margin-inline:0">
+        <div class="eyebrow">A hands-on reading of the JWT Handbook · chapters 1–3</div>
+        <h1>JWT,<br><span class="thin">piece by piece</span></h1>
+        <p class="lede">Every time you log in somewhere and it keeps you logged in, something like this is quietly happening. This page takes it apart in plain words &mdash; and lets you press on it, break it, and put it back.</p>
+        <p style="color:var(--ink-3);font-size:.88rem">No background needed. If you have ever been given a wristband at an event, you already understand the main idea.</p>
+      </div>
+
+      <div class="tokenbox">
+        <div class="tokenbox-head">
+          <span class="tokenbox-title">Specimen · signed token</span>
+          <span class="pill mute" style="margin-left:auto"><span class="dot"></span>Click a colour</span>
+        </div>
+        <p class="token" id="heroToken" data-clickable="1"></p>
+        <div class="parts" role="tablist" aria-label="Parts of a token">
+          <button role="tab" data-p="h" aria-selected="true">
+            <span class="pn">Header</span>
+            <span class="pd">How this one is sealed</span>
+          </button>
+          <button role="tab" data-p="p" aria-selected="false">
+            <span class="pn">Payload</span>
+            <span class="pd">What it actually says</span>
+          </button>
+          <button role="tab" data-p="s" aria-selected="false">
+            <span class="pn">Signature</span>
+            <span class="pd">Proof nobody edited it</span>
+          </button>
+        </div>
+        <div class="panel-body" style="border-top:1px solid var(--rule);background:var(--paper)">
+          <pre class="code" id="heroDecoded" style="border:0;background:transparent;padding:0"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= CH 1 ============================= -->
+<section class="chapter" id="ch1">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">1</span>
+        <span class="l">Introduction</span>
+        <span class="rule"></span>
+      </div>
+      <h2>The wristband idea</h2>
+    </div>
+
+    <div class="prose stack">
+      <div class="hook">
+        <div class="tag">Start here</div>
+        <p>You go to a concert. At the gate, someone checks your ticket and your face. Then they put a paper band on your wrist and wave you through.</p>
+        <p>After that, nobody checks anything again. Not at the food stall. Not at the toilets. Not at the door to the good seats. They just glance at your wrist.</p>
+      </div>
+
+      <p class="dropcap">That little band is doing a surprising amount of work. It says three things at the same time, without anyone having to talk to anyone:</p>
+
+      <div class="grid3">
+        <div class="minicard">
+          <span class="mt">It says</span>
+          <span class="mb"><b>Someone official already checked this person.</b> The hard work happened once, at the gate.</span>
+        </div>
+        <div class="minicard">
+          <span class="mt">It says</span>
+          <span class="mb"><b>Here is what they may do.</b> A gold band gets into the good seats. A blue one does not.</span>
+        </div>
+        <div class="minicard">
+          <span class="mt">It says</span>
+          <span class="mb"><b>Faking this is hard.</b> The pattern, the print, the colour &mdash; you cannot draw one at home.</span>
+        </div>
+      </div>
+
+      <p>A <strong>JSON Web Token</strong> &mdash; JWT, and people say it out loud as <em class="term">"jot"</em> &mdash; is that wristband, for the internet.</p>
+
+      <p>It is a small piece of text. A website gives it to you after you prove who you are. From then on, your browser shows it with every request, and the website can read it and trust it without going to look you up anywhere.</p>
+
+      <div class="callout">
+        <span class="h">The word "claims"</span>
+        The handbook calls the facts written on the band <strong>claims</strong>. A claim is just a statement about someone: <em>this is user 402</em>, <em>her name is Ana</em>, <em>she is an admin</em>. That is all the word means. Don't let it slow you down.
+      </div>
+    </div>
+
+    <!-- problem it solves -->
+    <div class="prose stack">
+      <h3>1.2 &nbsp;What problem does this solve?</h3>
+
+      <div class="hook">
+        <div class="tag">Picture the alternative</div>
+        <p>Same concert, but no wristbands. Now every stall, every door, every guard has to phone the main office and ask: <em>"Is this person allowed in?"</em></p>
+        <p>One office. One list. Thousands of calls a minute. The line is always busy, and when the office goes down for five minutes, the whole festival stops moving.</p>
+      </div>
+
+      <p>Websites have exactly this problem, and for a long time they solved it exactly this way.</p>
+
+      <p>The old way is called a <em class="term">session</em>. When you log in, the website writes your details into its own memory and hands you a small ID number. Every click you make, the website takes that number and goes to look you up.</p>
+
+      <p>It works. But the website has to keep that memory, keep it fast, and share it with every other copy of itself. That memory is the busy phone line.</p>
+
+      <p>A JWT moves the answer <strong>onto you</strong>. Instead of a number that means nothing on its own, you carry the actual facts &mdash; sealed so you cannot change them. Now every server can decide by itself, in a fraction of a second, with nothing to look up.</p>
+
+      <p style="color:var(--ink-3);font-size:.92rem">That is the whole trade. You will see the cost of it later &mdash; there is one &mdash; but this is the reason JWTs exist.</p>
+    </div>
+
+    <!-- LAB: coat check -->
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · the coat check</span>
+          <span class="sub">Two ways to remember who somebody is. Press the buttons.</span>
+        </div>
+        <div class="panel-body stack">
+          <p style="font-size:.92rem;color:var(--ink-2);max-width:66ch">
+            You hand your coat to the cloakroom and get a numbered tag. They keep the coat; you keep the tag.
+            That is a session. The other option is odd but simple: <em>carry your own coat</em>. Watch what changes.
+          </p>
+
+          <div class="sim2">
+            <div class="simcol">
+              <h4>The cloakroom keeps it &nbsp;<span style="font-weight:400;color:var(--ink-3);font-size:.78rem">(session on the server)</span></h4>
+              <div class="simbody">
+                <div class="rack" id="rackA"></div>
+                <div class="metric"><span>Stored on the server</span><b id="mA">0</b></div>
+                <div class="metric"><span>Lookups per request</span><b id="lA">1</b></div>
+                <div id="noteA" style="font-size:.8rem;line-height:1.5;color:var(--ink-3);min-height:3.6em"></div>
+              </div>
+            </div>
+            <div class="simcol">
+              <h4>You carry it &nbsp;<span style="font-weight:400;color:var(--ink-3);font-size:.78rem">(token on the client)</span></h4>
+              <div class="simbody">
+                <div class="rack empty-note" id="rackB"><span class="note">nothing stored here<br>the server keeps no rack at all</span></div>
+                <div class="metric"><span>Stored on the server</span><b id="mB">0</b></div>
+                <div class="metric"><span>Lookups per request</span><b id="lB">0</b></div>
+                <div id="noteB" style="font-size:.8rem;line-height:1.5;color:var(--ink-3);min-height:3.6em"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn primary" id="simAdd">+ 250 people log in</button>
+            <button class="btn" id="simRestart">Restart the server</button>
+            <button class="btn" id="simSecond">Add a second server</button>
+            <button class="btn ghost" id="simReset">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- what it looks like -->
+    <div class="prose stack">
+      <h3>1.3 &nbsp;So what does one actually look like?</h3>
+      <p>Like this. It is one long line of text; the breaks below are only so it fits on the screen.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="tokenbox">
+        <div class="tokenbox-head">
+          <span class="tokenbox-title">The three parts</span>
+          <span class="sub" style="font-size:.78rem;color:var(--ink-3);margin-left:auto">two dots, three pieces</span>
+        </div>
+        <p class="token" id="anatomyToken"></p>
+      </div>
+
+      <div class="prose stack">
+        <p>Two dots. Three pieces. That is the entire shape of a JWT, and it never changes:</p>
+        <div class="grid3">
+          <div class="minicard" style="border-color:var(--hdr-ed)">
+            <span class="mt" style="color:var(--hdr)">Piece 1 · header</span>
+            <span class="mb">The label. <b>How was this sealed?</b> Not about you at all &mdash; it is instructions for the person opening it.</span>
+          </div>
+          <div class="minicard" style="border-color:var(--pay-ed)">
+            <span class="mt" style="color:var(--pay)">Piece 2 · payload</span>
+            <span class="mb">The message. <b>Who you are, what you may do, how long this lasts.</b> The interesting part.</span>
+          </div>
+          <div class="minicard" style="border-color:var(--sig-ed)">
+            <span class="mt" style="color:var(--sig)">Piece 3 · signature</span>
+            <span class="mb">The seal. <b>Proof that nobody changed pieces 1 and 2</b> since they were written.</span>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <span class="h">The thing almost everyone gets wrong</span>
+          It <em>looks</em> like a secret code. It is not. That jumble of letters is not hiding anything &mdash; anyone holding the token can read every word inside it, in about one second, with no password. Think of a <strong>postcard with a wax seal</strong>: the postman can read the message, but he cannot change it without breaking the seal. A JWT protects against <em>editing</em>, not against <em>reading</em>. So never put anything private in one.
+        </div>
+      </div>
+    </div>
+
+    <!-- history -->
+    <div class="prose stack">
+      <h3>1.4 &nbsp;Where it came from</h3>
+      <p>Short version, because it matters less than people think.</p>
+      <p>Before 2011, every company invented its own way of doing this, and none of them worked with anyone else's. In 2011 a group of people sat down to agree on one shape. They called themselves <strong>JOSE</strong> &mdash; JSON Object Signing and Encryption. Their drafts became the official documents around 2015.</p>
+      <p>That agreement is the reason a token made by Google can be read by a small app in another country that has never heard of Google. Everybody learned the same handwriting.</p>
+      <p style="font-size:.9rem;color:var(--ink-3)">The main authors were Mike Jones, Nat Sakimura, John Bradley and Joe Hildebrand. The group is quiet now &mdash; the work is done.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CH 2 ============================= -->
+<section class="chapter" id="ch2">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">2</span>
+        <span class="l">Practical applications</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Where you have already met one</h2>
+      <p class="lede" style="margin-top:.7em">Before taking the token apart, it helps to see it doing a job. Three jobs, actually &mdash; and three ways people break it.</p>
+    </div>
+
+    <!-- 2.1 stateless sessions -->
+    <div class="prose stack">
+      <h3>2.1 &nbsp;Carrying your own session</h3>
+      <p>You met this idea above with the coats. Now the real version.</p>
+      <p>A shop wants to remember what is in your basket. The old way: keep the basket on the server, give you a number. The token way: <strong>put the basket itself in the token</strong> and let your browser hold it.</p>
+      <p>Here is a real shopping basket, straight from the handbook, before it is folded into a token:</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="grid2">
+        <div class="panel">
+          <div class="panel-head"><span class="k">What it says</span></div>
+          <div class="panel-body">
+<pre class="code">{
+  <span class="key">"items"</span>: [ <span class="num">0</span>, <span class="num">2</span>, <span class="num">4</span> ],
+  <span class="key">"iat"</span>: <span class="num">1493139659</span>,   <span class="cm">// made at this moment</span>
+  <span class="key">"exp"</span>: <span class="num">1493143259</span>    <span class="cm">// dead one hour later</span>
+}</pre>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="k">What gets stored in your browser</span></div>
+          <div class="panel-body">
+<pre class="code" style="word-break:break-all;white-space:pre-wrap">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJpdGVtcyI6WzAsMiw0XSwiaWF0IjoxNDkzMTM5NjU5LCJleHAiOjE0OTMxNDMyNTl9.
+932ZxtZzy1qhLXs932hd04J58Ihbg5_g_rIrj-Z16Js</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="prose stack">
+        <p>The shop's server keeps <em>nothing</em>. When you ask for a page, it reads your basket out of the token you sent, checks the seal, and answers. When you add an item, it makes a fresh token with the new list and hands it back.</p>
+
+        <div class="callout">
+          <span class="h">A detail worth noticing</span>
+          The page in your browser <strong>reads the basket without checking the seal</strong> &mdash; it only needs the item names to draw the list, and it cannot keep a secret anyway. The server checks the seal properly, every single time. Front end reads; back end verifies. Never the other way around.
+        </div>
+
+        <h4 style="margin-top:.6em">So is this actually a good idea?</h4>
+        <p>Honestly: sometimes. The handbook is blunt about it, and so should we be.</p>
+        <div class="grid2">
+          <div class="minicard" style="border-color:var(--ok)">
+            <span class="mt" style="color:var(--ok)">Good when</span>
+            <span class="mb">The thing you are carrying is small. Your servers are many. You want any one of them to answer without asking anyone.</span>
+          </div>
+          <div class="minicard" style="border-color:var(--warn)">
+            <span class="mt" style="color:var(--warn)">Bad when</span>
+            <span class="mb">The thing is big. A fat token rides along with <em>every single request</em>, forever. You can easily spend more on bandwidth than you saved on lookups.</span>
+          </div>
+        </div>
+        <p style="font-size:.92rem;color:var(--ink-3)">There is no universal answer. Measure your own traffic. A 4&nbsp;KB token on a mobile connection, sent a hundred times a minute, is a real cost.</p>
+      </div>
+    </div>
+
+    <!-- 2.1.1 attacks -->
+    <div class="prose stack">
+      <h3>2.1.1 &nbsp;Three ways people break this</h3>
+      <p>Client-side data is data you handed to a stranger and asked them to bring back unchanged. Treat it that way.</p>
+    </div>
+
+    <!-- signature stripping -->
+    <div class="lab stack-lg">
+      <div class="prose">
+        <div class="hook">
+          <div class="tag">Attack one · cutting off the signature</div>
+          <p>Imagine a note from your teacher, signed at the bottom. You want to change what it says, but you cannot copy that signature.</p>
+          <p>So you don't. You cut the signature off entirely, and write at the top: <em>"this one doesn't need a signature."</em></p>
+          <p>If the person reading it shrugs and accepts that &mdash; you have won. That is the whole attack.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Attack lab · signature stripping</span>
+          <span class="sub">Play the attacker. Nothing here leaves the page.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="tokenbox" style="box-shadow:none">
+            <div class="tokenbox-head">
+              <span class="tokenbox-title" id="stripLabel">The honest token</span>
+              <span class="pill ok" id="stripPill" style="margin-left:auto"><span class="dot"></span>Untouched</span>
+            </div>
+            <p class="token" id="stripToken"></p>
+          </div>
+
+          <div class="grid2">
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k">Header</span></div>
+              <div class="panel-body"><pre class="code" id="stripHeader" style="border:0;background:transparent;padding:0"></pre></div>
+            </div>
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k">Payload</span></div>
+              <div class="panel-body"><pre class="code" id="stripPayload" style="border:0;background:transparent;padding:0"></pre></div>
+            </div>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn danger" id="stripGo">1 &nbsp;Cut off the signature</button>
+            <button class="btn danger" id="stripAlg" disabled>2 &nbsp;Set the label to "no seal"</button>
+            <button class="btn danger" id="stripAdmin" disabled>3 &nbsp;Promote myself to admin</button>
+            <button class="btn ghost" id="stripReset">Put it back</button>
+          </div>
+
+          <div class="verdict" id="stripVerdict" hidden>
+            <div class="vcard bad">
+              <h4>A careless server</h4>
+              <p id="stripBadText">Reads the label, sees "no seal needed", believes it, and lets the attacker in as an admin.</p>
+              <span class="pill bad"><span class="dot"></span>Broken into</span>
+            </div>
+            <div class="vcard ok">
+              <h4>A careful server</h4>
+              <p>Was told in advance: <em>we only accept HS256, and the seal must be present and correct.</em> A token with no seal is not a token. Rejected before anything is even read.</p>
+              <span class="pill ok"><span class="dot"></span>Held</span>
+            </div>
+          </div>
+
+          <div class="callout bad">
+            <span class="h">The fix is one line</span>
+            Never let the token tell you how to check the token. Decide the allowed algorithm in <em>your</em> code, and refuse anything else. Every good library lets you say <code>algorithms: ["HS256"]</code>. Say it.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CSRF -->
+    <div class="lab stack-lg">
+      <div class="prose">
+        <div class="hook">
+          <div class="tag">Attack two · tricking your browser (CSRF)</div>
+          <p>Your browser is extremely helpful, and that is the problem.</p>
+          <p>Once you are logged into your bank, your browser attaches your bank cookie to <strong>every</strong> request going to that bank. It never stops to ask who asked for the request. It just helps.</p>
+          <p>So a bad page puts an invisible picture on it. The picture's address is not a picture at all &mdash; it is your bank's "send money" page. Your browser goes to fetch the picture, helpfully brings your cookie, and the bank sees a perfectly normal, perfectly signed-in request.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Attack lab · cross-site request forgery</span>
+          <span class="sub">Everything below is simulated on this page.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid2">
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k">A page you visited by accident</span></div>
+              <div class="panel-body">
+<pre class="code">&lt;h1&gt;Free wallpapers!&lt;/h1&gt;
+
+<span class="cm">&lt;!-- you never see this one --&gt;</span>
+&lt;img src=<span class="str">"https://bank.example
+     /transfer?to=attacker&amp;amount=1000"</span>&gt;</pre>
+              </div>
+            </div>
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k">What your browser does next</span></div>
+              <div class="panel-body">
+                <div id="csrfLog" style="display:flex;flex-direction:column;gap:7px;font-size:.83rem;min-height:150px;color:var(--ink-2)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn danger" id="csrfGo">Open the bad page</button>
+            <label class="fld" style="flex-direction:row;align-items:center;gap:9px;margin-left:6px">
+              <input type="checkbox" id="csrfFix" style="width:auto;accent-color:var(--pay)">
+              <span style="font-size:.84rem">Send the token in a header instead of a cookie</span>
+            </label>
+            <button class="btn ghost" id="csrfReset">Clear</button>
+          </div>
+
+          <div class="callout">
+            <span class="h">Why the fix works</span>
+            The browser only attaches <strong>cookies</strong> automatically. A token sent in a header has to be put there by your own JavaScript &mdash; and a stranger's page cannot run your JavaScript. Short lives on tokens help too, and so do the usual anti-forgery tricks. But if the token is not a cookie, this particular attack simply has nothing to work with.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- XSS -->
+    <div class="lab stack-lg">
+      <div class="prose">
+        <div class="hook">
+          <div class="tag">Attack three · getting the site to work for you (XSS)</div>
+          <p>Picture a restaurant where the waiter reads out loud whatever a customer writes on a card, and does whatever it says.</p>
+          <p>Most people write <em>happy birthday</em>. Then one person writes: <em>"Waiter &mdash; hand over the contents of the till."</em> And the waiter, who only knows how to read cards and do what they say, does it.</p>
+          <p>That is cross-site scripting. Someone leaves a comment that is not really a comment. The site prints it onto everyone else's screen, and the browser &mdash; which cannot tell the difference &mdash; runs it.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Attack lab · cross-site scripting</span>
+          <span class="sub">Type a comment. Simulated &mdash; nothing is really executed.</span>
+        </div>
+        <div class="panel-body stack">
+          <label class="fld">
+            <span class="lb">Leave a comment on the site</span>
+            <input type="text" id="xssIn" value="&lt;script&gt;send(document.cookie)&lt;/script&gt;">
+          </label>
+          <div class="grid2">
+            <div class="vcard bad">
+              <h4>Site that prints it straight out</h4>
+              <div id="xssBad" style="font-family:var(--mono);font-size:.76rem;word-break:break-all;color:var(--ink-2);min-height:2.6em"></div>
+              <p id="xssBadNote"></p>
+            </div>
+            <div class="vcard ok">
+              <h4>Site that cleans it first</h4>
+              <div id="xssOk" style="font-family:var(--mono);font-size:.76rem;word-break:break-all;color:var(--ink-2);min-height:2.6em"></div>
+              <p>The angle brackets get turned into harmless letters. The browser sees text, draws text, and moves on. The comment shows up looking exactly as it was typed &mdash; which is the honest outcome.</p>
+            </div>
+          </div>
+          <div class="callout warn">
+            <span class="h">Why this one matters most</span>
+            If a stranger can run code inside your page, they can read your cookies, read your local storage, and take your token. No signature stops that &mdash; the token they stole is completely genuine. Clean everything that comes from a user. Setting <code>HttpOnly</code> on a cookie hides it from JavaScript and helps a lot &mdash; though it does nothing at all for the forgery attack above. Different locks, different doors.
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- 2.2 federated identity -->
+    <div class="prose stack">
+      <h3>2.2 &nbsp;"Continue with Google"</h3>
+      <div class="hook">
+        <div class="tag">You have done this a hundred times</div>
+        <p>You open a new app. It asks you to make an account. You do not want another password, so you tap <em>Continue with Google</em>, a familiar screen appears, you tap once more, and you are in.</p>
+        <p>Think of a passport. One office issues it. Then dozens of countries that have never spoken to you accept it &mdash; because they trust that office. You do not apply for a fresh passport at every border.</p>
+      </div>
+      <p>The proper name for this is <em class="term">federated identity</em>. One place holds who you are; everybody else agrees to trust that place. What travels between them, very often, is a JWT.</p>
+      <p>Here is the round trip. It looks like a lot of steps, but you have lived through all of them in about two seconds.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Walk through the login</span>
+          <span class="sub">Six steps. Press next.</span>
+        </div>
+        <div class="panel-body stack">
+          <figure>
+            <div class="flowwrap">
+              <svg class="flowsvg" viewBox="0 0 760 250" role="img" aria-label="A login journey: the browser is bounced from the app to a login service to Google and back, collecting a sealed token on the way, which the app then checks by itself.">
+                <defs>
+                  <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <polygon points="0,1 9,5 0,9" fill="currentColor"></polygon>
+                  </marker>
+                </defs>
+
+                <!-- edges first, so nodes sit on top -->
+                <path id="e1" class="edge" d="M146 110 L 244 64" marker-end="url(#ar)"></path>
+                <text id="l1" class="elabel" x="192" y="72" text-anchor="middle">1 · let me in</text>
+
+                <path id="e2" class="edge" d="M292 78 L 292 164" marker-end="url(#ar)"></path>
+                <text id="l2" class="elabel" x="284" y="126" text-anchor="end">2 · who are you?</text>
+
+                <path id="e3" class="edge" d="M386 186 L 464 186" marker-end="url(#ar)"></path>
+                <text id="l3" class="elabel" x="425" y="178" text-anchor="middle">3 · log in here</text>
+
+                <path id="e4" class="edge" d="M464 212 L 388 212" marker-end="url(#ar)"></path>
+                <text id="l4" class="elabel" x="426" y="230" text-anchor="middle">4 · that's her</text>
+
+                <path id="e5" class="edge" d="M246 194 L 152 154" marker-end="url(#ar)"></path>
+                <text id="l5" class="elabel" x="196" y="186" text-anchor="middle">5 · your token</text>
+
+                <path id="e6" class="edge" d="M386 46 L 610 46" marker-end="url(#ar)"></path>
+                <text id="l6" class="elabel" x="498" y="38" text-anchor="middle">6 · seal checked, no phone call</text>
+
+                <!-- nodes -->
+                <g id="n1"><rect class="node" x="22" y="98" width="124" height="58" rx="6"></rect>
+                  <text class="nlabel" x="84" y="122" text-anchor="middle">You</text>
+                  <text class="nsub" x="84" y="139" text-anchor="middle">BROWSER</text></g>
+
+                <g id="n2"><rect class="node" x="252" y="18" width="132" height="58" rx="6"></rect>
+                  <text class="nlabel" x="318" y="42" text-anchor="middle">The app</text>
+                  <text class="nsub" x="318" y="59" text-anchor="middle">WANTS PROOF</text></g>
+
+                <g id="n3"><rect class="node" x="252" y="168" width="132" height="58" rx="6"></rect>
+                  <text class="nlabel" x="318" y="192" text-anchor="middle">Login service</text>
+                  <text class="nsub" x="318" y="209" text-anchor="middle">ISSUES TOKENS</text></g>
+
+                <g id="n4"><rect class="node" x="470" y="168" width="132" height="58" rx="6"></rect>
+                  <text class="nlabel" x="536" y="192" text-anchor="middle">Google</text>
+                  <text class="nsub" x="536" y="209" text-anchor="middle">KNOWS YOU</text></g>
+
+                <g id="n5"><rect class="node" x="614" y="18" width="126" height="58" rx="6"></rect>
+                  <text class="nlabel" x="677" y="42" text-anchor="middle">Your data</text>
+                  <text class="nsub" x="677" y="59" text-anchor="middle">THE GOAL</text></g>
+
+                <g id="fedchip" class="chip"><circle r="10"></circle><text y="3">you</text></g>
+              </svg>
+            </div>
+            <figcaption>Every hop actually goes through your browser as a redirect &mdash; which is exactly why all of this has to travel over HTTPS.</figcaption>
+          </figure>
+
+          <div class="stepnote">
+            <span class="sn" id="fedNum">1</span>
+            <span class="st" id="fedText"></span>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn" id="fedPrev">← Back</button>
+            <button class="btn primary" id="fedNext">Next step →</button>
+            <span class="pill mute" id="fedCount"><span class="dot"></span>1 of 6</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- access & refresh -->
+    <div class="prose stack">
+      <h3>2.2.1 &nbsp;Two tokens, two jobs</h3>
+      <div class="hook">
+        <div class="tag">The hotel</div>
+        <p>You check in at reception and show your passport. They give you a key card. The card opens your room, works until Sunday, and nothing else.</p>
+        <p>If you drop that card in the street, someone has a key &mdash; but only to one room, and only until Sunday. Meanwhile your passport never left your pocket. That is the point of the arrangement.</p>
+      </div>
+      <p>Logins work the same way, with two different tokens:</p>
+      <div class="grid2">
+        <div class="minicard" style="border-color:var(--pay-ed)">
+          <span class="mt" style="color:var(--pay)">Access token &nbsp;· the key card</span>
+          <span class="mb">Short life &mdash; minutes. Sent with every request. Because it is signed, <b>the door can check it on its own</b>, without phoning reception. That is the speed.</span>
+        </div>
+        <div class="minicard" style="border-color:var(--sig-ed)">
+          <span class="mt" style="color:var(--sig)">Refresh token &nbsp;· the right to a new card</span>
+          <span class="mb">Long life &mdash; days or weeks. Used rarely, and only against reception. <b>Guard this one.</b> If it leaks, someone can keep making new key cards.</span>
+        </div>
+      </div>
+      <p>Watch the two of them working together. The clock below runs fast so you can see a day pass in a few seconds.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Watch · the key card runs out</span>
+          <span class="sub">Sped up. Each request is one page view.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="stack" style="gap:.5rem">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--ink-3)">
+              <span>Access token life</span>
+              <span class="pill" id="atPill" style="color:var(--ok);background:var(--ok-bg)"><span class="dot"></span>valid</span>
+            </div>
+            <div class="lifebar"><i id="atBar"></i></div>
+          </div>
+          <div class="statgrid">
+            <div><div class="sv" id="statReq">0</div><div class="sl">Requests served</div></div>
+            <div><div class="sv" id="statDoor">0</div><div class="sl">Checked at the door</div></div>
+            <div><div class="sv" id="statRec">0</div><div class="sl">Trips to reception</div></div>
+          </div>
+          <div class="btnrow">
+            <button class="btn primary" id="rtPlay">Start the day</button>
+            <button class="btn ghost" id="rtReset">Reset</button>
+            <span style="font-size:.82rem;color:var(--ink-3)" id="rtNote">Reception gets used almost never. That is the whole idea.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <h4>Where OAuth2 and OpenID Connect fit</h4>
+      <p>Two names you will keep bumping into. They are not competitors to JWT &mdash; they sit on top of it.</p>
+      <p><strong>OAuth2</strong> is the rulebook for the dance you just walked through. Oddly, it never says what a token should look like inside. A signed JWT happens to fit its needs perfectly, so most people use one.</p>
+      <p><strong>OpenID Connect</strong> fills in the parts OAuth2 left open, and it does say what the token looks like: a JWT. It adds one called the <em class="term">ID token</em>, whose only job is to tell the app who you are &mdash; your name, your picture, your email &mdash; so it can say "Hi Ana" without asking anyone.</p>
+      <p style="font-size:.9rem;color:var(--ink-3)">Refresh tokens usually are <em>not</em> JWTs, by the way. They always require a trip to the server anyway, so a plain random string does the job.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CH 3 ============================= -->
+<section class="chapter" id="ch3">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">3</span>
+        <span class="l">JSON Web Tokens in detail</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Opening it up</h2>
+      <p class="lede" style="margin-top:.7em">Now the slow look. What each piece contains, why it is written the way it is, and how to build one by hand.</p>
+    </div>
+
+    <!-- base64 -->
+    <div class="prose stack">
+      <h3>3.0 &nbsp;First, the thing that confuses everybody</h3>
+      <div class="hook">
+        <div class="tag">Base64 is not a secret code</div>
+        <p>You are on a bad phone line, spelling your name. <em>"S for sugar, W for water, A for apple…"</em></p>
+        <p>You are not hiding your name. Anyone listening understands you perfectly. You are just using sounds that survive a bad connection.</p>
+      </div>
+      <p>That is <strong>Base64</strong>. The internet is a bad phone line for certain characters &mdash; spaces, quote marks, curly brackets, accented letters. They get mangled inside web addresses and headers.</p>
+      <p>So Base64 rewrites anything at all using only 64 characters that always survive: <code>A–Z</code>, <code>a–z</code>, <code>0–9</code>, and two more. JWTs use a version called <em class="term">base64url</em>, which swaps those last two for <code>-</code> and <code>_</code> so the result is safe to paste into a link.</p>
+      <p>Anyone can undo it. That is the point &mdash; it is a transport wrapper, not a lock. Try it both ways:</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · base64url, both directions</span>
+          <span class="sub">Type in either box.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="b64grid">
+            <label class="fld">
+              <span class="lb">Ordinary text</span>
+              <textarea id="b64Plain" rows="3">{"alg":"HS256","typ":"JWT"}</textarea>
+            </label>
+            <div class="b64arrow"><span>encode →</span><span>← decode</span></div>
+            <label class="fld">
+              <span class="lb">base64url</span>
+              <textarea id="b64Enc" rows="3"></textarea>
+            </label>
+          </div>
+          <div>
+            <div class="lb" style="font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px">Three bytes in, four characters out</div>
+            <div class="chipline" id="b64Chips"></div>
+          </div>
+          <p style="font-size:.83rem;color:var(--ink-3);line-height:1.55">
+            Base64 works in blocks: it takes three bytes, treats them as 24 bits, and cuts them into four groups of six. Six bits has 64 possible values &mdash; hence the name. The output is always about a third longer than what went in.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- header -->
+    <div class="prose stack">
+      <h3>3.1 &nbsp;The header</h3>
+      <p>The smallest piece, and the least interesting &mdash; which is exactly why it gets skipped and then causes trouble. It is the label on the envelope. It says nothing about you; it tells the reader how to handle what is inside.</p>
+      <div class="claimlist" style="margin-block:.4em">
+        <button type="button"><span class="ck">alg</span><span class="cx"><b>The only one that is required.</b> Which sealing method was used. <code>HS256</code> means a shared secret. <code>none</code> means no seal at all &mdash; and you saw what happens when a server believes that.</span></button>
+        <button type="button"><span class="ck">typ</span><span class="cx">Just says <code>"JWT"</code>. Only useful if these tokens are mixed in with other similar things. In practice, almost never matters.</span></button>
+        <button type="button"><span class="ck">cty</span><span class="cx">Only appears when a token is wrapped inside another token. Rare enough that you can forget it exists until you meet one.</span></button>
+      </div>
+      <p>An unsealed header is as small as JSON gets:</p>
+    </div>
+
+    <div class="lab">
+      <div class="grid2">
+        <div class="panel"><div class="panel-head"><span class="k">Written out</span></div>
+          <div class="panel-body"><pre class="code" style="border:0;background:transparent;padding:0">{ <span class="key">"alg"</span>: <span class="str">"none"</span> }</pre></div>
+        </div>
+        <div class="panel"><div class="panel-head"><span class="k">Packed for travel</span></div>
+          <div class="panel-body"><pre class="code" style="border:0;background:transparent;padding:0;color:var(--hdr)">eyJhbGciOiJub25lIn0</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- payload / ticket -->
+    <div class="prose stack">
+      <h3>3.2 &nbsp;The payload &mdash; read it as a ticket</h3>
+      <p>This is where the meaning lives, and there is a shortcut for understanding it: <strong>a JWT payload is a ticket.</strong> Not "like" a ticket. The people who designed it were solving the same problem ticket printers solved a century ago, and they landed on the same fields.</p>
+      <p>You have held one of these. Hover or tap a line to see which is which.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="ticketgrid">
+        <div class="ticket">
+          <div class="ticket-main">
+            <div class="ticket-brand">Northgate Rail <span>Single</span></div>
+            <div class="trow" data-claim="iss"><span class="tk">Issued by</span><span class="tv">Northgate Rail Co.</span></div>
+            <div class="trow" data-claim="sub"><span class="tk">Passenger</span><span class="tv">A. Moreau · #402</span></div>
+            <div class="trow" data-claim="aud"><span class="tk">Valid on</span><span class="tv">Coastal Line only</span></div>
+            <div class="trow" data-claim="nbf"><span class="tk">Valid from</span><span class="tv">06 Sep, 06:00</span></div>
+            <div class="trow" data-claim="exp"><span class="tk">Valid until</span><span class="tv">06 Sep, 23:59</span></div>
+            <div class="trow" data-claim="iat"><span class="tk">Printed</span><span class="tv">05 Sep, 19:14</span></div>
+          </div>
+          <div class="ticket-stub">
+            <div class="trow" data-claim="jti" style="display:block;text-align:center">
+              <span class="tk" style="display:block;margin-bottom:4px">Serial</span>
+              <span class="tv" style="font-size:.7rem">7f3a<br>91c2</span>
+            </div>
+            <div class="stubcode">NG-COASTAL-2026</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><span class="k">The same ticket, as JSON</span></div>
+          <div class="panel-body">
+<pre class="code claimjson" style="border:0;background:transparent;padding:0">{
+<span class="cl" data-claim="iss">  <span class="key">"iss"</span>: <span class="str">"northgate-rail"</span>,</span>
+<span class="cl" data-claim="sub">  <span class="key">"sub"</span>: <span class="str">"402"</span>,</span>
+<span class="cl" data-claim="aud">  <span class="key">"aud"</span>: <span class="str">"coastal-line"</span>,</span>
+<span class="cl" data-claim="nbf">  <span class="key">"nbf"</span>: <span class="num">1789020000</span>,</span>
+<span class="cl" data-claim="exp">  <span class="key">"exp"</span>: <span class="num">1789084740</span>,</span>
+<span class="cl" data-claim="iat">  <span class="key">"iat"</span>: <span class="num">1788973240</span>,</span>
+<span class="cl" data-claim="jti">  <span class="key">"jti"</span>: <span class="str">"7f3a91c2"</span></span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="claimlist" id="claimList">
+        <button type="button" data-claim="iss"><span class="ck">iss</span><span class="cx"><b>Issuer &mdash; who made this.</b> The railway's name printed at the top. Nobody polices these names; you and the people reading your tokens simply agree on one.</span></button>
+        <button type="button" data-claim="sub"><span class="ck">sub</span><span class="cx"><b>Subject &mdash; who this is about.</b> The passenger. Usually a user ID. It has to be unique at least within your own system.</span></button>
+        <button type="button" data-claim="aud"><span class="ck">aud</span><span class="cx"><b>Audience &mdash; who should accept it.</b> Valid on the Coastal Line, not the Mountain Line. If a server does not find its own name here, it must throw the token out, even if the seal is perfect.</span></button>
+        <button type="button" data-claim="exp"><span class="ck">exp</span><span class="cx"><b>Expires &mdash; dead after this moment.</b> The single most important claim you can add. A stolen ticket for yesterday is worth nothing.</span></button>
+        <button type="button" data-claim="nbf"><span class="ck">nbf</span><span class="cx"><b>Not before &mdash; asleep until this moment.</b> A ticket for tomorrow's train, bought today. Try to use it now and the gate says no.</span></button>
+        <button type="button" data-claim="iat"><span class="ck">iat</span><span class="cx"><b>Issued at &mdash; when it was printed.</b> Useful for "this is older than we allow, log in again."</span></button>
+        <button type="button" data-claim="jti"><span class="ck">jti</span><span class="cx"><b>Token ID &mdash; the serial number.</b> Lets you say "this exact ticket has already been used" and refuse it a second time.</span></button>
+      </div>
+
+      <div class="prose stack">
+        <div class="callout">
+          <span class="h">Why the names are so short</span>
+          Not to look clever. This whole thing gets sent with <em>every single request</em>. Writing <code>exp</code> instead of <code>expiration_time</code> saves eleven characters &mdash; times a few hundred million requests a day, that is real bandwidth and real money. The three-letter names are a budget decision.
+        </div>
+        <p style="font-size:.9rem;color:var(--ink-3)">All the times are counted in seconds since 1 January 1970, which is how computers have kept time for decades. <code>1789084740</code> is a real date; it just does not look like one.</p>
+      </div>
+    </div>
+
+    <!-- public/private -->
+    <div class="prose stack">
+      <h3>3.2.2 &nbsp;Your own fields</h3>
+      <p>The seven above are the ones the standard defines. Everything else is yours to invent &mdash; and that is where two systems can quietly disagree.</p>
+      <p>Say you add a field called <code>role</code>. Somewhere else, another company also adds <code>role</code>, meaning something completely different. The day your two systems meet, one of them reads the other's token and confidently gets it wrong.</p>
+      <div class="grid2">
+        <div class="minicard">
+          <span class="mt">Private claim</span>
+          <span class="mb"><b>Just for you.</b> <code>role</code>, <code>plan</code>, <code>cart_id</code>. Fine when only your own code will ever read the token.</span>
+        </div>
+        <div class="minicard">
+          <span class="mt">Public claim</span>
+          <span class="mb"><b>Safe to share.</b> Either registered in the official list, or given a name nobody else could collide with &mdash; usually by putting your web address in front: <code>https://myapp.com/role</code>.</span>
+        </div>
+      </div>
+      <p style="font-size:.9rem;color:var(--ink-3)">One more small rule: never write the same field twice in one payload. Some readers keep the last one, some throw the whole token out. Neither is what you wanted.</p>
+    </div>
+
+    <!-- unsecured -->
+    <div class="prose stack">
+      <h3>3.3 &nbsp;Tokens with no seal at all</h3>
+      <p>You can leave the seal off. Set <code>alg</code> to <code>"none"</code>, write your payload, and stop. The result has only two pieces &mdash; but it still ends with a dot, because the third piece exists and is simply empty.</p>
+      <p>When is that reasonable? When nothing bad happens if the holder edits it. The handbook's example: an app remembering your display name and which page you were last on, so it can draw the screen before the real data arrives. If someone changes their own display name to <em>Batman</em>, they have gained nothing but a slightly odd screen.</p>
+      <p>In real life these are rare. If a decision depends on it, it needs a seal.</p>
+    </div>
+
+    <!-- build one -->
+    <div class="prose stack">
+      <h3>3.4 &nbsp;Build one by hand</h3>
+      <p>Five steps, and none of them are clever. Edit the JSON below and watch the token rebuild itself as you type.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Workshop · make a token</span>
+          <span class="sub">Real encoding, live. Broken JSON is fine &mdash; it will tell you.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid2">
+            <label class="fld">
+              <span class="lb">1 · Header</span>
+              <textarea id="mkHeader" rows="4">{"alg":"HS256","typ":"JWT"}</textarea>
+            </label>
+            <label class="fld">
+              <span class="lb">2 · Payload</span>
+              <textarea id="mkPayload" rows="4">{"sub":"402","name":"Ana Moreau","admin":false}</textarea>
+            </label>
+          </div>
+
+          <div class="stack" style="gap:.55rem">
+            <span class="lb" style="font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">3 · Each piece, packed with base64url</span>
+            <div class="kv">
+              <dt>header</dt><dd style="color:var(--hdr)" id="mkH">—</dd>
+              <dt>payload</dt><dd style="color:var(--pay)" id="mkP">—</dd>
+            </div>
+          </div>
+
+          <label class="fld">
+            <span class="lb">4 · The shared secret &mdash; only the server knows this</span>
+            <input type="text" id="mkSecret" value="a-string-nobody-else-knows">
+          </label>
+
+          <div class="stack" style="gap:.55rem">
+            <span class="lb" style="font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)">5 · Join with dots, seal the result</span>
+            <div class="tokenbox" style="box-shadow:none">
+              <p class="token" id="mkToken"></p>
+            </div>
+          </div>
+
+          <div id="mkErr" class="callout bad" hidden><span class="h">That JSON isn't valid yet</span><span id="mkErrText"></span></div>
+
+          <div class="btnrow">
+            <button class="btn" id="mkExp">Add an expiry one hour from now</button>
+            <button class="btn" id="mkCopy">Copy the token</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <h3>3.5 &nbsp;Reading one back</h3>
+      <p>Going the other way is even simpler, and you can do it in your head if you had a base64 table handy:</p>
+      <p style="color:var(--ink-2)">Find the first dot. Take everything before it, undo the base64 &mdash; that is the header. Take everything between the first and second dot, undo the base64 &mdash; that is the payload. Done.</p>
+      <div class="callout warn">
+        <span class="h">Reading is not checking</span>
+        Those steps needed no secret and no permission, which is worth sitting with for a moment. Anyone who gets hold of your token can read every field in it. Checking the seal is a completely separate act, it needs the secret, and only the server can do it.
+      </div>
+    </div>
+
+    <!-- bonus: signature -->
+    <div class="prose stack">
+      <div class="chapnum" style="margin-top:.5em">
+        <span class="n" style="font-size:1.6rem;color:var(--sig)">✦</span>
+        <span class="l">One step ahead · chapter 4 territory</span>
+        <span class="rule"></span>
+      </div>
+      <h3 style="margin-top:.2em">How the seal actually works</h3>
+      <p>Chapters 1 to 3 keep pointing at the signature without opening it. Since you have already used it three times on this page, here it is &mdash; the short, honest version.</p>
+      <div class="hook">
+        <div class="tag">Two friends and a secret word</div>
+        <p>You and a friend agree on a secret word. Nobody else knows it.</p>
+        <p>To send a message, you mix the message together with the secret word using a fixed recipe, and you get a jumble of characters. You send the message <em>and</em> the jumble.</p>
+        <p>Your friend does exactly the same mixing with the same secret word. If she gets the same jumble, the message arrived exactly as you wrote it. If a single letter changed on the way, her jumble comes out completely different &mdash; and she knows.</p>
+      </div>
+      <p>That is <code>HS256</code>. The recipe is called HMAC-SHA256, the "secret word" is a string on your server, and the jumble is the third piece of the token.</p>
+      <p>The exact thing that gets mixed is worth memorising, because it explains a lot:</p>
+      <pre class="code" style="margin-block:.3em">signature = HMAC_SHA256( base64url(header) + "." + base64url(payload), secret )</pre>
+      <p>The header and payload are <em>inside</em> the mixture. Change one character of either, and the seal no longer matches. That is why editing a token is pointless without the secret &mdash; and why the secret must never, ever reach the browser.</p>
+      <p>Below, this page really does the mixing, in your browser, with the real algorithm. Break something and watch it fail.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Workshop · sign it, then break it</span>
+          <span class="sub">Real HMAC-SHA256, computed here.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="grid2">
+            <label class="fld">
+              <span class="lb">The payload the server signed</span>
+              <textarea id="sgOrig" rows="5" readonly>{
+  "sub": "402",
+  "name": "Ana Moreau",
+  "admin": false
+}</textarea>
+            </label>
+            <label class="fld">
+              <span class="lb">The payload actually arriving &mdash; edit me</span>
+              <textarea id="sgNow" rows="5">{
+  "sub": "402",
+  "name": "Ana Moreau",
+  "admin": false
+}</textarea>
+            </label>
+          </div>
+
+          <label class="fld">
+            <span class="lb">Server's secret</span>
+            <input type="text" id="sgSecret" value="a-string-nobody-else-knows">
+          </label>
+
+          <div class="sigcompare">
+            <div class="sigline"><span class="sl">Seal that came with the token</span><span class="sv" id="sgExpected">—</span></div>
+            <div class="sigline"><span class="sl">Seal the server computes now</span><span class="sv" id="sgActual">—</span></div>
+          </div>
+
+          <div id="sgVerdict"></div>
+
+          <div class="btnrow">
+            <button class="btn danger" id="sgHack">Make myself an admin</button>
+            <button class="btn" id="sgFixName">Change the name only</button>
+            <button class="btn ghost" id="sgReset">Put it back</button>
+          </div>
+
+          <div class="callout">
+            <span class="h">Notice what you cannot do</span>
+            Edit anything at all &mdash; even a space &mdash; and the two seals stop matching. To make them match again you would need the secret, and the secret never leaves the server. This is the entire security model, and it fits in one sentence.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<hr class="perf">
+
+<section class="chapter" id="flow">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n" style="font-size:1.8rem">&#9670;</span>
+        <span class="l">Putting it together</span>
+        <span class="rule"></span>
+      </div>
+      <h2>What a careful server actually does</h2>
+      <p class="lede" style="margin-top:.7em">Every idea on this page &mdash; the seal, the clock, the audience, the three attacks &mdash; meets here, in the six checks a token has to survive before a single word of it is believed.</p>
+    </div>
+
+    <div class="prose stack">
+      <div class="hook">
+        <div class="tag">Six gates, not one</div>
+        <p>People imagine checking a token is one action: <em>is the signature good?</em></p>
+        <p>It is six, in order, and the signature is only the fourth. A token can be perfectly sealed and still be thrown out by the two gates <strong>after</strong> it &mdash; and it can be thrown out by the two gates <strong>before</strong> it without the seal ever being looked at.</p>
+        <p>Send a broken token through below and watch where it stops.</p>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="flowbox">
+        <div class="flowscroll">
+<svg class="flowsvg2" viewBox="0 0 820 664" role="img" aria-label="A flowchart: a token passes six checks in order — structure, algorithm, key, signature, clock, audience — and any one of them can reject it before the payload is ever trusted.">
+<defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><polygon points="0,1 9,5 0,9" fill="currentColor"></polygon></marker></defs>
+<g color="var(--rule-2)">
+<path id="fe0" class="fe" d="M180 52 L 180 80" marker-end="url(#fa)"></path>
+<path id="fe1" class="fe" d="M180 136 L 180 164" marker-end="url(#fa)"></path>
+<text id="fp1" class="fl" x="189" y="157" text-anchor="start">passes</text>
+<path id="fe2" class="fe" d="M180 220 L 180 248" marker-end="url(#fa)"></path>
+<text id="fp2" class="fl" x="189" y="241" text-anchor="start">passes</text>
+<path id="fe3" class="fe" d="M180 304 L 180 332" marker-end="url(#fa)"></path>
+<text id="fp3" class="fl" x="189" y="325" text-anchor="start">passes</text>
+<path id="fe4" class="fe" d="M180 388 L 180 416" marker-end="url(#fa)"></path>
+<text id="fp4" class="fl" x="189" y="409" text-anchor="start">passes</text>
+<path id="fe5" class="fe" d="M180 472 L 180 500" marker-end="url(#fa)"></path>
+<text id="fp5" class="fl" x="189" y="493" text-anchor="start">passes</text>
+<path id="fe6" class="fe" d="M180 556 L 180 588" marker-end="url(#fa)"></path>
+<text id="fp6" class="fl" x="189" y="577" text-anchor="start">all six passed</text>
+<path id="fx1" class="fe" d="M304 110 L 486 110" marker-end="url(#fa)"></path>
+<text id="fxl1" class="fl" x="397" y="103" text-anchor="middle">no</text>
+<path id="fx2" class="fe" d="M304 194 L 486 194" marker-end="url(#fa)"></path>
+<text id="fxl2" class="fl" x="397" y="187" text-anchor="middle">no</text>
+<path id="fx3" class="fe" d="M304 278 L 486 278" marker-end="url(#fa)"></path>
+<text id="fxl3" class="fl" x="397" y="271" text-anchor="middle">no</text>
+<path id="fx4" class="fe" d="M304 362 L 486 362" marker-end="url(#fa)"></path>
+<text id="fxl4" class="fl" x="397" y="355" text-anchor="middle">no</text>
+<path id="fx5" class="fe" d="M304 446 L 486 446" marker-end="url(#fa)"></path>
+<text id="fxl5" class="fl" x="397" y="439" text-anchor="middle">no</text>
+<path id="fx6" class="fe" d="M304 530 L 486 530" marker-end="url(#fa)"></path>
+<text id="fxl6" class="fl" x="397" y="523" text-anchor="middle">no</text>
+</g>
+<g id="fnStart" class="fn"><rect x="56" y="8" width="248" height="44" rx="7"></rect><text x="180" y="27" text-anchor="middle">A token arrives</text><text class="sub" x="180" y="42" text-anchor="middle">FROM A BROWSER YOU DO NOT CONTROL</text></g>
+<g id="fng1" class="fn"><rect x="56" y="84" width="248" height="52" rx="7"></rect><text x="180" y="106" text-anchor="middle">Split it on the dots</text><text class="sub" x="180" y="122" text-anchor="middle">TWO DOTS &#183; THREE PARTS</text></g>
+<g id="frg1" class="fn"><rect x="490" y="89" width="310" height="42" rx="6"></rect><text x="504" y="107" text-anchor="start" font-size="11.5">Malformed &#8212; not a token at all</text><text class="sub" x="504" y="122" text-anchor="start">A truncated string, four dots, or none</text></g>
+<g id="fng2" class="fn"><rect x="56" y="168" width="248" height="52" rx="7"></rect><text x="180" y="190" text-anchor="middle">Is this algorithm on <tspan font-style="italic">my</tspan> list?</text><text class="sub" x="180" y="206" text-anchor="middle">ALG &#8212; MY LIST, NOT THE TOKEN'S</text></g>
+<g id="frg2" class="fn"><rect x="490" y="173" width="310" height="42" rx="6"></rect><text x="504" y="191" text-anchor="start" font-size="11.5">Algorithm refused</text><text class="sub" x="504" y="206" text-anchor="start">alg:none, or RS256 swapped for HS256</text></g>
+<g id="fng3" class="fn"><rect x="56" y="252" width="248" height="52" rx="7"></rect><text x="180" y="274" text-anchor="middle">Do I actually hold this key?</text><text class="sub" x="180" y="290" text-anchor="middle">KID &#8594; MY KEY SET</text></g>
+<g id="frg3" class="fn"><rect x="490" y="257" width="310" height="42" rx="6"></rect><text x="504" y="275" text-anchor="start" font-size="11.5">Nothing to check it against</text><text class="sub" x="504" y="290" text-anchor="start">Unknown kid, or a key retired too early</text></g>
+<g id="fng4" class="fn"><rect x="56" y="336" width="248" height="52" rx="7"></rect><text x="180" y="358" text-anchor="middle">Does the signature match?</text><text class="sub" x="180" y="374" text-anchor="middle">RECOMPUTE AND COMPARE</text></g>
+<g id="frg4" class="fn"><rect x="490" y="341" width="310" height="42" rx="6"></rect><text x="504" y="359" text-anchor="start" font-size="11.5">Tampered, or signed by someone else</text><text class="sub" x="504" y="374" text-anchor="start">One edited character is enough</text></g>
+<g id="fng5" class="fn"><rect x="56" y="420" width="248" height="52" rx="7"></rect><text x="180" y="442" text-anchor="middle">Is it awake, and still alive?</text><text class="sub" x="180" y="458" text-anchor="middle">EXP &#183; NBF &#183; CLOCK SKEW</text></g>
+<g id="frg5" class="fn"><rect x="490" y="425" width="310" height="42" rx="6"></rect><text x="504" y="443" text-anchor="start" font-size="11.5">Expired, or not valid yet</text><text class="sub" x="504" y="458" text-anchor="start">A flawless seal on yesterday's ticket</text></g>
+<g id="fng6" class="fn"><rect x="56" y="504" width="248" height="52" rx="7"></rect><text x="180" y="526" text-anchor="middle">Is it addressed to me?</text><text class="sub" x="180" y="542" text-anchor="middle">ISS &#183; AUD &#8212; EXACT MATCH</text></g>
+<g id="frg6" class="fn"><rect x="490" y="509" width="310" height="42" rx="6"></rect><text x="504" y="527" text-anchor="start" font-size="11.5">Genuine, but somebody else's</text><text class="sub" x="504" y="542" text-anchor="start">Right signature, wrong door</text></g>
+<g id="fnAccept" class="fn"><rect x="56" y="592" width="248" height="48" rx="7"></rect><text x="180" y="613" text-anchor="middle">Now trust the payload</text><text class="sub" x="180" y="629" text-anchor="middle">AND NOT ONE STEP BEFORE</text></g>
+<g id="fchip" class="chip"><circle r="12"></circle><text y="3.5">JWT</text></g>
+</svg>
+        </div>
+
+        <div class="legend">
+          <span><i class="g"></i>being checked</span>
+          <span><i class="k"></i>passed</span>
+          <span><i class="r"></i>rejected here</span>
+          <span><i class="n"></i>not reached</span>
+        </div>
+
+        <div class="flowbar">
+          <button class="btn primary" data-flow="good">Send a good token</button>
+          <button class="btn danger" data-flow="garbled">Garbled string</button>
+          <button class="btn danger" data-flow="algnone">alg: none</button>
+          <button class="btn danger" data-flow="kid">Unknown key</button>
+          <button class="btn danger" data-flow="tampered">Edited payload</button>
+          <button class="btn danger" data-flow="expired">Expired</button>
+          <button class="btn danger" data-flow="aud">For another service</button>
+        </div>
+
+        <div class="flowlog">
+          <span class="fi">&#183;</span>
+          <span class="ft">Pick a token above. It will travel down the six gates and either come out the bottom, or be pushed out to the right at the first gate it fails.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <div class="grid2">
+        <div class="minicard" style="border-color:var(--warn)">
+          <span class="mt" style="color:var(--warn)">The two before the signature</span>
+          <span class="mb">Gates 2 and 3 are the ones people skip, and they are where <b>alg:none</b> and the public-key-as-secret trick get in. Both are decided by <b>your</b> configuration, not by anything in the token.</span>
+        </div>
+        <div class="minicard" style="border-color:var(--warn)">
+          <span class="mt" style="color:var(--warn)">The two after it</span>
+          <span class="mb">Gates 5 and 6 catch tokens that are <b>completely genuine</b> &mdash; just old, or meant for somebody else. No amount of cryptography helps here; only checking the claims does.</span>
+        </div>
+      </div>
+      <div class="callout">
+        <span class="h">Read the order out loud once</span>
+        Structure, algorithm, key, signature, clock, audience. If your validation code does not have all six, the missing one is where you will be attacked &mdash; and the two most often missing are the last two, because they feel like paperwork rather than security.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<script>
+(function(){
+  "use strict";
+  var box = document.querySelector("#flow .flowbox");
+  if (!box || !window.FlowKit) return;
+  var FK = window.FlowKit;
+  var svg = box.querySelector("svg");
+  var chip = svg.querySelector("#fchip");
+  var GATES = ["g1","g2","g3","g4","g5","g6"];
+
+  var STORY = {
+    good: { fail: 0,
+      steps: ["Structure is fine &mdash; two dots, three parts.",
+              "Header says <code>HS256</code>. That is on the list this server was configured with.",
+              "The <code>kid</code> names a key we hold.",
+              "Signature recomputed and compared. Identical.",
+              "<code>exp</code> is in the future, <code>nbf</code> is in the past.",
+              "<code>iss</code> and <code>aud</code> match exactly."],
+      end: ["ok","&#10003;","<b>Accepted.</b> All six gates passed, so the payload can now be believed &mdash; and only now.<span class=\'why\'>Notice how much had to be true. The signature was one sixth of it.</span>"] },
+    garbled: { fail: 1,
+      why: "<b>Rejected at gate 1 &mdash; malformed.</b> The string does not split into three pieces on two dots, so there is nothing to read.<span class=\'why\'>Cheap to check, and it happens constantly: truncated cookies, a copy-paste that lost the tail, a header that never held a token.</span>" },
+    algnone: { fail: 2,
+      steps: ["Structure is fine &mdash; but look at what the header says."],
+      why: "<b>Rejected at gate 2 &mdash; algorithm refused.</b> The token asked to be checked with <code>alg: none</code>. This server was told to accept <code>HS256</code> and nothing else, so the request is simply declined.<span class=\'why\'>The signature was never examined. It did not need to be &mdash; the token was refused for what it asked for, not for what it carried. Same gate stops the RS256-as-HS256 trick.</span>" },
+    kid: { fail: 3,
+      steps: ["Structure is fine.","Algorithm is allowed."],
+      why: "<b>Rejected at gate 3 &mdash; no key.</b> The header names <code>kid: 2024-old</code>, and this server does not hold that key any more.<span class=\'why\'>Often not an attack at all: it is what a key rotation looks like from the server\'s side when the old key was dropped before the old tokens expired.</span>" },
+    tampered: { fail: 4,
+      steps: ["Structure is fine.","Algorithm is allowed.","Key found."],
+      why: "<b>Rejected at gate 4 &mdash; the seal does not match.</b> Someone changed <code>\"admin\": false</code> to <code>true</code> after the token was signed.<span class=\'why\'>The server cannot tell what was changed, and does not try. It throws the whole token away.</span>" },
+    expired: { fail: 5,
+      steps: ["Structure is fine.","Algorithm is allowed.","Key found.","<b>Signature is perfect.</b> Genuinely issued by us."],
+      why: "<b>Rejected at gate 5 &mdash; expired.</b> <code>exp</code> passed forty minutes ago.<span class=\'why\'>This is the important one to sit with: nothing is wrong with this token. It is real, it is ours, the maths checks out. It is simply too old, and only a claim check catches that.</span>" },
+    aud: { fail: 6,
+      steps: ["Structure is fine.","Algorithm is allowed.","Key found.","<b>Signature is perfect.</b>","Clock is fine &mdash; issued four minutes ago."],
+      why: "<b>Rejected at gate 6 &mdash; not for us.</b> <code>aud</code> says <code>billing-api</code>. We are <code>user-api</code>.<span class=\'why\'>A real token, still valid, signed with a key we share &mdash; sent to the wrong door. This is the substitution attack, and an exact-match check on <code>aud</code> is the entire defence. \"Contains\" is not a check.</span>" }
+  };
+
+  var running = false;
+  async function run(key){
+    if (running) return;
+    running = true;
+    var s = STORY[key];
+    FK.clearAll(box);
+    svg.querySelectorAll(".fn").forEach(function(n){ n.classList.add("muted"); });
+
+    var start = svg.querySelector("#fnStart");
+    start.classList.remove("muted"); start.classList.add("on");
+    chip.classList.add("show");
+    FK.log(box, "", "&#8595;", "A token arrives from a browser you do not control. Nothing about it is trusted yet.");
+    await FK.sleep(520);
+
+    var stop = s.fail === 0 ? GATES.length : s.fail;
+    for (var i = 0; i < stop; i++){
+      var edge = svg.querySelector("#fe" + i);
+      var lab = svg.querySelector("#fp" + i);
+      if (edge) edge.classList.add("lit");
+      if (lab) lab.classList.add("lit");
+      await FK.travel(edge, chip, 520);
+      if (edge) { edge.classList.remove("lit"); edge.classList.add("done"); }
+      if (lab) { lab.classList.remove("lit"); lab.classList.add("done"); }
+
+      var gate = svg.querySelector("#fn" + GATES[i]);
+      gate.classList.remove("muted"); gate.classList.add("on");
+      var failing = (s.fail === i + 1);
+      FK.log(box, failing ? "bad" : "", String(i+1),
+             failing ? "Checking gate " + (i+1) + "&hellip;" : (s.steps && s.steps[i] ? s.steps[i] : "Gate " + (i+1) + " passed."));
+      await FK.sleep(560);
+      if (!failing){ gate.classList.remove("on"); gate.classList.add("pass"); }
+    }
+
+    if (s.fail === 0){
+      var lastEdge = svg.querySelector("#fe6"), lastLab = svg.querySelector("#fp6");
+      lastEdge.classList.add("lit"); lastLab.classList.add("lit");
+      await FK.travel(lastEdge, chip, 520);
+      lastEdge.classList.remove("lit"); lastEdge.classList.add("done");
+      lastLab.classList.remove("lit"); lastLab.classList.add("done");
+      var acc = svg.querySelector("#fnAccept");
+      acc.classList.remove("muted"); acc.classList.add("pass");
+      chip.classList.add("ok");
+      FK.log(box, s.end[0], s.end[1], s.end[2]);
+    } else {
+      var g = svg.querySelector("#fn" + GATES[s.fail-1]);
+      g.classList.remove("on"); g.classList.add("bad");
+      var ex = svg.querySelector("#fx" + s.fail), exl = svg.querySelector("#fxl" + s.fail);
+      ex.classList.add("dead"); exl.classList.add("dead");
+      chip.classList.add("bad");
+      await FK.travel(ex, chip, 560);
+      var rej = svg.querySelector("#fr" + GATES[s.fail-1]);
+      rej.classList.remove("muted"); rej.classList.add("bad");
+      FK.log(box, "bad", "&#10007;", s.why);
+    }
+    running = false;
+  }
+
+  box.querySelectorAll("[data-flow]").forEach(function(b){
+    b.addEventListener("click", function(){ run(b.dataset.flow); });
+  });
+})();
+</script>
+
+<hr class="perf">
+
+<!-- ============================= QUIZ ============================= -->
+<section class="chapter" id="quiz">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">✓</span>
+        <span class="l">Check yourself</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Six questions</h2>
+      <p class="lede" style="margin-top:.6em">No score, no pressure. Every answer explains itself.</p>
+    </div>
+
+    <div class="lab">
+      <div class="quiz" id="quizBox"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= FOOTER ============================= -->
+<section class="chapter" style="padding-block:0 clamp(40px,6vw,72px)">
+  <div class="wrap lab">
+    <div class="panel" style="box-shadow:var(--shadow-lift)">
+      <div class="panel-head"><span class="k">Keep going</span><span class="sub">Handbook chapters 4 and 5</span></div>
+      <div class="panel-body stack">
+        <h3 style="font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);font-weight:700">The Seal and the Envelope</h3>
+        <p style="max-width:62ch;color:var(--ink-2)">This page left two questions open. <strong>How does the seal actually stop a forger</strong> &mdash; the difference between a rubber stamp everyone can copy and a signature only you can write? And <strong>what do you do when the message itself must stay private</strong>, because a signature never hid anything?</p>
+        <p style="max-width:62ch;color:var(--ink-2)">Part two answers both, with real key pairs and real encryption running in your browser.</p>
+        <div class="btnrow"><a class="btn primary" href="part-2.html" style="text-decoration:none">Read part two &nbsp;&rarr;</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="wrap prose stack">
+    <div class="eyebrow">Colophon</div>
+    <p class="byline">Recreated by <strong>Swaraj Bangar</strong><span class="hb" role="img" aria-label="love">❤️</span></p>
+    <p class="srcnote">
+      Everything here follows chapters 1&ndash;3 of <strong>The JWT Handbook</strong> (v0.14.2) by Sebastián E. Peyrott, published by Auth0 &mdash; the source of the structure, the examples, and the shopping-basket token. The wristbands, coat checks and railway tickets are this page's own, added to make the ideas land faster.
+    </p>
+    <p class="srcnote">
+      The signing on this page is real: it uses your browser's built-in Web Crypto to compute HMAC-SHA256. Nothing you type is sent anywhere. Nothing here is meant for production &mdash; real systems need proper libraries, proper key handling and proper testing.
+    </p>
+    <p class="srcnote" style="color:var(--ink-3)">
+      Set in Bodoni Moda, Public&nbsp;Sans and IBM Plex Mono. &nbsp;·&nbsp; <a href="index.html" style="color:var(--pay)">All three parts</a> &nbsp;·&nbsp; <a href="part-2.html" style="color:var(--pay)">Part two</a> &nbsp;·&nbsp; <a href="part-3.html" style="color:var(--pay)">Part three</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- base64url helpers ---------------- */
+var TE = new TextEncoder();
+var TD = new TextDecoder();
+
+function bytesToB64url(bytes){
+  var s = "";
+  for (var i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
+}
+function b64url(str){ return bytesToB64url(TE.encode(str)); }
+function unb64url(s){
+  var t = s.replace(/-/g,"+").replace(/_/g,"/");
+  while (t.length % 4) t += "=";
+  var bin = atob(t);
+  var bytes = new Uint8Array(bin.length);
+  for (var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return TD.decode(bytes);
+}
+async function hmac256(msg, secret){
+  var key = await crypto.subtle.importKey("raw", TE.encode(secret),
+            {name:"HMAC", hash:"SHA-256"}, false, ["sign"]);
+  var sig = await crypto.subtle.sign("HMAC", key, TE.encode(msg));
+  return bytesToB64url(new Uint8Array(sig));
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                  .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function paintToken(el, h, p, s){
+  var html = '<b class="t-h">'+esc(h)+'</b><b class="t-dot">.</b><b class="t-p">'+esc(p)+'</b>';
+  html += '<b class="t-dot">.</b>' + (s ? '<b class="t-s">'+esc(s)+'</b>' : '');
+  el.innerHTML = html;
+}
+function prettyJson(obj){
+  var s = JSON.stringify(obj, null, 2);
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/"([^"]+)":/g,'<span class="key">"$1"</span>:')
+    .replace(/:\s*"([^"]*)"/g,': <span class="str">"$1"</span>')
+    .replace(/:\s*(-?\d+(\.\d+)?)/g,': <span class="num">$1</span>')
+    .replace(/:\s*(true|false|null)/g,': <span class="num">$1</span>');
+}
+
+/* ---------------- guilloche hero engraving ---------------- */
+(function guilloche(){
+  var cv = document.getElementById("guilloche");
+  if (!cv) return;
+  function draw(){
+    var host = cv.parentElement;
+    var w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = w * dpr; cv.height = h * dpr;
+    var g = cv.getContext("2d");
+    g.scale(dpr, dpr);
+    g.clearRect(0,0,w,h);
+    var col = getComputedStyle(document.body).getPropertyValue("--engrave").trim() || "rgba(0,0,0,.1)";
+    g.strokeStyle = col; g.lineWidth = 0.6;
+
+    var cx = w * 0.92, cy = h * 0.46;
+    var scale = Math.min(w, h) * 0.62;
+    var R = scale, r = scale * 0.1379, d = scale * 0.118;
+
+    for (var pass = 0; pass < 16; pass++){
+      var phase = pass * 0.0393;
+      var rr = r * (1 + pass * 0.0042);
+      g.beginPath();
+      for (var i = 0; i <= 720; i++){
+        var t = (i/720) * Math.PI * 2 * 8 + phase;
+        var k = (R - rr) / rr;
+        var x = cx + (R - rr) * Math.cos(t) + d * Math.cos(k * t);
+        var y = cy + (R - rr) * Math.sin(t) - d * Math.sin(k * t);
+        if (i === 0) g.moveTo(x,y); else g.lineTo(x,y);
+      }
+      g.stroke();
+    }
+  }
+  draw();
+  var t = null;
+  window.addEventListener("resize", function(){ clearTimeout(t); t = setTimeout(draw, 180); });
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw, 60); });
+  }
+})();
+
+/* ---------------- hero token + tabs ---------------- */
+var HERO = {
+  h: {alg:"HS256", typ:"JWT"},
+  p: {sub:"402", name:"Ana Moreau", admin:true, exp:1789084740}
+};
+(function hero(){
+  var el = document.getElementById("heroToken");
+  var out = document.getElementById("heroDecoded");
+  if (!el) return;
+  var hb = b64url(JSON.stringify(HERO.h));
+  var pb = b64url(JSON.stringify(HERO.p));
+  var sb = "TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
+  paintToken(el, hb, pb, sb);
+
+  var views = {
+    h: function(){ return prettyJson(HERO.h) + '\n<span class="cm">// "sealed with HS256, and yes this is a JWT"</span>'; },
+    p: function(){ return prettyJson(HERO.p) + '\n<span class="cm">// user 402, an admin, until a date in 2026</span>'; },
+    s: function(){ return '<span class="cm">// not JSON — a fingerprint of the two pieces above,\n// mixed with a secret only the server knows.</span>\n\n' + esc(sb); }
+  };
+  var tabs = document.querySelectorAll(".parts button");
+  function select(which){
+    tabs.forEach(function(b){ b.setAttribute("aria-selected", b.dataset.p === which ? "true":"false"); });
+    out.innerHTML = views[which]();
+    el.querySelectorAll("b").forEach(function(b){
+      if (b.classList.contains("t-dot")) return;
+      var cls = b.classList.contains("t-h") ? "h" : b.classList.contains("t-p") ? "p" : "s";
+      b.classList.toggle("dim", cls !== which);
+    });
+  }
+  tabs.forEach(function(b){ b.addEventListener("click", function(){ select(b.dataset.p); }); });
+  el.addEventListener("click", function(e){
+    var b = e.target.closest("b"); if (!b || b.classList.contains("t-dot")) return;
+    select(b.classList.contains("t-h") ? "h" : b.classList.contains("t-p") ? "p" : "s");
+  });
+  select("h");
+
+  var an = document.getElementById("anatomyToken");
+  if (an) paintToken(an, hb, pb, sb);
+})();
+
+/* ---------------- coat check simulator ---------------- */
+(function coats(){
+  var rackA = document.getElementById("rackA");
+  if (!rackA) return;
+  var mA = document.getElementById("mA"), lA = document.getElementById("lA");
+  var mB = document.getElementById("mB"), lB = document.getElementById("lB");
+  var noteA = document.getElementById("noteA"), noteB = document.getElementById("noteB");
+  var users = 0, servers = 1;
+
+  function render(){
+    var shown = Math.min(users, 260);
+    var frag = "";
+    for (var i=0;i<shown;i++) frag += '<span class="coat"></span>';
+    rackA.innerHTML = frag;
+    mA.textContent = users.toLocaleString();
+    mB.textContent = "0";
+    lA.textContent = users ? "1" : "0";
+    if (servers > 1){
+      noteA.innerHTML = '<span style="color:var(--bad)">Server 2 has an empty rack.</span> It has never seen these people. They get logged out the moment they land on it — unless you build a shared rack, which is another thing to run and another thing to break.';
+      noteB.innerHTML = '<span style="color:var(--ok)">Server 2 works immediately.</span> It needs no memory of anyone. It just checks the seal on whatever arrives.';
+    } else if (users > 0){
+      noteA.innerHTML = 'Every request means going to the rack and finding the right coat. Fine at this size. Less fine at a million.';
+      noteB.innerHTML = 'Nothing to find. The facts arrive with the request; the server checks the seal and answers.';
+    } else {
+      noteA.innerHTML = "";
+      noteB.innerHTML = "";
+    }
+  }
+  document.getElementById("simAdd").addEventListener("click", function(){ users += 250; render(); });
+  document.getElementById("simRestart").addEventListener("click", function(){
+    users = 0; render();
+    noteA.innerHTML = '<span style="color:var(--bad)">The rack is gone.</span> Everyone who was logged in is now logged out, mid-checkout, all at once.';
+    noteB.innerHTML = '<span style="color:var(--ok)">Nobody noticed.</span> There was nothing on the server to lose.';
+  });
+  document.getElementById("simSecond").addEventListener("click", function(){ servers = 2; render(); });
+  document.getElementById("simReset").addEventListener("click", function(){ users = 0; servers = 1; render(); });
+  render();
+})();
+
+/* ---------------- signature stripping lab ---------------- */
+(function strip(){
+  var tokEl = document.getElementById("stripToken");
+  if (!tokEl) return;
+  var hEl = document.getElementById("stripHeader"), pEl = document.getElementById("stripPayload");
+  var pill = document.getElementById("stripPill"), label = document.getElementById("stripLabel");
+  var verdict = document.getElementById("stripVerdict"), badText = document.getElementById("stripBadText");
+  var bStrip = document.getElementById("stripGo"), bAlg = document.getElementById("stripAlg"), bAdm = document.getElementById("stripAdmin");
+
+  var SIG = "932ZxtZzy1qhLXs932hd04J58Ihbg5_g_rIrj-Z16Js";
+  var st;
+  function reset(){
+    st = { h:{alg:"HS256", typ:"JWT"}, p:{sub:"402", name:"Ana Moreau", admin:false}, sig:SIG, stage:0 };
+    bStrip.disabled = false; bAlg.disabled = true; bAdm.disabled = true;
+    verdict.hidden = true;
+    render();
+  }
+  function render(){
+    paintToken(tokEl, b64url(JSON.stringify(st.h)), b64url(JSON.stringify(st.p)), st.sig);
+    hEl.innerHTML = prettyJson(st.h);
+    pEl.innerHTML = prettyJson(st.p);
+    if (st.stage === 0){
+      pill.className = "pill ok"; pill.innerHTML = '<span class="dot"></span>Untouched';
+      label.textContent = "The honest token";
+    } else if (st.stage === 1){
+      pill.className = "pill warn"; pill.innerHTML = '<span class="dot"></span>Seal removed';
+      label.textContent = "Signature cut off";
+    } else if (st.stage === 2){
+      pill.className = "pill warn"; pill.innerHTML = '<span class="dot"></span>Label rewritten';
+      label.textContent = 'Now claiming "no seal needed"';
+    } else {
+      pill.className = "pill bad"; pill.innerHTML = '<span class="dot"></span>Forged';
+      label.textContent = "Forged token";
+    }
+  }
+  bStrip.addEventListener("click", function(){
+    st.sig = ""; st.stage = 1; bStrip.disabled = true; bAlg.disabled = false;
+    render();
+  });
+  bAlg.addEventListener("click", function(){
+    st.h = {alg:"none", typ:"JWT"}; st.stage = 2; bAlg.disabled = true; bAdm.disabled = false;
+    render();
+  });
+  bAdm.addEventListener("click", function(){
+    st.p = {sub:"402", name:"Ana Moreau", admin:true}; st.stage = 3; bAdm.disabled = true;
+    badText.innerHTML = 'Reads the label, sees <code>"alg": "none"</code>, decides no seal is needed, and hands over the admin panel. The attacker never needed the secret — they just asked politely.';
+    verdict.hidden = false;
+    render();
+  });
+  document.getElementById("stripReset").addEventListener("click", reset);
+  reset();
+})();
+
+/* ---------------- CSRF lab ---------------- */
+(function csrf(){
+  var log = document.getElementById("csrfLog");
+  if (!log) return;
+  var fix = document.getElementById("csrfFix");
+
+  function line(text, tone){
+    var color = tone === "bad" ? "var(--bad)" : tone === "ok" ? "var(--ok)" : "var(--ink-2)";
+    return '<div style="display:grid;grid-template-columns:14px 1fr;gap:8px;color:'+color+'">'+
+           '<span style="color:var(--ink-3);font-family:var(--mono);font-size:.7rem">›</span><span>'+text+'</span></div>';
+  }
+  function run(){
+    var out = "";
+    out += line("Browser sees an image tag. Goes to fetch it.");
+    if (fix.checked){
+      out += line("The token lives in a header, not a cookie. There is nothing for the browser to attach automatically.");
+      out += line("Request arrives with no proof of who you are.", "ok");
+      out += line("Bank replies: <b>401, who are you?</b> No money moves.", "ok");
+    } else {
+      out += line("The token lives in a cookie for bank.example. The browser attaches it, helpfully, without asking.");
+      out += line("Request arrives looking completely normal and completely signed in.", "bad");
+      out += line("Bank replies: <b>200, transfer complete.</b> You find out next month.", "bad");
+    }
+    log.innerHTML = out;
+  }
+  document.getElementById("csrfGo").addEventListener("click", run);
+  document.getElementById("csrfReset").addEventListener("click", function(){ log.innerHTML = ""; });
+  fix.addEventListener("change", function(){ if (log.innerHTML) run(); });
+})();
+
+/* ---------------- XSS lab ---------------- */
+(function xss(){
+  var input = document.getElementById("xssIn");
+  if (!input) return;
+  var bad = document.getElementById("xssBad"), ok = document.getElementById("xssOk");
+  var note = document.getElementById("xssBadNote");
+  function render(){
+    var v = input.value;
+    var looksLikeScript = /<\s*script|onerror\s*=|onload\s*=|javascript:/i.test(v);
+    bad.textContent = looksLikeScript ? "" : v;
+    ok.textContent = v;
+    if (looksLikeScript){
+      bad.innerHTML = '<span style="color:var(--bad)">[ nothing visible — the browser treated it as instructions and ran them ]</span>';
+      note.innerHTML = 'Every visitor who loads this page just handed their token to a stranger. The token was <em>genuine</em>, so the seal did not help at all.';
+    } else {
+      note.innerHTML = 'Harmless this time. But the site never checked — it only got lucky about what was typed.';
+    }
+  }
+  input.addEventListener("input", render);
+  render();
+})();
+
+/* ---------------- federated flow ---------------- */
+(function fed(){
+  var next = document.getElementById("fedNext");
+  if (!next) return;
+  var prev = document.getElementById("fedPrev");
+  var numEl = document.getElementById("fedNum"), textEl = document.getElementById("fedText");
+  var countEl = document.getElementById("fedCount");
+
+  var steps = [
+    { e:"e1", l:"l1", n:["n1","n2"], t:"You tap something in the app that you are not allowed to see yet. The app looks at your request, finds no proof of who you are, and does not simply say no." },
+    { e:"e2", l:"l2", n:["n2","n3"], t:"Instead it sends you somewhere else. Your browser is redirected to the login service — the one place that is allowed to decide who you are." },
+    { e:"e3", l:"l3", n:["n3","n4"], t:"The login service does not keep your password either. It offers you the sign-in options it trusts, you pick Google, and off you go again." },
+    { e:"e4", l:"l4", n:["n4","n3"], t:"You type your Google password on a Google page — nowhere else. Google confirms it is really you and sends you back with a note saying so." },
+    { e:"e5", l:"l5", n:["n3","n1"], t:"The login service takes Google's word for it and writes you a token: a small sealed statement saying who you are and what you may do. It comes back to your browser." },
+    { e:"e6", l:"l6", n:["n2","n5"], t:"You ask the app again, this time carrying the token. The app checks the seal by itself — no phone call to anyone — and finally shows you your data. Total time: about two seconds." }
+  ];
+  var i = 0;
+  function show(){
+    document.querySelectorAll(".flowsvg .edge").forEach(function(x){ x.classList.remove("live"); });
+    document.querySelectorAll(".flowsvg .elabel").forEach(function(x){ x.classList.remove("live"); });
+    document.querySelectorAll(".flowsvg .node").forEach(function(x){ x.classList.remove("live"); });
+    var s = steps[i];
+    var e = document.getElementById(s.e); if (e) e.classList.add("live");
+    var l = document.getElementById(s.l); if (l) l.classList.add("live");
+    s.n.forEach(function(id){
+      var g = document.getElementById(id);
+      if (g){ var r = g.querySelector("rect"); if (r) r.classList.add("live"); }
+    });
+    var chip = document.getElementById("fedchip");
+    if (chip && window.FlowKit){
+      chip.classList.add("show");
+      chip.classList.toggle("ok", i === steps.length - 1);
+      window.FlowKit.travel(e, chip, 700);
+    }
+    numEl.textContent = String(i+1);
+    textEl.textContent = s.t;
+    countEl.innerHTML = '<span class="dot"></span>' + (i+1) + ' of 6';
+    prev.disabled = (i === 0);
+    next.textContent = (i === steps.length-1) ? "Start again" : "Next step →";
+  }
+  next.addEventListener("click", function(){ i = (i+1) % steps.length; show(); });
+  prev.addEventListener("click", function(){ if (i>0){ i--; show(); } });
+  show();
+})();
+
+/* ---------------- access / refresh timeline ---------------- */
+(function tokens(){
+  var play = document.getElementById("rtPlay");
+  if (!play) return;
+  var bar = document.getElementById("atBar"), pill = document.getElementById("atPill");
+  var sReq = document.getElementById("statReq"), sDoor = document.getElementById("statDoor"), sRec = document.getElementById("statRec");
+  var note = document.getElementById("rtNote");
+  var timer = null, life = 100, req = 0, rec = 0, running = false;
+
+  function paint(){
+    bar.style.width = Math.max(0, life) + "%";
+    bar.className = life > 35 ? "" : life > 0 ? "low" : "out";
+    if (life > 35){ pill.className = "pill ok"; pill.innerHTML = '<span class="dot"></span>valid'; }
+    else if (life > 0){ pill.className = "pill warn"; pill.innerHTML = '<span class="dot"></span>expiring'; }
+    else { pill.className = "pill bad"; pill.innerHTML = '<span class="dot"></span>expired'; }
+    sReq.textContent = req; sDoor.textContent = req; sRec.textContent = rec;
+  }
+  function tick(){
+    life -= 3.2; req += 2;
+    if (life <= 0){
+      life = 100; rec += 1;
+      note.innerHTML = '<span style="color:var(--pay)">Key card ran out → one trip to reception → new card.</span> Everything else was decided at the door.';
+    }
+    paint();
+  }
+  play.addEventListener("click", function(){
+    running = !running;
+    play.textContent = running ? "Pause" : "Continue the day";
+    if (running) timer = setInterval(tick, 120); else clearInterval(timer);
+  });
+  document.getElementById("rtReset").addEventListener("click", function(){
+    clearInterval(timer); running = false; play.textContent = "Start the day";
+    life = 100; req = 0; rec = 0;
+    note.textContent = "Reception gets used almost never. That is the whole idea.";
+    paint();
+  });
+  paint();
+})();
+
+/* ---------------- base64 playground ---------------- */
+(function b64play(){
+  var plain = document.getElementById("b64Plain");
+  if (!plain) return;
+  var encd = document.getElementById("b64Enc"), chips = document.getElementById("b64Chips");
+  var lock = false;
+
+  function drawChips(text){
+    var bytes = TE.encode(text).slice(0, 24);
+    var out = "";
+    for (var i=0;i<bytes.length;i+=3){
+      var group = Array.from(bytes.slice(i, i+3));
+      var chars = group.map(function(b){
+        var c = String.fromCharCode(b);
+        return (b >= 32 && b < 127) ? c : "·";
+      }).join("");
+      out += '<span class="chip">'+esc(chars)+'</span>';
+      var enc = bytesToB64url(new Uint8Array(group));
+      out += '<span class="chip b">'+esc(enc)+'</span>';
+      if (i+3 < bytes.length) out += '<span style="color:var(--ink-3);padding:2px 2px">·</span>';
+    }
+    if (TE.encode(text).length > 24) out += '<span class="chip" style="color:var(--ink-3)">…</span>';
+    chips.innerHTML = out || '<span class="chip" style="color:var(--ink-3)">nothing yet</span>';
+  }
+  function fromPlain(){
+    if (lock) return; lock = true;
+    try { encd.value = b64url(plain.value); } catch(e){ encd.value = ""; }
+    drawChips(plain.value);
+    lock = false;
+  }
+  function fromEnc(){
+    if (lock) return; lock = true;
+    try { plain.value = unb64url(encd.value.trim()); }
+    catch(e){ plain.value = "(that is not valid base64url yet)"; }
+    drawChips(plain.value);
+    lock = false;
+  }
+  plain.addEventListener("input", fromPlain);
+  encd.addEventListener("input", fromEnc);
+  fromPlain();
+})();
+
+/* ---------------- ticket / claims linking ---------------- */
+(function claims(){
+  var list = document.getElementById("claimList");
+  if (!list) return;
+  function set(name, on){
+    document.querySelectorAll('[data-claim="'+name+'"]').forEach(function(el){
+      el.classList.toggle("hi", on);
+    });
+  }
+  document.querySelectorAll("[data-claim]").forEach(function(el){
+    var n = el.getAttribute("data-claim");
+    el.addEventListener("mouseenter", function(){ set(n, true); });
+    el.addEventListener("mouseleave", function(){ set(n, false); });
+    el.addEventListener("focus", function(){ set(n, true); });
+    el.addEventListener("blur", function(){ set(n, false); });
+    if (el.tagName === "BUTTON") el.addEventListener("click", function(){ set(n, true); setTimeout(function(){ set(n,false); }, 1400); });
+  });
+})();
+
+/* ---------------- token workshop ---------------- */
+(function maker(){
+  var hIn = document.getElementById("mkHeader");
+  if (!hIn) return;
+  var pIn = document.getElementById("mkPayload"), sIn = document.getElementById("mkSecret");
+  var hOut = document.getElementById("mkH"), pOut = document.getElementById("mkP");
+  var tokOut = document.getElementById("mkToken");
+  var errBox = document.getElementById("mkErr"), errText = document.getElementById("mkErrText");
+
+  async function build(){
+    var hOk = true, pOk = true, msg = "";
+    try { JSON.parse(hIn.value); } catch(e){ hOk = false; msg = "Header: " + e.message; }
+    try { JSON.parse(pIn.value); } catch(e){ pOk = false; msg = msg || ("Payload: " + e.message); }
+    if (!hOk || !pOk){
+      errBox.hidden = false; errText.textContent = " " + msg;
+      return;
+    }
+    errBox.hidden = true;
+    var hb = b64url(JSON.stringify(JSON.parse(hIn.value)));
+    var pb = b64url(JSON.stringify(JSON.parse(pIn.value)));
+    hOut.textContent = hb; pOut.textContent = pb;
+    var sig = "";
+    try { sig = await hmac256(hb + "." + pb, sIn.value); } catch(e){ sig = "(cannot sign here)"; }
+    paintToken(tokOut, hb, pb, sig);
+  }
+  [hIn, pIn, sIn].forEach(function(el){ el.addEventListener("input", build); });
+
+  document.getElementById("mkExp").addEventListener("click", function(){
+    var o;
+    try { o = JSON.parse(pIn.value); } catch(e){ return; }
+    o.exp = Math.floor(Date.now()/1000) + 3600;
+    o.iat = Math.floor(Date.now()/1000);
+    pIn.value = JSON.stringify(o, null, 2);
+    build();
+  });
+  document.getElementById("mkCopy").addEventListener("click", function(){
+    var btn = this;
+    navigator.clipboard.writeText(tokOut.textContent).then(function(){
+      btn.textContent = "Copied";
+      setTimeout(function(){ btn.textContent = "Copy the token"; }, 1600);
+    }).catch(function(){ btn.textContent = "Select it by hand"; });
+  });
+  build();
+})();
+
+/* ---------------- signature workshop ---------------- */
+(function signer(){
+  var orig = document.getElementById("sgOrig");
+  if (!orig) return;
+  var now = document.getElementById("sgNow"), sec = document.getElementById("sgSecret");
+  var expEl = document.getElementById("sgExpected"), actEl = document.getElementById("sgActual");
+  var verdict = document.getElementById("sgVerdict");
+  var HEADER = b64url(JSON.stringify({alg:"HS256", typ:"JWT"}));
+  var CLEAN = orig.value;
+
+  function compact(txt){
+    try { return b64url(JSON.stringify(JSON.parse(txt))); }
+    catch(e){ return null; }
+  }
+  async function check(){
+    var ob = compact(orig.value), nb = compact(now.value);
+    if (ob === null || nb === null){
+      expEl.textContent = "—"; actEl.textContent = "—";
+      verdict.innerHTML = '<span class="pill warn"><span class="dot"></span>that payload is not valid JSON yet</span>';
+      return;
+    }
+    var expected, actual;
+    try {
+      expected = await hmac256(HEADER + "." + ob, sec.value);
+      actual   = await hmac256(HEADER + "." + nb, sec.value);
+    } catch(e){
+      verdict.innerHTML = '<span class="pill warn"><span class="dot"></span>this browser will not do the maths</span>';
+      return;
+    }
+    var same = expected === actual;
+    expEl.textContent = expected; expEl.className = "sv match";
+    actEl.textContent = actual;   actEl.className = "sv " + (same ? "match" : "miss");
+    if (same){
+      verdict.innerHTML = '<div class="vcard ok"><h4>The seals match</h4>'+
+        '<p>Nothing changed on the way. The server trusts every word of this payload and gets on with the request.</p>'+
+        '<span class="pill ok"><span class="dot"></span>accepted</span></div>';
+    } else {
+      verdict.innerHTML = '<div class="vcard bad"><h4>The seals do not match</h4>'+
+        '<p>Somebody edited the payload after it was sealed. The server has no idea what was changed, and does not care — it throws the whole token away and asks you to log in again.</p>'+
+        '<span class="pill bad"><span class="dot"></span>rejected</span></div>';
+    }
+  }
+  [now, sec].forEach(function(el){ el.addEventListener("input", check); });
+  document.getElementById("sgHack").addEventListener("click", function(){
+    now.value = CLEAN.replace('"admin": false', '"admin": true'); check();
+  });
+  document.getElementById("sgFixName").addEventListener("click", function(){
+    now.value = CLEAN.replace('"Ana Moreau"', '"Ana Moreauu"'); check();
+  });
+  document.getElementById("sgReset").addEventListener("click", function(){
+    now.value = CLEAN; check();
+  });
+  check();
+})();
+
+/* ---------------- quiz ---------------- */
+(function quiz(){
+  var box = document.getElementById("quizBox");
+  if (!box) return;
+  var QS = [
+    { q:"Someone sends you a JWT. Can you read what is inside it?",
+      a:["Yes — anyone can, in about a second","Only with the secret","Only if it has not expired"],
+      c:0,
+      why:"It is base64, not encryption. Base64 is a way of writing things down safely, not a way of hiding them. The seal stops people <em>changing</em> the token; it never stops them reading it." },
+    { q:"So what does the signature actually protect?",
+      a:["It hides the contents","It proves nothing was edited after it was made","It stops the token being copied"],
+      c:1,
+      why:"Wax seal on a postcard. Everyone reads the message; nobody can alter it without the seal breaking. Copying is a different problem — that is what short expiry times are for." },
+    { q:"A token arrives saying <code>\"alg\": \"none\"</code>. What should the server do?",
+      a:["Trust it — the token says so","Check it against the list of algorithms it was told to accept","Try every algorithm until one works"],
+      c:1,
+      why:"Never let the token decide how it gets checked. The server should be told in advance which algorithms are acceptable, and refuse everything else. That one rule kills the whole signature-stripping attack." },
+    { q:"Which claim decides whether a token is still alive?",
+      a:["<code>iat</code>","<code>exp</code>","<code>jti</code>"],
+      c:1,
+      why:"<code>exp</code> — the moment it dies. <code>iat</code> only records when it was made, and <code>jti</code> is its serial number. If you add one claim to a token, make it this one." },
+    { q:"A stolen token was taken by a script injected into the page. Does the signature help?",
+      a:["Yes, the signature blocks stolen tokens","No — the stolen token is completely genuine","Only if the token is in a cookie"],
+      c:1,
+      why:"This is the uncomfortable one. A stolen token is a real token, correctly sealed, and it works perfectly for whoever holds it. The answer is to stop the theft — clean user input, and keep the lifetime short." },
+    { q:"Why keep the access token short-lived and the refresh token long-lived?",
+      a:["To make logging in feel faster","So the thing used constantly is cheap to lose, and the valuable thing is used rarely","Because long tokens are too big to send"],
+      c:1,
+      why:"The key card goes everywhere and expires quickly, so losing it costs little. The card that makes new cards stays in one place and gets used almost never — which is exactly why it is worth guarding." }
+  ];
+  var html = "";
+  QS.forEach(function(item, qi){
+    html += '<div class="q" data-q="'+qi+'">';
+    html += '<div class="qq"><span class="qn">'+String(qi+1).padStart(2,"0")+'</span><span>'+item.q+'</span></div>';
+    html += '<div class="opts">';
+    item.a.forEach(function(opt, ai){
+      html += '<button class="opt" type="button" data-a="'+ai+'">'+opt+'</button>';
+    });
+    html += '</div>';
+    html += '<div class="qwhy" hidden></div>';
+    html += '</div>';
+  });
+  box.innerHTML = html;
+
+  box.addEventListener("click", function(e){
+    var btn = e.target.closest(".opt");
+    if (!btn || btn.disabled) return;
+    var wrapEl = btn.closest(".q");
+    var qi = +wrapEl.dataset.q;
+    var pick = +btn.dataset.a;
+    var item = QS[qi];
+    wrapEl.querySelectorAll(".opt").forEach(function(b){
+      b.disabled = true;
+      var ai = +b.dataset.a;
+      if (ai === item.c) b.classList.add("right");
+      else if (ai === pick) b.classList.add("wrong");
+    });
+    var why = wrapEl.querySelector(".qwhy");
+    why.innerHTML = (pick === item.c ? "<strong>Yes. </strong>" : "<strong>Not quite. </strong>") + item.why;
+    why.hidden = false;
+  });
+})();
+
+/* ---------------- nav progress + active section ---------------- */
+(function nav(){
+  var barEl = document.getElementById("progressbar");
+  var links = Array.prototype.slice.call(document.querySelectorAll("[data-nav]"));
+  var secs = links.map(function(a){ return document.getElementById(a.dataset.nav); }).filter(Boolean);
+
+  function onScroll(){
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - doc.clientHeight;
+    barEl.style.width = (max > 0 ? (doc.scrollTop / max) * 100 : 0) + "%";
+    var y = doc.scrollTop + 140, active = null;
+    secs.forEach(function(s){ if (s.offsetTop <= y) active = s.id; });
+    links.forEach(function(a){ a.classList.toggle("on", a.dataset.nav === active); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+})();
+
+})();
+</script>
+</body>
+</html>

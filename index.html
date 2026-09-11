@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JWT in Three Parts</title>
+  <meta name="description" content="An interactive reading of the JWT Handbook — all eight chapters in plain English, with real cryptography you can press on.">
+  <meta name="author" content="Swaraj Bangar">
+  <meta property="og:title" content="JWT in Three Parts">
+  <meta property="og:description" content="An interactive reading of the JWT Handbook — all eight chapters in plain English, with real cryptography you can press on.">
+  <meta property="og:type" content="article">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2756%27%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+<style>
+/* ============================================================
+   JWT, Piece by Piece — security-print / pass-office identity
+   ============================================================ */
+
+:root{
+  --paper:#F8FAF8;
+  --paper-2:#FFFFFF;
+  --paper-3:#EDF1EC;
+  --ink:#131B17;
+  --ink-2:#44514B;
+  --ink-3:#6D7A72;
+  --rule:#E2E7E0;
+  --rule-2:#BFC9BC;
+  --engrave:rgba(29,78,74,.12);
+
+  --hdr:#8F5514;
+  --pay:#1B5A52;
+  --sig:#A2372A;
+  --hdr-bg:rgba(143,85,20,.13);
+  --pay-bg:rgba(27,90,82,.13);
+  --sig-bg:rgba(162,55,42,.13);
+  --hdr-ed:rgba(143,85,20,.42);
+  --pay-ed:rgba(27,90,82,.42);
+  --sig-ed:rgba(162,55,42,.42);
+
+  --ok:#2A6A4C;
+  --ok-bg:rgba(42,106,76,.12);
+  --bad:#A2372A;
+  --bad-bg:rgba(162,55,42,.12);
+  --warn:#8F5514;
+  --warn-bg:rgba(143,85,20,.12);
+
+  --shadow:0 1px 2px rgba(21,30,26,.04), 0 10px 26px -20px rgba(21,30,26,.40);
+  --shadow-lift:0 1px 3px rgba(21,30,26,.05), 0 20px 44px -24px rgba(21,30,26,.42);
+
+  --serif:"Bodoni Moda",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1311;
+    --paper-2:#161D1A;
+    --paper-3:#1F2925;
+    --ink:#E7ECE5;
+    --ink-2:#A5B2AA;
+    --ink-3:#76837B;
+    --rule:#28322D;
+    --rule-2:#3A453F;
+    --engrave:rgba(122,204,190,.14);
+
+    --hdr:#E2AB60;
+    --pay:#5FC9B5;
+    --sig:#EE8674;
+    --hdr-bg:rgba(226,171,96,.14);
+    --pay-bg:rgba(95,201,181,.14);
+    --sig-bg:rgba(238,134,116,.14);
+    --hdr-ed:rgba(226,171,96,.45);
+    --pay-ed:rgba(95,201,181,.45);
+    --sig-ed:rgba(238,134,116,.45);
+
+    --ok:#71CE9E;
+    --ok-bg:rgba(113,206,158,.13);
+    --bad:#EE8674;
+    --bad-bg:rgba(238,134,116,.13);
+    --warn:#E2AB60;
+    --warn-bg:rgba(226,171,96,.13);
+
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+    --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+  }
+}
+
+:root[data-theme="dark"]{
+  --paper:#0E1311;
+  --paper-2:#161D1A;
+  --paper-3:#1F2925;
+  --ink:#E7ECE5;
+  --ink-2:#A5B2AA;
+  --ink-3:#76837B;
+  --rule:#28322D;
+  --rule-2:#3A453F;
+  --engrave:rgba(122,204,190,.14);
+
+  --hdr:#E2AB60;
+  --pay:#5FC9B5;
+  --sig:#EE8674;
+  --hdr-bg:rgba(226,171,96,.14);
+  --pay-bg:rgba(95,201,181,.14);
+  --sig-bg:rgba(238,134,116,.14);
+  --hdr-ed:rgba(226,171,96,.45);
+  --pay-ed:rgba(95,201,181,.45);
+  --sig-ed:rgba(238,134,116,.45);
+
+  --ok:#71CE9E;
+  --ok-bg:rgba(113,206,158,.13);
+  --bad:#EE8674;
+  --bad-bg:rgba(238,134,116,.13);
+  --warn:#E2AB60;
+  --warn-bg:rgba(226,171,96,.13);
+
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+  --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+}
+
+*{box-sizing:border-box}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:var(--step);
+  font-weight:400;
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- layout rails ---------- */
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:22px}
+.prose{max-width:63ch;margin-inline:auto}
+.lab{max-width:940px;margin-inline:auto}
+
+section.chapter{padding-block:clamp(48px,7vw,86px);scroll-margin-top:56px}
+h2,h3,h4{scroll-margin-top:64px}
+.stack{display:flex;flex-direction:column;gap:1.05em}
+.stack-lg{display:flex;flex-direction:column;gap:2.1rem}
+.stack-xl{display:flex;flex-direction:column;gap:3.4rem}
+
+/* ---------- type ---------- */
+h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.12}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.018em}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.85rem,4.2vw,2.7rem);letter-spacing:-.012em}
+h3{font-family:var(--sans);font-weight:650;font-size:clamp(1.12rem,2vw,1.32rem);letter-spacing:-.008em;line-height:1.3}
+h4{font-family:var(--sans);font-weight:650;font-size:1rem;letter-spacing:-.004em}
+p{margin:0}
+a{color:inherit}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;
+  letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);
+}
+.lede{font-size:clamp(1.06rem,1.9vw,1.24rem);line-height:1.6;color:var(--ink-2);font-weight:350}
+.dropcap::first-letter{
+  font-family:var(--serif);font-weight:700;float:left;
+  font-size:3.5em;line-height:.82;padding:.06em .1em 0 0;color:var(--pay);
+}
+strong{font-weight:650;color:var(--ink)}
+em.term{font-style:normal;font-weight:600;color:var(--pay);white-space:nowrap}
+code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.12em .38em;border-radius:3px;color:var(--ink)}
+
+/* ---------- perforation rule ---------- */
+.perf{
+  height:1px;border:0;margin:0;
+  background:repeating-linear-gradient(to right,var(--rule-2) 0 7px,transparent 7px 15px);
+}
+.perf-thick{
+  position:relative;height:0;border:0;margin:0;
+  border-top:1px dashed var(--rule-2);
+}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{
+  max-width:1120px;margin-inline:auto;padding:9px 22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.brandmark{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink);white-space:nowrap;
+}
+.brandmark span{color:var(--ink-3)}
+.navlinks{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.navlinks a{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
+  color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
+}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a.on{color:var(--pay);background:var(--pay-bg)}
+.progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+#guilloche{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-in{position:relative;padding-block:clamp(52px,9vw,104px)}
+.hero-grid{display:grid;gap:34px}
+.hero h1{margin-block:.18em .34em}
+.hero h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2)}
+
+/* ---------- token strip ---------- */
+.tokenbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow-lift);overflow:hidden;
+}
+.tokenbox-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+}
+.tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.token{
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  word-break:break-all;padding:16px 14px;margin:0;
+}
+.token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
+.t-h{color:var(--hdr);background:var(--hdr-bg)}
+.t-p{color:var(--pay);background:var(--pay-bg)}
+.t-s{color:var(--sig);background:var(--sig-bg)}
+.t-dot{color:var(--ink-3);font-weight:600}
+.token b.dim{opacity:.3}
+.token[data-clickable] b{cursor:pointer}
+.token[data-clickable] b:hover{box-shadow:0 0 0 1.5px currentColor}
+
+/* ---------- part legend / tabs ---------- */
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+.parts button{
+  all:unset;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px;
+  border-right:1px solid var(--rule);transition:background .16s;
+}
+.parts button:last-child{border-right:0}
+.parts button:hover{background:var(--paper-3)}
+.parts button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
+.parts .pn{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase}
+.parts .pd{font-size:.78rem;color:var(--ink-3);line-height:1.35}
+.parts button[aria-selected="true"]{background:var(--paper-3)}
+.parts button[data-p="h"] .pn{color:var(--hdr)}
+.parts button[data-p="p"] .pn{color:var(--pay)}
+.parts button[data-p="s"] .pn{color:var(--sig)}
+
+/* ---------- panels & cards ---------- */
+.panel{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.panel-head .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.panel-head .sub{font-size:.8rem;color:var(--ink-3)}
+.panel-body{padding:16px}
+
+.callout{
+  border-left:2px solid var(--pay);padding:2px 0 2px 16px;
+  color:var(--ink-2);font-size:.95em;
+}
+.callout.warn{border-left-color:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout .h{display:block;font-weight:650;color:var(--ink);margin-bottom:.2em;font-size:.98em}
+
+.hook{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  padding:20px 22px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.85em;
+}
+.hook .tag{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:8px;
+}
+.hook .tag::after{content:"";height:1px;flex:1;background:var(--rule)}
+.hook p{font-size:1.02em;line-height:1.62}
+
+/* ---------- buttons ---------- */
+.btn{
+  all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--sans);font-size:.83rem;font-weight:600;letter-spacing:.005em;
+  padding:8px 15px;border-radius:5px;border:1px solid var(--rule-2);
+  background:var(--paper-2);color:var(--ink);transition:background .15s,border-color .15s,transform .08s;
+  white-space:nowrap;
+}
+.btn:hover{background:var(--paper-3);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.btn.primary{background:var(--pay);color:var(--paper-2);border-color:var(--pay)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- form bits ---------- */
+label.fld{display:flex;flex-direction:column;gap:5px}
+label.fld .lb{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+input[type=text],textarea{
+  font-family:var(--mono);font-size:.82rem;line-height:1.6;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:9px 11px;width:100%;
+  resize:vertical;
+}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--pay);outline-offset:-1px;border-color:var(--pay)}
+
+/* ---------- status pills ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;border:1px solid currentColor;
+}
+.pill.ok{color:var(--ok);background:var(--ok-bg)}
+.pill.bad{color:var(--bad);background:var(--bad-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.mute{color:var(--ink-3);background:var(--paper-3);border-color:var(--rule-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- code blocks ---------- */
+pre.code{
+  font-family:var(--mono);font-size:.79rem;line-height:1.7;margin:0;
+  background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  padding:13px 15px;overflow-x:auto;color:var(--ink-2);
+}
+pre.code .key{color:var(--pay)}
+pre.code .str{color:var(--hdr)}
+pre.code .num{color:var(--sig)}
+pre.code .cm{color:var(--ink-3);font-style:italic}
+
+/* ---------- chapter opener ---------- */
+.chapnum{
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+}
+.chapnum .n{
+  font-family:var(--serif);font-size:2.6rem;font-weight:700;line-height:1;
+  color:var(--pay);
+}
+.chapnum .l{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.chapnum .rule{flex:1;height:1px;background:var(--rule)}
+
+/* ---------- coat check sim ---------- */
+.sim2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.simcol{border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.simcol h4{padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--paper-3);font-size:.85rem}
+.simcol .simbody{padding:13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.rack{
+  height:74px;border:1px dashed var(--rule-2);border-radius:5px;background:var(--paper-2);
+  display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:5px;overflow:hidden;
+}
+.coat{width:5px;height:11px;border-radius:1px;background:var(--pay);opacity:.75}
+.rack.empty-note{align-items:center;justify-content:center;align-content:center}
+.rack .note{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);letter-spacing:.06em;text-align:center;line-height:1.5}
+.metric{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--ink-3)}
+.metric b{font-family:var(--mono);font-size:1.05rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- ticket ---------- */
+.ticketgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.ticket{
+  position:relative;background:var(--paper-2);border:1px solid var(--rule-2);border-radius:6px;
+  display:grid;grid-template-columns:1fr 88px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ticket-main{padding:14px 15px;display:flex;flex-direction:column;gap:0}
+.ticket-stub{
+  border-left:1px dashed var(--rule-2);padding:14px 10px;
+  display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  background:var(--paper-3);
+}
+.ticket-brand{
+  font-family:var(--serif);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.ticket-brand span{font-family:var(--mono);font-size:.6rem;font-weight:400;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.trow{
+  display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline;
+  padding:4px 6px;margin-inline:-6px;border-radius:4px;cursor:default;
+  transition:background .15s;
+}
+.trow .tk{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.trow .tv{font-family:var(--mono);font-size:.78rem;color:var(--ink);word-break:break-word}
+.trow.hi{background:var(--pay-bg)}
+.trow.hi .tk{color:var(--pay)}
+.claimjson .cl{
+  display:block;padding:1px 6px;margin-inline:-6px;border-radius:3px;transition:background .15s;
+}
+.claimjson .cl.hi{background:var(--pay-bg)}
+.stubcode{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;color:var(--ink-3);writing-mode:vertical-rl;transform:rotate(180deg);margin-inline:auto}
+
+.claimlist{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.claimlist button{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;
+  grid-template-columns:52px 1fr;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
+}
+.claimlist button:last-child{border-bottom:0}
+.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
+.claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
+.claimlist .cx b{color:var(--ink);font-weight:600}
+
+/* ---------- base64 playground ---------- */
+.b64grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.b64arrow{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+  text-align:center;display:flex;flex-direction:column;gap:3px;
+}
+.chipline{display:flex;flex-wrap:wrap;gap:3px;font-family:var(--mono);font-size:.72rem}
+.chip{padding:2px 5px;border-radius:3px;background:var(--paper-3);border:1px solid var(--rule)}
+.chip.b{background:var(--pay-bg);border-color:var(--pay-ed);color:var(--pay)}
+
+/* ---------- flow diagram ---------- */
+.flowwrap{overflow-x:auto}
+.flowsvg{display:block;width:100%;min-width:560px;height:auto;color:var(--ink-2)}
+.flowsvg .node{fill:var(--paper-2);stroke:var(--rule-2)}
+.flowsvg .nlabel{fill:var(--ink);font-family:var(--sans);font-size:12px;font-weight:600}
+.flowsvg .nsub{fill:var(--ink-3);font-family:var(--mono);font-size:9px;letter-spacing:.08em}
+.flowsvg .edge{stroke:var(--rule-2);stroke-width:1.5;fill:none;opacity:.35;transition:opacity .3s,stroke .3s}
+.flowsvg .edge.live{stroke:var(--pay);opacity:1;stroke-width:2.2}
+.flowsvg .elabel{fill:var(--ink-3);font-family:var(--mono);font-size:9px;opacity:0;transition:opacity .3s}
+.flowsvg .elabel.live{fill:var(--pay);opacity:1}
+.flowsvg .node.live{stroke:var(--pay);stroke-width:2;fill:var(--pay-bg)}
+.stepnote{
+  display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;
+  padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;min-height:78px;
+}
+.stepnote .sn{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--paper-2);background:var(--pay);
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+}
+.stepnote .st{font-size:.88rem;line-height:1.55;color:var(--ink-2)}
+
+/* ---------- token life ---------- */
+.lifebar{height:9px;border-radius:100px;background:var(--paper-3);overflow:hidden;border:1px solid var(--rule)}
+.lifebar i{display:block;height:100%;background:var(--ok);width:100%;border-radius:100px}
+.lifebar i.low{background:var(--warn)}
+.lifebar i.out{background:var(--bad)}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.statgrid div{background:var(--paper);padding:10px 12px}
+.statgrid .sv{font-family:var(--mono);font-size:1.25rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.statgrid .sl{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+
+/* ---------- attack lab ---------- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vcard{border:1px solid var(--rule);border-radius:7px;padding:13px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.vcard.ok{border-color:var(--ok);background:var(--ok-bg)}
+.vcard.bad{border-color:var(--bad);background:var(--bad-bg)}
+.vcard h4{font-size:.86rem}
+.vcard p{font-size:.83rem;line-height:1.5;color:var(--ink-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-family:var(--mono);font-size:.76rem;align-items:baseline}
+.kv dt{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:.62rem}
+.kv dd{margin:0;word-break:break-all;color:var(--ink)}
+
+.sigcompare{display:flex;flex-direction:column;gap:7px}
+.sigline{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;font-family:var(--mono);font-size:.74rem}
+.sigline .sl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sigline .sv{word-break:break-all}
+.sigline .sv.match{color:var(--ok)}
+.sigline .sv.miss{color:var(--bad)}
+
+/* ---------- quiz ---------- */
+.quiz{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper-2)}
+.q{padding:18px 20px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:11px}
+.q:last-child{border-bottom:0}
+.q .qq{font-weight:600;font-size:.97rem;line-height:1.5;display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start}
+.q .qn{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);padding-top:.25em}
+.opts{display:flex;flex-direction:column;gap:6px;padding-left:34px}
+.opt{
+  all:unset;box-sizing:border-box;cursor:pointer;padding:9px 13px;border-radius:5px;
+  border:1px solid var(--rule-2);background:var(--paper);font-size:.87rem;line-height:1.45;
+  transition:background .15s,border-color .15s;
+}
+.opt:hover{background:var(--paper-3)}
+.opt:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt[disabled]{cursor:default}
+.qwhy{
+  padding-left:34px;font-size:.85rem;line-height:1.55;color:var(--ink-2);
+  border-left:2px solid var(--pay);margin-left:34px;padding-block:2px;
+}
+
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.minicard{border:1px solid var(--rule);border-radius:7px;padding:13px 14px;background:var(--paper-2);display:flex;flex-direction:column;gap:6px}
+.minicard .mt{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.minicard .mb{font-size:.87rem;line-height:1.5;color:var(--ink-2)}
+.minicard .mb b{color:var(--ink)}
+
+figure{margin:0;display:flex;flex-direction:column;gap:9px}
+figcaption{font-size:.8rem;color:var(--ink-3);line-height:1.5}
+
+footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:var(--paper-2)}
+.byline{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.6vw,1.6rem);font-weight:500;font-style:italic;
+  color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin:0;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.byline strong{font-style:normal;font-weight:700;color:var(--pay)}
+.byline .hb{font-style:normal;font-size:.82em;margin-left:.28em}
+
+.srcnote{font-size:.82rem;color:var(--ink-3);line-height:1.6}
+.srcnote a{color:var(--pay)}
+
+@media (max-width:760px){
+  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
+  .b64arrow{flex-direction:row;justify-content:center;gap:10px}
+  .grid3,.statgrid,.parts{grid-template-columns:1fr}
+  .parts button{border-right:0;border-bottom:1px solid var(--rule)}
+  .ticket{grid-template-columns:1fr}
+  .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
+  .stubcode{writing-mode:horizontal-tb;transform:none;margin:0}
+  .navlinks{display:none}
+  .dropcap::first-letter{font-size:3em}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style><style>
+:root{
+  --key:#6B3A82;  --key-bg:rgba(107,58,130,.13);
+  --iv:#2F5680;   --iv-bg:rgba(47,86,128,.13);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --key:#C89BDC; --key-bg:rgba(200,155,220,.15);
+    --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);
+  }
+}
+:root[data-theme="dark"]{
+  --key:#C89BDC; --key-bg:rgba(200,155,220,.15);
+  --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);
+}
+.t-k{color:var(--key);background:var(--key-bg)}
+.t-i{color:var(--iv);background:var(--iv-bg)}
+
+/* ---- cover ---- */
+.cover h1{font-size:clamp(2.5rem,6.4vw,4.9rem);line-height:1;letter-spacing:-.025em}
+@media (min-width:1000px){
+  .cover .hero-grid{grid-template-columns:1.12fr .88fr;align-items:center;gap:44px}
+}
+.cover h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2);display:block}
+.coverline{
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);
+}
+.coverline::after{content:"";height:1px;flex:1;background:var(--rule)}
+
+/* ---- part cards ---- */
+.parts3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.partcard{
+  display:flex;flex-direction:column;gap:0;text-decoration:none;color:inherit;
+  border:1px solid var(--rule);border-radius:8px;background:var(--paper-2);
+  box-shadow:var(--shadow);overflow:hidden;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.partcard:hover,.partcard:focus-visible{
+  transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--ink-3);
+}
+.partcard:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.partcard .pcnum{
+  padding:14px 18px 0;font-family:var(--serif);font-size:2.4rem;font-weight:700;line-height:1;
+}
+.partcard .pcbody{padding:6px 18px 18px;display:flex;flex-direction:column;gap:9px;flex:1}
+.partcard .pctitle{font-family:var(--serif);font-size:1.32rem;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.partcard .pcch{font-family:var(--mono);font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.partcard .pcdesc{font-size:.87rem;line-height:1.55;color:var(--ink-2);flex:1}
+.partcard .pcdo{
+  font-size:.8rem;line-height:1.5;color:var(--ink-3);
+  border-top:1px solid var(--rule);padding-top:9px;margin-top:2px;
+}
+.partcard .pcdo b{color:var(--pay);font-weight:600}
+.partcard .pcgo{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--pay);font-weight:600;
+}
+.partcard.p1 .pcnum{color:var(--pay)}
+.partcard.p2 .pcnum{color:var(--sig)}
+.partcard.p3 .pcnum{color:var(--key)}
+
+/* ---- contents table ---- */
+.toc{border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper-2)}
+.tocrow{
+  display:grid;grid-template-columns:38px 1fr 128px 92px;gap:14px;align-items:center;
+  padding:11px 16px;border-bottom:1px solid var(--rule);text-decoration:none;color:inherit;
+  transition:background .15s;
+}
+.tocrow:last-child{border-bottom:0}
+.tocrow:hover,.tocrow:focus-visible{background:var(--paper-3)}
+.tocrow:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.tocrow .tn{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--ink-3)}
+.tocrow .tt{font-weight:600;font-size:.94rem;line-height:1.3}
+.tocrow .tt small{display:block;font-weight:400;font-size:.8rem;color:var(--ink-3);margin-top:2px;line-height:1.4}
+.tocrow .tp{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.tocrow .tg{font-family:var(--mono);font-size:.66rem;color:var(--pay);text-align:right;opacity:0;transition:opacity .15s}
+.tocrow:hover .tg,.tocrow:focus-visible .tg{opacity:1}
+.tochead{
+  display:grid;grid-template-columns:38px 1fr 128px 92px;gap:14px;
+  padding:9px 16px;background:var(--paper-3);border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
+}
+
+/* ---- start chooser ---- */
+.chooser{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.chooser button{
+  all:unset;box-sizing:border-box;cursor:pointer;
+  border:1px solid var(--rule-2);border-radius:7px;padding:14px 16px;background:var(--paper);
+  display:flex;flex-direction:column;gap:5px;transition:border-color .15s,background .15s;
+}
+.chooser button:hover{background:var(--paper-3)}
+.chooser button:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.chooser button[aria-pressed="true"]{border-color:var(--pay);background:var(--pay-bg)}
+.chooser .cq{font-weight:650;font-size:.92rem;line-height:1.35}
+.chooser .cs{font-size:.81rem;line-height:1.45;color:var(--ink-3)}
+
+/* ---- shape switch ---- */
+.shapes{display:flex;gap:0;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.shapes button{
+  all:unset;cursor:pointer;padding:8px 15px;font-size:.82rem;font-weight:600;
+  border-right:1px solid var(--rule-2);transition:background .15s,color .15s;flex:1;text-align:center;
+}
+.shapes button:last-child{border-right:0}
+.shapes button:hover{background:var(--paper-3)}
+.shapes button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.shapes button[aria-pressed="true"]{background:var(--pay);color:var(--paper-2)}
+
+@media (max-width:860px){
+  .parts3,.chooser{grid-template-columns:1fr}
+  .tocrow,.tochead{grid-template-columns:32px 1fr;gap:10px}
+  .tocrow .tp,.tocrow .tg,.tochead span:nth-child(3),.tochead span:nth-child(4){display:none}
+}
+</style>
+<nav class="topbar">
+  <div class="topbar-in">
+    <div class="brandmark">JWT <span>/ handbook</span></div>
+    <div class="navlinks">
+      <a href="#start" data-nav="start">Where to start</a>
+      <a href="#parts" data-nav="parts">The three parts</a>
+      <a href="#contents" data-nav="contents">Contents</a>
+    </div>
+  </div>
+  <div class="progressbar" id="progressbar"></div>
+</nav>
+
+<header class="hero">
+  <canvas id="guilloche" aria-hidden="true"></canvas>
+  <div class="wrap hero-in cover">
+    <div class="hero-grid">
+      <div class="prose stack" style="margin-inline:0">
+        <div class="coverline">An interactive reading of the JWT Handbook</div>
+        <h1>JWT<span class="thin">in three parts</span></h1>
+        <p class="lede">All eight chapters of Sebasti&aacute;n Peyrott's handbook, retold in plain words for people who have never done any of this &mdash; and rebuilt as something you press on rather than read.</p>
+        <p style="color:var(--ink-3);font-size:.88rem">Nothing here is a simulation. The pages generate real key pairs, compute real signatures, and really encrypt things, in your own browser. Nothing you type is sent anywhere.</p>
+      </div>
+
+      <div class="tokenbox">
+        <div class="tokenbox-head">
+          <span class="tokenbox-title">A token has three possible shapes</span>
+        </div>
+        <div class="panel-body stack" style="gap:.8rem;background:var(--paper-2)">
+          <div class="shapes" role="group" aria-label="Token shape">
+            <button id="shNone" aria-pressed="false">No seal</button>
+            <button id="shSig" aria-pressed="true">Signed</button>
+            <button id="shEnc" aria-pressed="false">Encrypted</button>
+          </div>
+          <p class="token" id="shapeToken" style="padding:0"></p>
+          <hr class="perf">
+          <p id="shapeNote" style="font-size:.85rem;line-height:1.55;color:var(--ink-2);min-height:4.4em"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= START ============================= -->
+<section class="chapter" id="start" style="padding-block:clamp(40px,6vw,68px)">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n" style="font-size:1.7rem">→</span>
+        <span class="l">Where to start</span>
+        <span class="rule"></span>
+      </div>
+      <h2 style="margin-top:.3em">Which of these is you?</h2>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="chooser" role="group" aria-label="Pick your starting point">
+        <button id="ch1btn" aria-pressed="false">
+          <span class="cq">I have no idea what a JWT is</span>
+          <span class="cs">Never done any of this. Not sure what a token even does.</span>
+        </button>
+        <button id="ch2btn" aria-pressed="false">
+          <span class="cq">I use them, but I do not really get them</span>
+          <span class="cs">I copy the library call and it works. Ask me why and I would struggle.</span>
+        </button>
+        <button id="ch3btn" aria-pressed="false">
+          <span class="cq">I want to know how the maths works</span>
+          <span class="cs">Comfortable with tokens. Curious what is actually inside a signature.</span>
+        </button>
+      </div>
+
+      <div class="panel" id="advicePanel" hidden>
+        <div class="panel-head"><span class="k" id="adviceHead">Start here</span></div>
+        <div class="panel-body stack">
+          <p id="adviceText" style="font-size:.95rem;line-height:1.65;color:var(--ink-2);max-width:64ch"></p>
+          <div class="btnrow"><a class="btn primary" id="adviceLink" href="#" style="text-decoration:none">Open it</a></div>
+        </div>
+      </div>
+
+      <p class="prose" style="font-size:.88rem;color:var(--ink-3);margin-inline:auto">
+        Whatever you pick, the parts run in order and each one assumes the last. If you jump to part three and something feels unexplained, it is probably explained in part one.
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= PARTS ============================= -->
+<section class="chapter" id="parts">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n" style="font-size:1.7rem">✦</span>
+        <span class="l">The three parts</span>
+        <span class="rule"></span>
+      </div>
+      <h2 style="margin-top:.3em">Roughly forty minutes each</h2>
+      <p class="lede" style="margin-top:.6em">Split where the subject splits: what a token is, how it is protected, and how the protection is built.</p>
+    </div>
+
+    <div class="parts3">
+      <a class="partcard p1" href="part-1.html">
+        <span class="pcnum">1</span>
+        <div class="pcbody">
+          <span class="pcch">Chapters 1 – 3</span>
+          <span class="pctitle">JWT, Piece&nbsp;by&nbsp;Piece</span>
+          <span class="pcdesc">What a token is, using a concert wristband. Why they exist, using a coat check. The three pieces, the seven claims that read like a railway ticket, and the three ways people break the whole thing.</span>
+          <span class="pcdo">You will <b>decode a token by clicking it</b>, run a session simulator, play attacker in three labs, and build a token from JSON.</span>
+          <span class="pcgo">Read part one →</span>
+        </div>
+      </a>
+
+      <a class="partcard p2" href="part-2.html">
+        <span class="pcnum">2</span>
+        <div class="pcbody">
+          <span class="pcch">Chapters 4 – 5</span>
+          <span class="pctitle">The Seal and the Envelope</span>
+          <span class="pcdesc">A rubber stamp everyone can copy versus a signature only you can write. Then the reversal that catches everybody: encryption runs the opposite way round, and does not replace signing.</span>
+          <span class="pcdo">You will <b>generate real key pairs</b>, fail to forge with a public key, and really encrypt something &mdash; then break the seal and watch it refuse to open.</span>
+          <span class="pcgo">Read part two →</span>
+        </div>
+      </a>
+
+      <a class="partcard p3" href="part-3.html">
+        <span class="pcnum">3</span>
+        <div class="pcbody">
+          <span class="pcch">Chapters 6 – 8</span>
+          <span class="pctitle">The Locksmith's Manual</span>
+          <span class="pcdesc">Everything the first two parts labelled "the maths" and skipped. Base64 to the bit, hashing, HMAC, RSA and elliptic curves &mdash; then six real attacks and the eight rules that stop them.</span>
+          <span class="pcdo">You will <b>watch one letter move half a hash</b>, build HMAC by hand, break an RSA key, and draw on an elliptic curve.</span>
+          <span class="pcgo">Read part three →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CONTENTS ============================= -->
+<section class="chapter" id="contents">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n" style="font-size:1.7rem">§</span>
+        <span class="l">Full contents</span>
+        <span class="rule"></span>
+      </div>
+      <h2 style="margin-top:.3em">Every chapter, and where it lives</h2>
+      <p class="lede" style="margin-top:.6em">Each line opens straight to that section.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="toc">
+        <div class="tochead"><span>№</span><span>Chapter</span><span>Part</span><span></span></div>
+
+        <a class="tocrow" href="part-1.html#ch1">
+          <span class="tn">1</span>
+          <span class="tt">Introduction<small>What a JSON Web Token is, what problem it solves, and where it came from</small></span>
+          <span class="tp">Part one</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-1.html#ch2">
+          <span class="tn">2</span>
+          <span class="tt">Practical Applications<small>Client-side sessions, signature stripping, CSRF, XSS, federated identity, access and refresh tokens</small></span>
+          <span class="tp">Part one</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-1.html#ch3">
+          <span class="tn">3</span>
+          <span class="tt">JSON Web Tokens in Detail<small>Base64url, the header, the payload and its registered claims, unsecured tokens, building and parsing one</small></span>
+          <span class="tp">Part one</span><span class="tg">open →</span>
+        </a>
+
+        <a class="tocrow" href="part-2.html#ch4">
+          <span class="tn">4</span>
+          <span class="tt">JSON Web Signatures<small>Shared secrets versus key pairs, what "valid" really means, JWS header claims, key rotation, JSON serialization</small></span>
+          <span class="tp">Part two</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-2.html#ch5">
+          <span class="tn">5</span>
+          <span class="tt">JSON Web Encryption<small>The direction reversal, the five parts, the content encryption key, the five key-management modes</small></span>
+          <span class="tp">Part two</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-2.html#nested">
+          <span class="tn">✦</span>
+          <span class="tt">Nested tokens<small>Sign first, then encrypt — and why that order is not a matter of taste</small></span>
+          <span class="tp">Part two</span><span class="tg">open →</span>
+        </a>
+
+        <a class="tocrow" href="part-3.html#ch6">
+          <span class="tn">6</span>
+          <span class="tt">JSON Web Keys<small>A key written as JSON, the fields that matter, and key sets</small></span>
+          <span class="tp">Part three</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-3.html#ch7">
+          <span class="tn">7</span>
+          <span class="tt">JSON Web Algorithms<small>Base64 to the bit, SHA-256 and the avalanche effect, HMAC, RSA, elliptic curves</small></span>
+          <span class="tp">Part three</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-3.html#ch8">
+          <span class="tn">8</span>
+          <span class="tt">Best Current Practices<small>alg:none, public key as shared secret, weak secrets, invalid curves, substitution attacks</small></span>
+          <span class="tp">Part three</span><span class="tg">open →</span>
+        </a>
+        <a class="tocrow" href="part-3.html#rules">
+          <span class="tn">✓</span>
+          <span class="tt">The eight rules<small>The checklist that stops every attack in the handbook</small></span>
+          <span class="tp">Part three</span><span class="tg">open →</span>
+        </a>
+      </div>
+
+      <div class="prose stack">
+        <div class="callout">
+          <span class="h">If you only read one thing</span>
+          Chapter 3 tells you what is actually inside a token, and the eight rules at the end of part three tell you how not to get hurt by one. Between them they cover most of what goes wrong in practice.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="wrap prose stack">
+    <div class="eyebrow">Colophon</div>
+    <p class="byline">Recreated by <strong>Swaraj Bangar</strong><span class="hb" role="img" aria-label="love">❤️</span></p>
+    <p class="srcnote">
+      Based on <strong>The JWT Handbook</strong>, version 0.14.2, by Sebasti&aacute;n E. Peyrott, published by Auth0 &mdash; the source of the structure, the specifications and the examples throughout. The best-practice chapter draws on the IETF OAuth Working Group's JWT Best Current Practices draft. The wristbands, coat checks, railway tickets, rubber stamps, suggestion boxes, locked trunks and signature books are these pages' own, added so the ideas land without a background in cryptography.
+    </p>
+    <p class="srcnote">
+      Every cryptographic operation across the three parts runs in your browser through Web Crypto &mdash; real HMAC, real RSA and ECDSA key pairs, real AES-GCM encryption. Nothing you type leaves the page. None of it is production code: real systems need battle-tested libraries, careful key handling and proper testing.
+    </p>
+    <p class="srcnote" style="color:var(--ink-3)">
+      Set in Bodoni Moda, Public&nbsp;Sans and IBM Plex Mono. &nbsp;·&nbsp;
+      <a href="part-1.html" style="color:var(--pay)">Part one</a> &nbsp;·&nbsp;
+      <a href="part-2.html" style="color:var(--pay)">Part two</a> &nbsp;·&nbsp;
+      <a href="part-3.html" style="color:var(--pay)">Part three</a>
+    </p>
+  </div>
+</footer>
+<script>
+(function(){
+"use strict";
+
+var P1 = "part-1.html", P2 = "part-2.html", P3 = "part-3.html";
+
+/* ---------------- guilloche ---------------- */
+(function(){
+  var cv = document.getElementById("guilloche");
+  if (!cv) return;
+  function draw(){
+    var host = cv.parentElement, w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio||1, 2);
+    cv.width = w*dpr; cv.height = h*dpr;
+    var g = cv.getContext("2d"); g.scale(dpr,dpr); g.clearRect(0,0,w,h);
+    g.strokeStyle = getComputedStyle(document.body).getPropertyValue("--engrave").trim() || "rgba(0,0,0,.1)";
+    g.lineWidth = 0.6;
+    var cx = w*0.92, cy = h*0.46, scale = Math.min(w,h)*0.62;
+    var R = scale, r = scale*0.1379, d = scale*0.118;
+    for (var pass=0; pass<16; pass++){
+      var phase = pass*0.0393, rr = r*(1+pass*0.0042), k = (R-rr)/rr;
+      g.beginPath();
+      for (var i=0;i<=720;i++){
+        var t = (i/720)*Math.PI*2*8 + phase;
+        var x = cx + (R-rr)*Math.cos(t) + d*Math.cos(k*t);
+        var y = cy + (R-rr)*Math.sin(t) - d*Math.sin(k*t);
+        if (i===0) g.moveTo(x,y); else g.lineTo(x,y);
+      }
+      g.stroke();
+    }
+  }
+  draw();
+  var t=null;
+  window.addEventListener("resize", function(){ clearTimeout(t); t=setTimeout(draw,180); });
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+  }
+})();
+
+/* ---------------- the three shapes ---------------- */
+(function shapes(){
+  var tok = document.getElementById("shapeToken");
+  if (!tok) return;
+  var note = document.getElementById("shapeNote");
+  var bN = document.getElementById("shNone"), bS = document.getElementById("shSig"), bE = document.getElementById("shEnc");
+
+  function part(cls, text){ return '<b class="'+cls+'">'+text+'</b>'; }
+  var DOT = '<b class="t-dot">.</b>';
+
+  var SHAPES = {
+    none: {
+      html: part("t-h","eyJhbGciOiJub25lIn0") + DOT + part("t-p","eyJzdWIiOiI0MDIiLCJuYW1lIjoiQW5hIn0") + DOT,
+      note: '<strong>Two pieces, and a trailing dot that leads nowhere.</strong> The label says <code>alg: none</code> &mdash; there is no seal, so the third slot is empty, but the dot is still written. Anyone can read it and anyone can change it. Fine for remembering which page you were on. Useless for anything that matters. <em>Covered in part one.</em>'
+    },
+    sig: {
+      html: part("t-h","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9") + DOT +
+            part("t-p","eyJzdWIiOiI0MDIiLCJuYW1lIjoiQW5hIiwiYWRtaW4iOnRydWV9") + DOT +
+            part("t-s","TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"),
+      note: '<strong>Three pieces. This is the one you will meet.</strong> Header, payload, signature. Everyone can still read every word &mdash; the seal does not hide anything, it only proves nobody changed it since it was written. A postcard with a wax seal. <em>Parts one and two.</em>'
+    },
+    enc: {
+      html: part("t-h","eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMTI4R0NNIn0") + DOT +
+            part("t-k","QRuFPq3lM9dYoT2xVbA7cHkNzs1WgE0jIuL5rXfPmB8v") + DOT +
+            part("t-i","b7Kq2ZmXsPvA0tRe") + DOT +
+            part("t-p","yT4nQpLxVdW9sHcB2mKfEuZaR7gJ0iNvXoY3tSlC") + DOT +
+            part("t-s","9hH0vgRfYgPnAHOd8stkvw"),
+      note: '<strong>Five pieces, and now nobody can read it.</strong> Header, the wrapped key, a pinch of randomness, the hidden message, and tamper-evident tape. Two locks are at work: a fast one on the message, a slow careful one on the key to the fast one. <em>Part two.</em>'
+    }
+  };
+
+  function show(which, btn){
+    [bN,bS,bE].forEach(function(b){ b.setAttribute("aria-pressed", b === btn ? "true":"false"); });
+    tok.innerHTML = SHAPES[which].html;
+    note.innerHTML = SHAPES[which].note;
+  }
+  bN.addEventListener("click", function(){ show("none", bN); });
+  bS.addEventListener("click", function(){ show("sig", bS); });
+  bE.addEventListener("click", function(){ show("enc", bE); });
+  show("sig", bS);
+})();
+
+/* ---------------- where to start ---------------- */
+(function chooser(){
+  var b1 = document.getElementById("ch1btn");
+  if (!b1) return;
+  var b2 = document.getElementById("ch2btn"), b3 = document.getElementById("ch3btn");
+  var panel = document.getElementById("advicePanel");
+  var head = document.getElementById("adviceHead"), text = document.getElementById("adviceText");
+  var link = document.getElementById("adviceLink");
+
+  var ADVICE = {
+    a: { head: "Start at the very beginning",
+         text: "Part one, and read it straight through. It assumes nothing at all — the first thing it does is compare a token to the paper band somebody puts on your wrist at a concert, and it builds from there. Do not skip the labs; the coat-check simulator and the three attack labs are where the ideas stop being words. By the end you will be able to look at any token and say what it holds and whether you should trust it.",
+         href: P1, label: "Open part one →" },
+    b: { head: "Skim part one, then slow down",
+         text: "Read part one quickly — you will recognise most of it, and the ticket-shaped view of the claims is worth five minutes even if you already know them. Then part two is your page. It answers the two questions people in your position usually cannot answer: why anyone would choose RS256 over HS256, and why encrypting a token does not mean you can stop signing it.",
+         href: P2, label: "Open part two →" },
+    c: { head: "Go straight to part three",
+         text: "It opens with a bank's book of signature samples and ends with an elliptic curve you place points on yourself. In between: Base64 down to the individual bit, a live SHA-256 avalanche, HMAC assembled from XOR and hashing then checked against your browser's own, and a complete RSA key small enough to verify by hand — which the page then factors in front of you. If a term goes unexplained, it was explained in part one.",
+         href: P3, label: "Open part three →" }
+  };
+
+  function pick(which, btn){
+    [b1,b2,b3].forEach(function(b){ b.setAttribute("aria-pressed", b === btn ? "true":"false"); });
+    var a = ADVICE[which];
+    head.textContent = a.head;
+    text.textContent = a.text;
+    link.href = a.href;
+    link.textContent = a.label;
+    panel.hidden = false;
+  }
+  b1.addEventListener("click", function(){ pick("a", b1); });
+  b2.addEventListener("click", function(){ pick("b", b2); });
+  b3.addEventListener("click", function(){ pick("c", b3); });
+})();
+
+/* ---------------- nav ---------------- */
+(function nav(){
+  var barEl = document.getElementById("progressbar");
+  var links = Array.prototype.slice.call(document.querySelectorAll("[data-nav]"));
+  var secs = links.map(function(a){ return document.getElementById(a.dataset.nav); }).filter(Boolean);
+  function onScroll(){
+    var doc = document.documentElement, max = doc.scrollHeight - doc.clientHeight;
+    barEl.style.width = (max > 0 ? (doc.scrollTop/max)*100 : 0) + "%";
+    var y = doc.scrollTop + 140, active = null;
+    secs.forEach(function(s){ if (s.offsetTop <= y) active = s.id; });
+    links.forEach(function(a){ a.classList.toggle("on", a.dataset.nav === active); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+})();
+
+})();
+</script>
+</body>
+</html>

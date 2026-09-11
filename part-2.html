@@ -1,0 +1,2077 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Seal and the Envelope</title>
+  <meta name="description" content="Signatures and encryption, with real key pairs generated in your browser. Chapters 4–5 of the JWT Handbook.">
+  <meta name="author" content="Swaraj Bangar">
+  <meta property="og:title" content="The Seal and the Envelope">
+  <meta property="og:description" content="Signatures and encryption, with real key pairs generated in your browser. Chapters 4–5 of the JWT Handbook.">
+  <meta property="og:type" content="article">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2756%27%3E%F0%9F%94%8F%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    :root{color-scheme:light dark}
+    html{-webkit-text-size-adjust:100%}
+    body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    img{max-width:100%}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+<style>
+/* ============================================================
+   JWT, Piece by Piece — security-print / pass-office identity
+   ============================================================ */
+
+:root{
+  --paper:#F8FAF8;
+  --paper-2:#FFFFFF;
+  --paper-3:#EDF1EC;
+  --ink:#131B17;
+  --ink-2:#44514B;
+  --ink-3:#6D7A72;
+  --rule:#E2E7E0;
+  --rule-2:#BFC9BC;
+  --engrave:rgba(29,78,74,.12);
+
+  --hdr:#8F5514;
+  --pay:#1B5A52;
+  --sig:#A2372A;
+  --hdr-bg:rgba(143,85,20,.13);
+  --pay-bg:rgba(27,90,82,.13);
+  --sig-bg:rgba(162,55,42,.13);
+  --hdr-ed:rgba(143,85,20,.42);
+  --pay-ed:rgba(27,90,82,.42);
+  --sig-ed:rgba(162,55,42,.42);
+
+  --ok:#2A6A4C;
+  --ok-bg:rgba(42,106,76,.12);
+  --bad:#A2372A;
+  --bad-bg:rgba(162,55,42,.12);
+  --warn:#8F5514;
+  --warn-bg:rgba(143,85,20,.12);
+
+  --shadow:0 1px 2px rgba(21,30,26,.04), 0 10px 26px -20px rgba(21,30,26,.40);
+  --shadow-lift:0 1px 3px rgba(21,30,26,.05), 0 20px 44px -24px rgba(21,30,26,.42);
+
+  --serif:"Bodoni Moda",Georgia,"Times New Roman",serif;
+  --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1311;
+    --paper-2:#161D1A;
+    --paper-3:#1F2925;
+    --ink:#E7ECE5;
+    --ink-2:#A5B2AA;
+    --ink-3:#76837B;
+    --rule:#28322D;
+    --rule-2:#3A453F;
+    --engrave:rgba(122,204,190,.14);
+
+    --hdr:#E2AB60;
+    --pay:#5FC9B5;
+    --sig:#EE8674;
+    --hdr-bg:rgba(226,171,96,.14);
+    --pay-bg:rgba(95,201,181,.14);
+    --sig-bg:rgba(238,134,116,.14);
+    --hdr-ed:rgba(226,171,96,.45);
+    --pay-ed:rgba(95,201,181,.45);
+    --sig-ed:rgba(238,134,116,.45);
+
+    --ok:#71CE9E;
+    --ok-bg:rgba(113,206,158,.13);
+    --bad:#EE8674;
+    --bad-bg:rgba(238,134,116,.13);
+    --warn:#E2AB60;
+    --warn-bg:rgba(226,171,96,.13);
+
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+    --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+  }
+}
+
+:root[data-theme="dark"]{
+  --paper:#0E1311;
+  --paper-2:#161D1A;
+  --paper-3:#1F2925;
+  --ink:#E7ECE5;
+  --ink-2:#A5B2AA;
+  --ink-3:#76837B;
+  --rule:#28322D;
+  --rule-2:#3A453F;
+  --engrave:rgba(122,204,190,.14);
+
+  --hdr:#E2AB60;
+  --pay:#5FC9B5;
+  --sig:#EE8674;
+  --hdr-bg:rgba(226,171,96,.14);
+  --pay-bg:rgba(95,201,181,.14);
+  --sig-bg:rgba(238,134,116,.14);
+  --hdr-ed:rgba(226,171,96,.45);
+  --pay-ed:rgba(95,201,181,.45);
+  --sig-ed:rgba(238,134,116,.45);
+
+  --ok:#71CE9E;
+  --ok-bg:rgba(113,206,158,.13);
+  --bad:#EE8674;
+  --bad-bg:rgba(238,134,116,.13);
+  --warn:#E2AB60;
+  --warn-bg:rgba(226,171,96,.13);
+
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 26px -18px rgba(0,0,0,.8);
+  --shadow-lift:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.85);
+}
+
+*{box-sizing:border-box}
+
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:var(--step);
+  font-weight:400;
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---------- layout rails ---------- */
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:22px}
+.prose{max-width:63ch;margin-inline:auto}
+.lab{max-width:940px;margin-inline:auto}
+
+section.chapter{padding-block:clamp(48px,7vw,86px);scroll-margin-top:56px}
+h2,h3,h4{scroll-margin-top:64px}
+.stack{display:flex;flex-direction:column;gap:1.05em}
+.stack-lg{display:flex;flex-direction:column;gap:2.1rem}
+.stack-xl{display:flex;flex-direction:column;gap:3.4rem}
+
+/* ---------- type ---------- */
+h1,h2,h3,h4{text-wrap:balance;margin:0;line-height:1.12}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:-.018em}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.85rem,4.2vw,2.7rem);letter-spacing:-.012em}
+h3{font-family:var(--sans);font-weight:650;font-size:clamp(1.12rem,2vw,1.32rem);letter-spacing:-.008em;line-height:1.3}
+h4{font-family:var(--sans);font-weight:650;font-size:1rem;letter-spacing:-.004em}
+p{margin:0}
+a{color:inherit}
+
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:500;
+  letter-spacing:.19em;text-transform:uppercase;color:var(--ink-3);
+}
+.lede{font-size:clamp(1.06rem,1.9vw,1.24rem);line-height:1.6;color:var(--ink-2);font-weight:350}
+.dropcap::first-letter{
+  font-family:var(--serif);font-weight:700;float:left;
+  font-size:3.5em;line-height:.82;padding:.06em .1em 0 0;color:var(--pay);
+}
+strong{font-weight:650;color:var(--ink)}
+em.term{font-style:normal;font-weight:600;color:var(--pay);white-space:nowrap}
+code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.12em .38em;border-radius:3px;color:var(--ink)}
+
+/* ---------- perforation rule ---------- */
+.perf{
+  height:1px;border:0;margin:0;
+  background:repeating-linear-gradient(to right,var(--rule-2) 0 7px,transparent 7px 15px);
+}
+.perf-thick{
+  position:relative;height:0;border:0;margin:0;
+  border-top:1px dashed var(--rule-2);
+}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{
+  max-width:1120px;margin-inline:auto;padding:9px 22px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.brandmark{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink);white-space:nowrap;
+}
+.brandmark span{color:var(--ink-3)}
+.navlinks{display:flex;gap:3px;margin-left:auto;flex-wrap:wrap}
+.navlinks a{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
+  color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
+}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a.on{color:var(--pay);background:var(--pay-bg)}
+.progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+#guilloche{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-in{position:relative;padding-block:clamp(52px,9vw,104px)}
+.hero-grid{display:grid;gap:34px}
+.hero h1{margin-block:.18em .34em}
+.hero h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2)}
+
+/* ---------- token strip ---------- */
+.tokenbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow-lift);overflow:hidden;
+}
+.tokenbox-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+}
+.tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.token{
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  word-break:break-all;padding:16px 14px;margin:0;
+}
+.token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
+.t-h{color:var(--hdr);background:var(--hdr-bg)}
+.t-p{color:var(--pay);background:var(--pay-bg)}
+.t-s{color:var(--sig);background:var(--sig-bg)}
+.t-dot{color:var(--ink-3);font-weight:600}
+.token b.dim{opacity:.3}
+.token[data-clickable] b{cursor:pointer}
+.token[data-clickable] b:hover{box-shadow:0 0 0 1.5px currentColor}
+
+/* ---------- part legend / tabs ---------- */
+.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+.parts button{
+  all:unset;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px;
+  border-right:1px solid var(--rule);transition:background .16s;
+}
+.parts button:last-child{border-right:0}
+.parts button:hover{background:var(--paper-3)}
+.parts button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
+.parts .pn{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase}
+.parts .pd{font-size:.78rem;color:var(--ink-3);line-height:1.35}
+.parts button[aria-selected="true"]{background:var(--paper-3)}
+.parts button[data-p="h"] .pn{color:var(--hdr)}
+.parts button[data-p="p"] .pn{color:var(--pay)}
+.parts button[data-p="s"] .pn{color:var(--sig)}
+
+/* ---------- panels & cards ---------- */
+.panel{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.panel-head{
+  padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper-3);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.panel-head .k{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2)}
+.panel-head .sub{font-size:.8rem;color:var(--ink-3)}
+.panel-body{padding:16px}
+
+.callout{
+  border-left:2px solid var(--pay);padding:2px 0 2px 16px;
+  color:var(--ink-2);font-size:.95em;
+}
+.callout.warn{border-left-color:var(--warn)}
+.callout.bad{border-left-color:var(--bad)}
+.callout .h{display:block;font-weight:650;color:var(--ink);margin-bottom:.2em;font-size:.98em}
+
+.hook{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  padding:20px 22px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.85em;
+}
+.hook .tag{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:8px;
+}
+.hook .tag::after{content:"";height:1px;flex:1;background:var(--rule)}
+.hook p{font-size:1.02em;line-height:1.62}
+
+/* ---------- buttons ---------- */
+.btn{
+  all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--sans);font-size:.83rem;font-weight:600;letter-spacing:.005em;
+  padding:8px 15px;border-radius:5px;border:1px solid var(--rule-2);
+  background:var(--paper-2);color:var(--ink);transition:background .15s,border-color .15s,transform .08s;
+  white-space:nowrap;
+}
+.btn:hover{background:var(--paper-3);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.btn.primary{background:var(--pay);color:var(--paper-2);border-color:var(--pay)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---------- form bits ---------- */
+label.fld{display:flex;flex-direction:column;gap:5px}
+label.fld .lb{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+input[type=text],textarea{
+  font-family:var(--mono);font-size:.82rem;line-height:1.6;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:5px;padding:9px 11px;width:100%;
+  resize:vertical;
+}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--pay);outline-offset:-1px;border-color:var(--pay)}
+
+/* ---------- status pills ---------- */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 9px;border-radius:100px;border:1px solid currentColor;
+}
+.pill.ok{color:var(--ok);background:var(--ok-bg)}
+.pill.bad{color:var(--bad);background:var(--bad-bg)}
+.pill.warn{color:var(--warn);background:var(--warn-bg)}
+.pill.mute{color:var(--ink-3);background:var(--paper-3);border-color:var(--rule-2)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+
+/* ---------- code blocks ---------- */
+pre.code{
+  font-family:var(--mono);font-size:.79rem;line-height:1.7;margin:0;
+  background:var(--paper);border:1px solid var(--rule);border-radius:6px;
+  padding:13px 15px;overflow-x:auto;color:var(--ink-2);
+}
+pre.code .key{color:var(--pay)}
+pre.code .str{color:var(--hdr)}
+pre.code .num{color:var(--sig)}
+pre.code .cm{color:var(--ink-3);font-style:italic}
+
+/* ---------- chapter opener ---------- */
+.chapnum{
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+}
+.chapnum .n{
+  font-family:var(--serif);font-size:2.6rem;font-weight:700;line-height:1;
+  color:var(--pay);
+}
+.chapnum .l{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.chapnum .rule{flex:1;height:1px;background:var(--rule)}
+
+/* ---------- coat check sim ---------- */
+.sim2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.simcol{border:1px solid var(--rule);border-radius:7px;background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
+.simcol h4{padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--paper-3);font-size:.85rem}
+.simcol .simbody{padding:13px;display:flex;flex-direction:column;gap:10px;flex:1}
+.rack{
+  height:74px;border:1px dashed var(--rule-2);border-radius:5px;background:var(--paper-2);
+  display:flex;flex-wrap:wrap;align-content:flex-start;gap:2px;padding:5px;overflow:hidden;
+}
+.coat{width:5px;height:11px;border-radius:1px;background:var(--pay);opacity:.75}
+.rack.empty-note{align-items:center;justify-content:center;align-content:center}
+.rack .note{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);letter-spacing:.06em;text-align:center;line-height:1.5}
+.metric{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--ink-3)}
+.metric b{font-family:var(--mono);font-size:1.05rem;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- ticket ---------- */
+.ticketgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.ticket{
+  position:relative;background:var(--paper-2);border:1px solid var(--rule-2);border-radius:6px;
+  display:grid;grid-template-columns:1fr 88px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ticket-main{padding:14px 15px;display:flex;flex-direction:column;gap:0}
+.ticket-stub{
+  border-left:1px dashed var(--rule-2);padding:14px 10px;
+  display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  background:var(--paper-3);
+}
+.ticket-brand{
+  font-family:var(--serif);font-size:1.05rem;font-weight:700;letter-spacing:-.01em;
+  padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+}
+.ticket-brand span{font-family:var(--mono);font-size:.6rem;font-weight:400;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.trow{
+  display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:baseline;
+  padding:4px 6px;margin-inline:-6px;border-radius:4px;cursor:default;
+  transition:background .15s;
+}
+.trow .tk{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.trow .tv{font-family:var(--mono);font-size:.78rem;color:var(--ink);word-break:break-word}
+.trow.hi{background:var(--pay-bg)}
+.trow.hi .tk{color:var(--pay)}
+.claimjson .cl{
+  display:block;padding:1px 6px;margin-inline:-6px;border-radius:3px;transition:background .15s;
+}
+.claimjson .cl.hi{background:var(--pay-bg)}
+.stubcode{font-family:var(--mono);font-size:.62rem;letter-spacing:.05em;color:var(--ink-3);writing-mode:vertical-rl;transform:rotate(180deg);margin-inline:auto}
+
+.claimlist{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.claimlist button{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;
+  grid-template-columns:52px 1fr;gap:12px;align-items:baseline;
+  padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
+}
+.claimlist button:last-child{border-bottom:0}
+.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
+.claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
+.claimlist .cx b{color:var(--ink);font-weight:600}
+
+/* ---------- base64 playground ---------- */
+.b64grid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.b64arrow{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+  text-align:center;display:flex;flex-direction:column;gap:3px;
+}
+.chipline{display:flex;flex-wrap:wrap;gap:3px;font-family:var(--mono);font-size:.72rem}
+.chip{padding:2px 5px;border-radius:3px;background:var(--paper-3);border:1px solid var(--rule)}
+.chip.b{background:var(--pay-bg);border-color:var(--pay-ed);color:var(--pay)}
+
+/* ---------- flow diagram ---------- */
+.flowwrap{overflow-x:auto}
+.flowsvg{display:block;width:100%;min-width:560px;height:auto;color:var(--ink-2)}
+.flowsvg .node{fill:var(--paper-2);stroke:var(--rule-2)}
+.flowsvg .nlabel{fill:var(--ink);font-family:var(--sans);font-size:12px;font-weight:600}
+.flowsvg .nsub{fill:var(--ink-3);font-family:var(--mono);font-size:9px;letter-spacing:.08em}
+.flowsvg .edge{stroke:var(--rule-2);stroke-width:1.5;fill:none;opacity:.35;transition:opacity .3s,stroke .3s}
+.flowsvg .edge.live{stroke:var(--pay);opacity:1;stroke-width:2.2;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.flowsvg .elabel{fill:var(--ink-3);font-family:var(--mono);font-size:9px;opacity:0;transition:opacity .3s}
+.flowsvg .elabel.live{fill:var(--pay);opacity:1}
+.flowsvg .node.live{stroke:var(--pay);stroke-width:2;fill:var(--pay-bg)}
+.stepnote{
+  display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start;
+  padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:6px;min-height:78px;
+}
+.stepnote .sn{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--paper-2);background:var(--pay);
+  width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+}
+.stepnote .st{font-size:.88rem;line-height:1.55;color:var(--ink-2)}
+
+/* ---------- token life ---------- */
+.lifebar{height:9px;border-radius:100px;background:var(--paper-3);overflow:hidden;border:1px solid var(--rule)}
+.lifebar i{display:block;height:100%;background:var(--ok);width:100%;border-radius:100px}
+.lifebar i.low{background:var(--warn)}
+.lifebar i.out{background:var(--bad)}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.statgrid div{background:var(--paper);padding:10px 12px}
+.statgrid .sv{font-family:var(--mono);font-size:1.25rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.2}
+.statgrid .sl{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-top:2px}
+
+/* ---------- attack lab ---------- */
+.verdict{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vcard{border:1px solid var(--rule);border-radius:7px;padding:13px;background:var(--paper);display:flex;flex-direction:column;gap:8px}
+.vcard.ok{border-color:var(--ok);background:var(--ok-bg)}
+.vcard.bad{border-color:var(--bad);background:var(--bad-bg)}
+.vcard h4{font-size:.86rem}
+.vcard p{font-size:.83rem;line-height:1.5;color:var(--ink-2)}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-family:var(--mono);font-size:.76rem;align-items:baseline}
+.kv dt{color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;font-size:.62rem}
+.kv dd{margin:0;word-break:break-all;color:var(--ink)}
+
+.sigcompare{display:flex;flex-direction:column;gap:7px}
+.sigline{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;font-family:var(--mono);font-size:.74rem}
+.sigline .sl{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.sigline .sv{word-break:break-all}
+.sigline .sv.match{color:var(--ok)}
+.sigline .sv.miss{color:var(--bad)}
+
+/* ---------- quiz ---------- */
+.quiz{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--paper-2)}
+.q{padding:18px 20px;border-bottom:1px solid var(--rule);display:flex;flex-direction:column;gap:11px}
+.q:last-child{border-bottom:0}
+.q .qq{font-weight:600;font-size:.97rem;line-height:1.5;display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start}
+.q .qn{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);padding-top:.25em}
+.opts{display:flex;flex-direction:column;gap:6px;padding-left:34px}
+.opt{
+  all:unset;box-sizing:border-box;cursor:pointer;padding:9px 13px;border-radius:5px;
+  border:1px solid var(--rule-2);background:var(--paper);font-size:.87rem;line-height:1.45;
+  transition:background .15s,border-color .15s;
+}
+.opt:hover{background:var(--paper-3)}
+.opt:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.opt.right{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.opt[disabled]{cursor:default}
+.qwhy{
+  padding-left:34px;font-size:.85rem;line-height:1.55;color:var(--ink-2);
+  border-left:2px solid var(--pay);margin-left:34px;padding-block:2px;
+}
+
+/* ---------- misc ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.minicard{border:1px solid var(--rule);border-radius:7px;padding:13px 14px;background:var(--paper-2);display:flex;flex-direction:column;gap:6px}
+.minicard .mt{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.minicard .mb{font-size:.87rem;line-height:1.5;color:var(--ink-2)}
+.minicard .mb b{color:var(--ink)}
+
+figure{margin:0;display:flex;flex-direction:column;gap:9px}
+figcaption{font-size:.8rem;color:var(--ink-3);line-height:1.5}
+
+footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:var(--paper-2)}
+.byline{
+  font-family:var(--serif);font-size:clamp(1.2rem,2.6vw,1.6rem);font-weight:500;font-style:italic;
+  color:var(--ink);letter-spacing:-.012em;line-height:1.3;margin:0;
+  padding-bottom:14px;border-bottom:1px solid var(--rule);
+}
+.byline strong{font-style:normal;font-weight:700;color:var(--pay)}
+.byline .hb{font-style:normal;font-size:.82em;margin-left:.28em}
+
+.srcnote{font-size:.82rem;color:var(--ink-3);line-height:1.6}
+.srcnote a{color:var(--pay)}
+
+@media (max-width:760px){
+  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
+  .b64arrow{flex-direction:row;justify-content:center;gap:10px}
+  .grid3,.statgrid,.parts{grid-template-columns:1fr}
+  .parts button{border-right:0;border-bottom:1px solid var(--rule)}
+  .ticket{grid-template-columns:1fr}
+  .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
+  .stubcode{writing-mode:horizontal-tb;transform:none;margin:0}
+  .navlinks{display:none}
+  .dropcap::first-letter{font-size:3em}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style><style>
+/* ---- part two: two more part-colours for the five-piece token ---- */
+:root{
+  --key:#6B3A82;  --key-bg:rgba(107,58,130,.13);  --key-ed:rgba(107,58,130,.42);
+  --iv:#2F5680;   --iv-bg:rgba(47,86,128,.13);    --iv-ed:rgba(47,86,128,.42);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --key:#C89BDC; --key-bg:rgba(200,155,220,.15); --key-ed:rgba(200,155,220,.45);
+    --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);  --iv-ed:rgba(134,182,230,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --key:#C89BDC; --key-bg:rgba(200,155,220,.15); --key-ed:rgba(200,155,220,.45);
+  --iv:#86B6E6;  --iv-bg:rgba(134,182,230,.15);  --iv-ed:rgba(134,182,230,.45);
+}
+
+.t-k{color:var(--key);background:var(--key-bg)}
+.t-i{color:var(--iv);background:var(--iv-bg)}
+
+/* five-part legend */
+.parts5{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--rule)}
+.parts5 button{
+  all:unset;cursor:pointer;padding:10px 11px;display:flex;flex-direction:column;gap:3px;
+  border-right:1px solid var(--rule);transition:background .16s;
+}
+.parts5 button:last-child{border-right:0}
+.parts5 button:hover,.parts5 button[aria-selected="true"]{background:var(--paper-3)}
+.parts5 button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
+.parts5 .pn{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase}
+.parts5 .pd{font-size:.74rem;color:var(--ink-3);line-height:1.35}
+.parts5 [data-p="h"] .pn{color:var(--hdr)}
+.parts5 [data-p="k"] .pn{color:var(--key)}
+.parts5 [data-p="i"] .pn{color:var(--iv)}
+.parts5 [data-p="c"] .pn{color:var(--pay)}
+.parts5 [data-p="t"] .pn{color:var(--sig)}
+
+/* branch-office grid */
+.offices{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:6px}
+.office{
+  border:1px solid var(--rule-2);border-radius:5px;padding:7px 4px;text-align:center;
+  background:var(--paper);transition:background .25s,border-color .25s,color .25s;
+}
+.office .oi{font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;color:var(--ink-3);display:block}
+.office .os{font-size:.62rem;font-weight:600;display:block;margin-top:3px;line-height:1.3}
+.office.forge{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.office.safe{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.office.hq{border-color:var(--pay);background:var(--pay-bg);color:var(--pay)}
+
+/* switch */
+.switch{display:inline-flex;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden}
+.switch button{
+  all:unset;cursor:pointer;padding:8px 16px;font-size:.83rem;font-weight:600;
+  border-right:1px solid var(--rule-2);transition:background .15s,color .15s;
+}
+.switch button:last-child{border-right:0}
+.switch button:hover{background:var(--paper-3)}
+.switch button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.switch button[aria-pressed="true"]{background:var(--pay);color:var(--paper-2)}
+
+/* direction table */
+.dirtable{width:100%;border-collapse:collapse;font-size:.87rem}
+.dirtable th,.dirtable td{padding:10px 13px;border:1px solid var(--rule);text-align:left}
+.dirtable thead th{background:var(--paper-3);font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.dirtable tbody th{font-weight:600;background:var(--paper-3);width:110px}
+.dirtable td b{color:var(--pay)}
+.dirtable td.enc b{color:var(--key)}
+
+/* keyring */
+.keyring{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.keyrow{
+  display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;
+  padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .2s;
+}
+.keyrow:last-child{border-bottom:0}
+.keyrow.active{background:var(--pay-bg)}
+.keyrow.retired{opacity:.5}
+.keyrow .kk{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--pay)}
+.keyrow .kd{font-size:.8rem;color:var(--ink-3)}
+
+/* trunk diagram bits */
+.twolock{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lockcard{
+  border:1px solid var(--rule);border-radius:7px;padding:14px;background:var(--paper);
+  display:flex;flex-direction:column;gap:7px;
+}
+.lockcard.big{border-color:var(--pay-ed);background:var(--pay-bg)}
+.lockcard.small{border-color:var(--key-ed);background:var(--key-bg)}
+.lockcard .lt{font-family:var(--mono);font-size:.64rem;letter-spacing:.13em;text-transform:uppercase}
+.lockcard.big .lt{color:var(--pay)}
+.lockcard.small .lt{color:var(--key)}
+.lockcard .lb{font-size:.86rem;line-height:1.5;color:var(--ink-2)}
+.lockcard .lb b{color:var(--ink)}
+
+/* mode cards */
+.modes{display:flex;flex-direction:column;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.moderow{
+  display:grid;grid-template-columns:190px 1fr 96px;gap:14px;align-items:center;
+  padding:11px 14px;border-bottom:1px solid var(--rule);
+}
+.moderow:last-child{border-bottom:0}
+.moderow .mn{font-weight:600;font-size:.85rem}
+.moderow .mx{font-size:.82rem;line-height:1.5;color:var(--ink-2)}
+.moderow .mp{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-align:right;
+  color:var(--ink-3);text-transform:uppercase;
+}
+.moderow .mp.full{color:var(--key)}
+
+@media (max-width:760px){
+  .parts5,.twolock{grid-template-columns:1fr}
+  .parts5 button{border-right:0;border-bottom:1px solid var(--rule)}
+  .moderow{grid-template-columns:1fr;gap:5px}
+  .moderow .mp{text-align:left}
+  .dirtable{font-size:.8rem}
+  .dirtable th,.dirtable td{padding:8px 9px}
+}
+</style>
+<style>
+/* ============ animated flow diagrams ============ */
+.flowbox{
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:8px;
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.flowscroll{overflow-x:auto;padding:14px 10px}
+.flowsvg2{display:block;width:100%;height:auto;margin-inline:auto}
+
+.fn rect,.fn path.shape{
+  fill:var(--paper-2);stroke:var(--rule-2);stroke-width:1.5;
+  transition:stroke .3s,fill .3s,stroke-width .3s;
+}
+.fn text{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;transition:fill .3s}
+.fn text.sub{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.07em}
+.fn.on rect,.fn.on path.shape{stroke:var(--pay);stroke-width:2.4;fill:var(--pay-bg)}
+.fn.pass rect,.fn.pass path.shape{stroke:var(--ok);stroke-width:2;fill:var(--ok-bg)}
+.fn.pass text{fill:var(--ok)}
+.fn.bad rect,.fn.bad path.shape{stroke:var(--bad);stroke-width:2.4;fill:var(--bad-bg)}
+.fn.bad text{fill:var(--bad)}
+.fn.muted rect,.fn.muted path.shape{opacity:.5}
+.fn.muted text{opacity:.5}
+
+.fe{stroke:var(--rule-2);stroke-width:2;fill:none;opacity:.62;transition:stroke .3s,opacity .3s}
+.fe.lit{stroke:var(--pay);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.dead{stroke:var(--bad);opacity:1;stroke-dasharray:9 6;animation:fmarch .55s linear infinite}
+.fe.done{stroke:var(--ok);opacity:.9}
+@keyframes fmarch{to{stroke-dashoffset:-15}}
+
+.fl{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;transition:fill .3s,opacity .3s;opacity:.78}
+.fl.lit{fill:var(--pay);opacity:1}
+.fl.dead{fill:var(--bad);opacity:1}
+.fl.done{fill:var(--ok);opacity:1}
+
+.chip{opacity:0;transition:opacity .2s}
+.chip.show{opacity:1}
+.chip circle{fill:var(--pay);stroke:var(--paper-2);stroke-width:2}
+.chip.bad circle{fill:var(--bad)}
+.chip.ok circle{fill:var(--ok)}
+.chip text{fill:var(--paper-2);font-family:var(--mono);font-size:9px;font-weight:600;text-anchor:middle}
+
+.flowbar{
+  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
+  padding:12px 15px;border-top:1px solid var(--rule);background:var(--paper-3);
+}
+.flowbar .btn{font-size:.78rem;padding:6px 12px}
+.flowlog{
+  padding:13px 16px;border-top:1px solid var(--rule);min-height:76px;
+  display:grid;grid-template-columns:22px 1fr;gap:11px;align-items:start;
+}
+.flowlog .fi{
+  width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-family:var(--mono);font-size:.66rem;font-weight:600;
+  background:var(--paper-3);color:var(--ink-3);transition:background .25s,color .25s;
+}
+.flowlog .fi.ok{background:var(--ok-bg);color:var(--ok)}
+.flowlog .fi.bad{background:var(--bad-bg);color:var(--bad)}
+.flowlog .ft{font-size:.87rem;line-height:1.55;color:var(--ink-2)}
+.flowlog .ft b{color:var(--ink)}
+.flowlog .ft .why{display:block;margin-top:5px;font-size:.82rem;color:var(--ink-3)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid var(--rule)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.legend i{width:14px;height:3px;border-radius:2px;display:block}
+.legend i.g{background:var(--pay)}
+.legend i.r{background:var(--bad)}
+.legend i.k{background:var(--ok)}
+.legend i.n{background:var(--rule-2)}
+</style>
+
+<script>
+/* ============ shared flow-animation engine ============ */
+window.FlowKit = (function(){
+  "use strict";
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r, reduced ? Math.min(ms,40) : ms); }); }
+
+  /* move a chip group along a <path>, returns a promise */
+  function travel(pathEl, chipEl, ms){
+    if (!pathEl || !chipEl) return Promise.resolve();
+    var len = pathEl.getTotalLength();
+    if (reduced){
+      var e = pathEl.getPointAtLength(len);
+      chipEl.setAttribute("transform","translate("+e.x+","+e.y+")");
+      return Promise.resolve();
+    }
+    return new Promise(function(resolve){
+      var t0 = null;
+      function frame(ts){
+        if (t0 === null) t0 = ts;
+        var k = Math.min(1, (ts - t0) / ms);
+        var eased = k < .5 ? 2*k*k : 1 - Math.pow(-2*k+2, 2)/2;
+        var p = pathEl.getPointAtLength(eased * len);
+        chipEl.setAttribute("transform","translate("+p.x+","+p.y+")");
+        if (k < 1) requestAnimationFrame(frame); else resolve();
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function clearAll(root){
+    root.querySelectorAll(".fn").forEach(function(n){ n.classList.remove("on","pass","bad","muted"); });
+    root.querySelectorAll(".fe").forEach(function(e){ e.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".fl").forEach(function(l){ l.classList.remove("lit","dead","done"); });
+    root.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("show","bad","ok"); });
+  }
+
+  function log(box, kind, mark, html){
+    var icon = box.querySelector(".fi"), txt = box.querySelector(".ft");
+    icon.className = "fi" + (kind ? " " + kind : "");
+    icon.innerHTML = mark;
+    txt.innerHTML = html;
+  }
+
+  return { travel: travel, sleep: sleep, clearAll: clearAll, log: log, reduced: reduced };
+})();
+</script>
+
+<nav class="topbar">
+  <div class="topbar-in">
+    <div class="brandmark">JWT <span>/ part two</span></div>
+    <div class="navlinks">
+      <a href="#ch4" data-nav="ch4">4 · Signatures</a>
+      <a href="#ch5" data-nav="ch5">5 · Encryption</a>
+      <a href="#nested" data-nav="nested">Both at once</a>
+      <a href="#quiz" data-nav="quiz">Check yourself</a>
+      <a href="part-1.html" style="color:var(--pay)">Part one</a>
+      <a href="part-3.html" style="color:var(--pay)">Part three</a>
+      <a href="index.html" style="color:var(--pay)">Contents</a>
+    </div>
+  </div>
+  <div class="progressbar" id="progressbar"></div>
+</nav>
+
+<header class="hero">
+  <canvas id="guilloche" aria-hidden="true"></canvas>
+  <div class="wrap hero-in">
+    <div class="hero-grid">
+      <div class="prose stack" style="margin-inline:0">
+        <div class="eyebrow">JWT, piece by piece · part two · handbook chapters 4–5</div>
+        <h1>The seal<br><span class="thin">and the envelope</span></h1>
+        <p class="lede">Part one left two questions hanging. How does the seal actually stop a forger &mdash; and what do you do when the message itself must stay private? Those are chapters 4 and 5, and they are the two halves of this page.</p>
+        <p style="color:var(--ink-3);font-size:.88rem">Everything here really runs. The page generates real key pairs and does real encryption in your browser.</p>
+        <p style="font-size:.88rem"><a href="part-1.html" style="color:var(--pay);text-decoration-thickness:1px;text-underline-offset:3px">Start with part one</a><span style="color:var(--ink-3)"> if you have not read it &mdash; it covers what a token is, where you meet one, and what the three pieces hold.</span></p>
+      </div>
+
+      <div class="tokenbox">
+        <div class="tokenbox-head">
+          <span class="tokenbox-title">Specimen · encrypted token</span>
+          <span class="pill mute" style="margin-left:auto"><span class="dot"></span>Five parts, four dots</span>
+        </div>
+        <p class="token" id="heroToken"></p>
+        <div class="parts5" role="tablist" aria-label="Parts of an encrypted token">
+          <button role="tab" data-p="h" aria-selected="true"><span class="pn">Header</span><span class="pd">Which two locks</span></button>
+          <button role="tab" data-p="k" aria-selected="false"><span class="pn">Wrapped key</span><span class="pd">The key, locked up</span></button>
+          <button role="tab" data-p="i" aria-selected="false"><span class="pn">IV</span><span class="pd">A pinch of randomness</span></button>
+          <button role="tab" data-p="c" aria-selected="false"><span class="pn">Ciphertext</span><span class="pd">The message, hidden</span></button>
+          <button role="tab" data-p="t" aria-selected="false"><span class="pn">Tag</span><span class="pd">Tamper-evident tape</span></button>
+        </div>
+        <div class="panel-body" style="border-top:1px solid var(--rule);background:var(--paper)">
+          <pre class="code" id="heroDecoded" style="border:0;background:transparent;padding:0"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================= CH 4 ============================= -->
+<section class="chapter" id="ch4">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">4</span>
+        <span class="l">JSON Web Signatures</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Who is allowed to make one</h2>
+    </div>
+
+    <div class="prose stack">
+      <p class="dropcap">In part one you saw a seal being made and broken. What you did not see is the question that decides how a whole system is built: <strong>if I let you check my seals, have I also let you make them?</strong></p>
+      <p>With the method used so far &mdash; <code>HS256</code> &mdash; the answer is yes. And that turns out to matter enormously.</p>
+
+      <div class="hook">
+        <div class="tag">Two ways to prove something is yours</div>
+        <p><strong>A rubber stamp.</strong> Your head office has one. A branch office needs to check that stamped letters are genuine, so you post them a copy of the stamp. Now that branch can check letters &mdash; and stamp new ones. You cannot give away one ability without the other.</p>
+        <p><strong>A handwritten signature.</strong> You sign a cheque. The bank keeps a sample of your signature on file and compares. They can check your signature for the rest of your life. They can never write it.</p>
+      </div>
+
+      <p>That is the entire difference between the two families of JWT signature, and it is worth saying slowly:</p>
+
+      <div class="grid2">
+        <div class="minicard" style="border-color:var(--warn)">
+          <span class="mt" style="color:var(--warn)">HS256 · the rubber stamp</span>
+          <span class="mb">One shared secret. <b>Anyone who can check a token can also make one.</b> Fine when the same people are on both ends.</span>
+        </div>
+        <div class="minicard" style="border-color:var(--ok)">
+          <span class="mt" style="color:var(--ok)">RS256 / ES256 · the signature</span>
+          <span class="mb">A pair of keys. The <b>private</b> one signs. The <b>public</b> one only checks. You can hand the public one to the whole world.</span>
+        </div>
+      </div>
+
+      <p>The handbook calls these <em class="term">shared secret</em> and <em class="term">public key</em> schemes. Watch what happens when you have more than two parties.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · one head office, twelve branches</span>
+          <span class="sub">Every branch needs to check tokens. Which method do you send them?</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="switch" role="group" aria-label="Signing method">
+            <button id="swHs" aria-pressed="true">Send the rubber stamp &nbsp;<span style="opacity:.7;font-weight:400">HS256</span></button>
+            <button id="swRs" aria-pressed="false">Send the signature sample &nbsp;<span style="opacity:.7;font-weight:400">RS256</span></button>
+          </div>
+          <div class="offices" id="offices"></div>
+          <div id="officeNote" class="callout" style="border-left-color:var(--warn)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <p>The handbook puts it plainly: with a shared secret, <em>"if a legitimate user turned malicious, he or she could modify messages without the other parties noticing."</em> With a key pair, that user only ever held the public key, and the public key cannot write anything.</p>
+      <p>This is why every large login provider &mdash; the ones whose tokens are checked by thousands of apps they have never met &mdash; signs with <code>RS256</code> or <code>ES256</code> and publishes the public key for anyone to fetch.</p>
+      <div class="callout">
+        <span class="h">Three names, one idea</span>
+        <code>HS256</code> is HMAC with SHA-256 &mdash; the shared secret. <code>RS256</code> is RSA, the classic key pair. <code>ES256</code> is the same idea on elliptic curves: different mathematics, much smaller keys, same guarantee. Only <code>HS256</code> is compulsory for a library to support; the other two are recommended. Everything else you will see (<code>HS384</code>, <code>RS512</code>, <code>PS256</code>&hellip;) is a variation on those three.
+      </div>
+    </div>
+
+    <!-- real keys -->
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Workshop · make a real key pair</span>
+          <span class="sub">Generated in your browser. Never leaves this page.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="btnrow">
+            <button class="btn primary" id="kgRsa">Generate an RSA key pair &nbsp;<span style="opacity:.7;font-weight:400">RS256</span></button>
+            <button class="btn" id="kgEc">Generate an elliptic-curve pair &nbsp;<span style="opacity:.7;font-weight:400">ES256</span></button>
+            <span class="pill mute" id="kgState"><span class="dot"></span>no keys yet</span>
+          </div>
+
+          <div class="grid2">
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k" style="color:var(--sig)">Private key · stays on the server</span></div>
+              <div class="panel-body"><pre class="code" id="kgPriv" style="border:0;background:transparent;padding:0;max-height:120px;overflow:auto">—</pre></div>
+            </div>
+            <div class="panel" style="box-shadow:none">
+              <div class="panel-head"><span class="k" style="color:var(--ok)">Public key · safe to publish</span></div>
+              <div class="panel-body"><pre class="code" id="kgPub" style="border:0;background:transparent;padding:0;max-height:120px;overflow:auto">—</pre></div>
+            </div>
+          </div>
+
+          <div class="statgrid">
+            <div><div class="sv" id="kgSizePriv">—</div><div class="sl">Private key bytes</div></div>
+            <div><div class="sv" id="kgSizePub">—</div><div class="sl">Public key bytes</div></div>
+            <div><div class="sv" id="kgSigLen">—</div><div class="sl">Signature bytes</div></div>
+          </div>
+
+          <div class="tokenbox" style="box-shadow:none">
+            <div class="tokenbox-head"><span class="tokenbox-title">Signed with the private key</span></div>
+            <p class="token" id="kgToken">generate a pair to sign something</p>
+          </div>
+
+          <div class="btnrow">
+            <button class="btn" id="kgVerify" disabled>Check it with the public key</button>
+            <button class="btn danger" id="kgForge" disabled>Try to forge one using only the public key</button>
+          </div>
+          <div id="kgVerdict"></div>
+
+          <div class="callout">
+            <span class="h">Notice the sizes</span>
+            The handbook points this out and it is easy to miss: an elliptic-curve key holds far less data than an RSA key for the same strength. Generate both and compare the numbers above. On a phone, on a slow connection, with a token sent hundreds of times a minute, that difference is the reason <code>ES256</code> exists.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- validation vs signature -->
+    <div class="prose stack">
+      <h3>4.1 &nbsp;"Valid" means more than "correctly sealed"</h3>
+      <div class="hook">
+        <div class="tag">A perfect ticket for yesterday</div>
+        <p>You hand the gate a ticket. The hologram is flawless. It is completely genuine.</p>
+        <p>It is also dated yesterday, and it is for a different line.</p>
+        <p>The gate has two separate jobs, and doing the first one brilliantly does not excuse skipping the second.</p>
+      </div>
+      <p>The handbook is strict about this word. <em class="term">Validating</em> a token does not mean checking the seal. It means checking <strong>everything the header and the payload ask for</strong> &mdash; and everything you require on top.</p>
+      <div class="grid3">
+        <div class="minicard"><span class="mt">Check the seal</span><span class="mb">Is it really from who it claims? And <b>was the algorithm one I allow?</b></span></div>
+        <div class="minicard"><span class="mt">Check the clock</span><span class="mb"><b>exp</b> passed? <b>nbf</b> not reached yet? Then it does not matter how perfect the seal is.</span></div>
+        <div class="minicard"><span class="mt">Check it is for you</span><span class="mb">Is my name in <b>aud</b>? Is <b>iss</b> someone I actually trust?</span></div>
+      </div>
+      <p>Two consequences follow, and both surprise people. A token with <code>"alg": "none"</code> can technically be "valid" &mdash; the header asked for nothing, so nothing failed. And a token with a flawless signature can be entirely invalid, because it expired an hour ago.</p>
+    </div>
+
+    <!-- header claims / kid -->
+    <div class="prose stack">
+      <h3>4.2 &nbsp;Extra lines in the header</h3>
+      <p>Once you move to key pairs, a new problem appears: <strong>which key?</strong> A server might be holding five public keys. The token has to say which one it was signed with. That is what these header fields are for.</p>
+      <div class="claimlist" style="margin-block:.4em">
+        <button type="button"><span class="ck">kid</span><span class="cx"><b>Key ID &mdash; the label on the key.</b> By far the one you will meet most. Just a name you chose, so the reader knows which key to reach for.</span></button>
+        <button type="button"><span class="ck">jku</span><span class="cx"><b>Where to fetch my public keys.</b> A web address holding a set of keys. Must be fetched over HTTPS &mdash; otherwise someone on the way can swap the keys.</span></button>
+        <button type="button"><span class="ck">jwk</span><span class="cx"><b>The public key, carried inside the token itself.</b> Convenient, and a trap: see the warning below.</span></button>
+        <button type="button"><span class="ck">x5u &nbsp;x5c &nbsp;x5t</span><span class="cx"><b>The certificate versions of the same idea.</b> A web address for certificates, the certificates themselves, or a short fingerprint of one. You will meet these in older enterprise systems.</span></button>
+        <button type="button"><span class="ck">crit</span><span class="cx"><b>"You must understand these lines or refuse the whole token."</b> A list of header fields the reader is not allowed to ignore. Like a warning label: if you cannot read it, do not open the box.</span></button>
+      </div>
+
+      <div class="callout bad">
+        <span class="h">The trap in <code>jwk</code></span>
+        A token that carries its own key is a note that says <em>"here is my signature sample &mdash; compare it to the one I have also enclosed."</em> Of course it matches; the forger wrote both. It is the same family as the stripping trick from part one, and the fix is the same shape: <strong>only ever check against a key you already trust</strong>, one you fetched yourself or were configured with. Never one the token handed you.
+      </div>
+
+      <p>Here is why <code>kid</code> earns its place. Keys have to be changed sometimes &mdash; and changing a key is exactly like changing the locks on a building full of people who are still inside.</p>
+    </div>
+
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Try it · changing the keys without locking anyone out</span>
+          <span class="sub">Old tokens are still out there. They do not know you changed anything.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="keyring" id="keyring"></div>
+          <div class="btnrow">
+            <button class="btn primary" id="krRotate">Add a new key and start signing with it</button>
+            <button class="btn danger" id="krDrop" disabled>Throw away the old key</button>
+            <button class="btn ghost" id="krReset">Reset</button>
+          </div>
+          <div class="statgrid">
+            <div><div class="sv" id="krOk" style="color:var(--ok)">0</div><div class="sl">Tokens accepted</div></div>
+            <div><div class="sv" id="krFail" style="color:var(--bad)">0</div><div class="sl">Tokens rejected</div></div>
+            <div><div class="sv" id="krAge">—</div><div class="sl">Signed with</div></div>
+          </div>
+          <div id="krNote" class="callout"></div>
+          <div class="btnrow">
+            <button class="btn" id="krTraffic">Send 20 more requests</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JSON serialization -->
+    <div class="prose stack">
+      <h3>4.3 &nbsp;When one signature is not enough</h3>
+      <div class="hook">
+        <div class="tag">A contract, not a ticket</div>
+        <p>A ticket stub has room for exactly one stamp. That is fine &mdash; one railway issued it.</p>
+        <p>A contract is different. The same document, signed at the bottom by three different people, each with their own pen.</p>
+      </div>
+      <p>The dotted form you have been reading all along is called <em class="term">compact serialization</em>, and it holds exactly one signature. When you need more, JWS offers a second shape: the whole thing written out as ordinary JSON, with a list of signatures.</p>
+      <p>The example below is straight from the specification. One payload, signed twice &mdash; once with RSA, once with elliptic curve &mdash; so that readers who can only check one kind still have something they can check.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Three shapes, one token</span>
+          <span class="sub">Same payload throughout.</span>
+        </div>
+        <div class="panel-body stack">
+          <div class="switch" role="group" aria-label="Serialization shape">
+            <button id="serCompact" aria-pressed="true">Compact</button>
+            <button id="serFlat" aria-pressed="false">Flattened JSON</button>
+            <button id="serGeneral" aria-pressed="false">General JSON</button>
+          </div>
+          <pre class="code" id="serOut" style="max-height:340px;overflow:auto"></pre>
+          <div id="serNote" style="font-size:.86rem;line-height:1.55;color:var(--ink-2)"></div>
+        </div>
+      </div>
+
+      <div class="prose stack">
+        <h4>Two kinds of header, and the difference matters</h4>
+        <p>The JSON shape introduces something the compact form does not have: a header that <strong>is not covered by the signature</strong>.</p>
+        <div class="grid2">
+          <div class="minicard" style="border-color:var(--ok)">
+            <span class="mt" style="color:var(--ok)">protected</span>
+            <span class="mb">Written on the document itself. <b>The signature covers it.</b> Change one letter and the signature breaks.</span>
+          </div>
+          <div class="minicard" style="border-color:var(--warn)">
+            <span class="mt" style="color:var(--warn)">header &nbsp;<span style="text-transform:none;letter-spacing:0">(unprotected)</span></span>
+            <span class="mb">A sticky note attached to it. <b>Anyone can peel it off and write a new one.</b> Useful for hints, never for decisions.</span>
+          </div>
+        </div>
+        <p>At least one of the two must be there; both may be. The real header is the two of them added together, and no field may appear twice. In practice <code>kid</code> often lives on the sticky note &mdash; it is only a hint about which key to try, and trying the wrong key simply fails the check anyway.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= CH 5 ============================= -->
+<section class="chapter" id="ch5">
+  <div class="wrap stack-xl">
+
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">5</span>
+        <span class="l">JSON Web Encryption</span>
+        <span class="rule"></span>
+      </div>
+      <h2>When it must not be read</h2>
+      <p class="lede" style="margin-top:.7em">Everything so far has been a postcard. Readable by anyone, protected only from editing. Now we put it in an envelope.</p>
+    </div>
+
+    <div class="prose stack">
+      <p>The moment you encrypt a token, one thing reverses &mdash; and it catches almost everybody, because it feels backwards the first time you meet it.</p>
+
+      <div class="hook">
+        <div class="tag">The notice board and the suggestion box</div>
+        <p><strong>Signing is a notice board.</strong> One person pins up notices. Everyone in the building can read them and check the handwriting is really the manager's. Nobody else can pin a genuine notice. Information flows from <em>one</em> writer to <em>many</em> readers.</p>
+        <p><strong>Encrypting is a suggestion box.</strong> It has a slot in the top. Anyone walking past can drop a note in. Only the person with the box key can open it and read. Information flows from <em>many</em> writers to <em>one</em> reader.</p>
+      </div>
+
+      <p>Same pair of keys, opposite directions. Written out, it is almost startling:</p>
+
+      <div style="overflow-x:auto">
+        <table class="dirtable">
+          <thead>
+            <tr><th></th><th>Signing &nbsp;(JWS)</th><th>Encrypting &nbsp;(JWE)</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Who holds the private key</th><td>the <b>writer</b> &mdash; signs</td><td class="enc">the <b>reader</b> &mdash; decrypts</td></tr>
+            <tr><th>Who holds the public key</th><td>the <b>readers</b> &mdash; check only</td><td class="enc">the <b>writers</b> &mdash; encrypt only</td></tr>
+            <tr><th>So data flows</th><td>one → many</td><td class="enc">many → one</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout bad">
+        <span class="h">The consequence people miss</span>
+        Encryption does <strong>not</strong> replace signing. If anyone can drop a note in your suggestion box, then opening a note tells you what it says &mdash; not who wrote it. A liar can post one too. That is why the handbook says the two are <em>complementary</em>, and why serious systems do both: sign it so the reader knows who wrote it, then encrypt it so only the reader can read it.
+      </div>
+
+      <p style="font-size:.92rem;color:var(--ink-3)">And no, you cannot fix this by handing the private key to every writer. That just turns it back into a shared secret, and you have thrown away the only thing key pairs were good for.</p>
+    </div>
+
+    <!-- five parts -->
+    <div class="prose stack">
+      <h3>5.1 &nbsp;Five parts now, not three</h3>
+      <p>An encrypted token has a different shape. Four dots, five pieces. Before the list, the reason &mdash; because the reason is the whole design.</p>
+
+      <div class="hook">
+        <div class="tag">Posting a locked trunk</div>
+        <p>You want to send a heavy trunk to a friend, and nobody along the way may look inside.</p>
+        <p>You own a clever little lock that only your friend can open. But it is tiny and painfully slow to work, and it will not close a trunk.</p>
+        <p>So you do it in two steps. Lock the trunk with an ordinary strong padlock &mdash; fast, and it handles any size. Then drop <em>that padlock's key</em> into the tiny clever lock-box that only your friend can open, and tape the box to the trunk.</p>
+        <p>Your friend opens the little box, takes out the key, opens the trunk.</p>
+      </div>
+
+      <p>That is exactly what an encrypted JWT does, and it is why there are five pieces instead of three.</p>
+
+      <div class="twolock">
+        <div class="lockcard big">
+          <span class="lt">The padlock · enc</span>
+          <span class="lb"><b>Fast, handles any amount of data.</b> A brand-new random key is made for this one message. The handbook calls it the <b>Content Encryption Key</b>, or CEK. It locks the actual message.</span>
+        </div>
+        <div class="lockcard small">
+          <span class="lt">The little lock-box · alg</span>
+          <span class="lb"><b>Slow, tiny, and only your reader can open it.</b> Its only job is to carry that one small key safely. This is piece two of the token.</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="h">Why the header has two algorithms</span>
+        This trips everyone up on first reading. <code>alg</code> is the <strong>little lock-box</strong> &mdash; how the key was wrapped. <code>enc</code> is the <strong>padlock</strong> &mdash; how the message itself was locked. Two algorithms, because there are genuinely two locks.
+      </div>
+
+      <p>With that in mind, the five pieces read themselves:</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="claimlist">
+        <button type="button"><span class="ck" style="color:var(--hdr)">1</span><span class="cx"><b>Protected header.</b> Which two locks were used &mdash; <code>alg</code> for the box, <code>enc</code> for the padlock &mdash; plus <code>kid</code>, <code>zip</code> and the rest. Readable by anyone; that is fine, it gives nothing away.</span></button>
+        <button type="button"><span class="ck" style="color:var(--key)">2</span><span class="cx"><b>The wrapped key.</b> The padlock's key, sealed inside the little box. Sometimes this piece is <em>empty</em> &mdash; see the modes below.</span></button>
+        <button type="button"><span class="ck" style="color:var(--iv)">3</span><span class="cx"><b>Initialization vector.</b> A pinch of fresh randomness, so that locking the same message twice never produces the same jumble twice.</span></button>
+        <button type="button"><span class="ck" style="color:var(--pay)">4</span><span class="cx"><b>Ciphertext.</b> The message itself, locked. This is the trunk.</span></button>
+        <button type="button"><span class="ck" style="color:var(--sig)">5</span><span class="cx"><b>Authentication tag.</b> Tamper-evident tape across the lid. Proves nobody poked at the locked trunk on the way.</span></button>
+      </div>
+
+      <div class="prose stack">
+        <div class="callout warn">
+          <span class="h">Why the tag has to be there</span>
+          Without it, an attacker who cannot read your message can still <em>scribble on it</em> &mdash; flip a few characters of the locked text and post it on. The reader unlocks it, gets nonsense, and processes the nonsense. Sometimes the way it fails leaks information, one small piece at a time. The tag stops that at the door: if a single bit changed, unlocking refuses to even begin. This is why the spec insists on it.
+        </div>
+      </div>
+    </div>
+
+    <div class="lab stack-lg" id="jwepipe">
+
+    <div class="prose stack">
+      <h4 style="margin-top:.4em">The two locks, as one picture</h4>
+      <p>The words above describe a trunk and a lock-box. Here is the same thing as the actual pipeline &mdash; press play and watch which lane does what.</p>
+    </div>
+
+    <div class="flowbox">
+      <div class="flowscroll">
+<svg class="flowsvg2" viewBox="0 0 860 420" role="img" aria-label="Two lanes converge: a random content key encrypts the message with AES-GCM producing ciphertext and a tag, while the same key is wrapped with RSA for the reader; the header, wrapped key, IV, ciphertext and tag are then joined into a five-part token.">
+<defs><marker id="fa2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><polygon points="0,1 9,5 0,9" fill="currentColor"></polygon></marker></defs>
+
+<g color="var(--rule-2)">
+  <path id="pe1" class="fe" d="M186 74 L 340 74" marker-end="url(#fa2)"></path>
+  <text id="pl1" class="fl" x="263" y="65" text-anchor="middle">plaintext</text>
+
+  <path id="pe2" class="fe" d="M110 148 L 110 106 L 336 106" marker-end="url(#fa2)"></path>
+  <text id="pl2" class="fl" x="252" y="99" text-anchor="middle">the padlock key</text>
+
+  <path id="pe3" class="fe" d="M186 322 L 264 322 L 264 148 L 336 128" marker-end="url(#fa2)"></path>
+  <text id="pl3" class="fl" x="276" y="180" text-anchor="start">randomness</text>
+
+  <path id="pe4" class="fe" d="M110 196 L 110 250 L 336 250" marker-end="url(#fa2)"></path>
+  <text id="pl4" class="fl" x="252" y="243" text-anchor="middle">the same key again</text>
+
+  <path id="pe5" class="fe" d="M540 92 L 610 92 L 610 152 L 646 152" marker-end="url(#fa2)"></path>
+  <text id="pl5" class="fl" x="756" y="96" text-anchor="middle">ciphertext + tag</text>
+
+  <path id="pe6" class="fe" d="M540 262 L 610 262 L 610 196 L 646 196" marker-end="url(#fa2)"></path>
+  <text id="pl6" class="fl" x="556" y="278" text-anchor="start">wrapped key</text>
+
+  <path id="pe7" class="fe" d="M110 348 L 110 386 L 700 386 L 700 296" marker-end="url(#fa2)"></path>
+  <text id="pl7" class="fl" x="404" y="400" text-anchor="middle">the IV travels in the clear &#8212; it is not a secret</text>
+</g>
+
+<g id="pnMsg" class="fn"><rect x="20" y="48" width="166" height="52" rx="7"></rect>
+  <text x="103" y="70" text-anchor="middle">Your payload</text>
+  <text class="sub" x="103" y="86" text-anchor="middle">ORDINARY JSON</text></g>
+
+<g id="pnCek" class="fn"><rect x="20" y="148" width="180" height="48" rx="7"></rect>
+  <text x="110" y="169" text-anchor="middle">A fresh random key</text>
+  <text class="sub" x="110" y="185" text-anchor="middle">THE CEK &#183; 16 BYTES</text></g>
+
+<g id="pnIv" class="fn"><rect x="20" y="300" width="166" height="48" rx="7"></rect>
+  <text x="103" y="321" text-anchor="middle">A fresh IV</text>
+  <text class="sub" x="103" y="337" text-anchor="middle">12 RANDOM BYTES</text></g>
+
+<g id="pnEnc" class="fn"><rect x="340" y="60" width="200" height="64" rx="7"></rect>
+  <text x="440" y="84" text-anchor="middle">Lock the message</text>
+  <text class="sub" x="440" y="101" text-anchor="middle">AES-128-GCM &#183; FAST, ANY SIZE</text>
+  <text class="sub" x="440" y="114" text-anchor="middle">ENC</text></g>
+
+<g id="pnWrap" class="fn"><rect x="340" y="228" width="200" height="64" rx="7"></rect>
+  <text x="440" y="252" text-anchor="middle">Lock the key</text>
+  <text class="sub" x="440" y="269" text-anchor="middle">RSA-OAEP &#183; SLOW, TINY</text>
+  <text class="sub" x="440" y="282" text-anchor="middle">ALG</text></g>
+
+<g id="pnOut" class="fn"><rect x="646" y="60" width="196" height="230" rx="7"></rect>
+  <text x="744" y="84" text-anchor="middle">The five parts</text>
+  <text class="sub" x="744" y="100" text-anchor="middle">JOINED BY FOUR DOTS</text></g>
+
+<g id="pp1" class="fn"><rect x="662" y="112" width="164" height="26" rx="4"></rect><text x="672" y="129" text-anchor="start" font-size="11">1 &#183; header</text></g>
+<g id="pp2" class="fn"><rect x="662" y="144" width="164" height="26" rx="4"></rect><text x="672" y="161" text-anchor="start" font-size="11">2 &#183; wrapped key</text></g>
+<g id="pp3" class="fn"><rect x="662" y="176" width="164" height="26" rx="4"></rect><text x="672" y="193" text-anchor="start" font-size="11">3 &#183; iv</text></g>
+<g id="pp4" class="fn"><rect x="662" y="208" width="164" height="26" rx="4"></rect><text x="672" y="225" text-anchor="start" font-size="11">4 &#183; ciphertext</text></g>
+<g id="pp5" class="fn"><rect x="662" y="240" width="164" height="26" rx="4"></rect><text x="672" y="257" text-anchor="start" font-size="11">5 &#183; tag</text></g>
+
+<g id="pchip" class="chip"><circle r="11"></circle><text y="3.5">&#9679;</text></g>
+</svg>
+      </div>
+      <div class="legend">
+        <span><i class="g"></i>running now</span>
+        <span><i class="k"></i>done</span>
+        <span><i class="n"></i>waiting</span>
+      </div>
+      <div class="flowbar">
+        <button class="btn primary" data-jwe="run">Play the whole thing</button>
+        <button class="btn" data-jwe="reset">Reset</button>
+        <span style="font-size:.8rem;color:var(--ink-3)">Two lanes, five outputs, four dots.</span>
+      </div>
+      <div class="flowlog">
+        <span class="fi">&#183;</span>
+        <span class="ft">Two separate locks are at work here, and mixing them up is the usual source of confusion. Press play to follow each one.</span>
+      </div>
+    </div>
+    </div>
+
+    <!-- real JWE -->
+    <div class="lab">
+      <div class="panel">
+        <div class="panel-head">
+          <span class="k">Workshop · really encrypt something</span>
+          <span class="sub">RSA-OAEP-256 for the box, AES-128-GCM for the padlock. Genuine crypto, running here.</span>
+        </div>
+        <div class="panel-body stack">
+          <label class="fld">
+            <span class="lb">The secret message</span>
+            <textarea id="jweIn" rows="3">{"sub":"402","salary_band":"C4","note":"nobody else should read this"}</textarea>
+          </label>
+
+          <div class="btnrow">
+            <button class="btn primary" id="jweGo">Lock it</button>
+            <button class="btn" id="jweAgain" disabled>Lock the same message again</button>
+            <button class="btn" id="jweOpen" disabled>Unlock it</button>
+            <button class="btn danger" id="jweTamper" disabled>Scribble on the locked text</button>
+          </div>
+
+          <div class="tokenbox" style="box-shadow:none">
+            <div class="tokenbox-head">
+              <span class="tokenbox-title">The encrypted token</span>
+              <span class="pill mute" id="jwePill" style="margin-left:auto"><span class="dot"></span>nothing yet</span>
+            </div>
+            <p class="token" id="jweToken">press "Lock it"</p>
+          </div>
+
+          <dl class="kv" id="jweParts"></dl>
+
+          <div id="jweOut"></div>
+
+          <div class="callout">
+            <span class="h">Press "lock the same message again"</span>
+            Same message, same keys &mdash; and a completely different token, every time. That is the initialization vector doing its job. If encrypting the same thing always gave the same answer, anyone watching would learn when you repeated yourself, without ever reading a word.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- key management modes -->
+    <div class="prose stack">
+      <h3>5.2 &nbsp;Five ways to get the key across</h3>
+      <p>The specification lists five ways of settling on that padlock key. They sound like five different worlds; they are really one question &mdash; <strong>what, if anything, goes in piece two?</strong></p>
+    </div>
+
+    <div class="lab stack-lg">
+      <div class="modes">
+        <div class="moderow">
+          <span class="mn">Key Encryption</span>
+          <span class="mx">The little lock-box, using a key pair. The one in the workshop above, and the one you will meet most.</span>
+          <span class="mp full">piece 2 filled</span>
+        </div>
+        <div class="moderow">
+          <span class="mn">Key Wrapping</span>
+          <span class="mx">Same idea, but the box is locked with a secret you already share, rather than a key pair.</span>
+          <span class="mp full">piece 2 filled</span>
+        </div>
+        <div class="moderow">
+          <span class="mn">Key Agreement with Wrapping</span>
+          <span class="mx">Both sides work out a shared key from their own key pairs, then use it to wrap the padlock key.</span>
+          <span class="mp full">piece 2 filled</span>
+        </div>
+        <div class="moderow">
+          <span class="mn">Direct Key Agreement</span>
+          <span class="mx">The clever one. Both sides independently arrive at the same key without it ever being sent. Nothing to wrap.</span>
+          <span class="mp">piece 2 empty</span>
+        </div>
+        <div class="moderow">
+          <span class="mn">Direct Encryption</span>
+          <span class="mx">You already share a secret key, so use it as the padlock key itself. Nothing to wrap.</span>
+          <span class="mp">piece 2 empty</span>
+        </div>
+      </div>
+
+      <div class="prose stack">
+        <p>So when you meet a token with two dots in a row and nothing between them, that is not a bug. It is one of the bottom two modes, saying <em>there was nothing to send.</em></p>
+        <div class="callout">
+          <span class="h">One more distinction worth keeping straight</span>
+          The <strong>CEK</strong> is the padlock key &mdash; the thing that actually locks your message. The <strong>JWE Encrypted Key</strong> is the wrapped-up version of it that travels in piece two. Same key, two states: in your hand, or in the box.
+        </div>
+      </div>
+    </div>
+
+    <div class="prose stack">
+      <h4>Several readers, one trunk</h4>
+      <p>JWE has a written-out JSON shape too, and it does something rather elegant. Encrypting for three people does not mean three encrypted copies of your message.</p>
+      <p><strong>You lock the trunk once.</strong> Then you tape three little lock-boxes to it &mdash; one for each friend, each holding the same padlock key. Everyone opens their own box, gets the same key, opens the same trunk.</p>
+      <p>In the JSON form that is a <code>recipients</code> list: one shared <code>ciphertext</code>, and one <code>encrypted_key</code> per person.</p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= NESTED ============================= -->
+<section class="chapter" id="nested">
+  <div class="wrap stack-xl">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">✦</span>
+        <span class="l">Putting both together</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Sign it, then hide it</h2>
+    </div>
+
+    <div class="prose stack">
+      <p>You now have two tools that do different jobs. A signature says <strong>who wrote this</strong>. Encryption says <strong>only you may read it</strong>. When you need both answers, you use both &mdash; one inside the other. The handbook calls this a <em class="term">nested JWT</em>.</p>
+      <p>The order is not a matter of taste.</p>
+    </div>
+
+    <div class="lab stack-lg">
+      <figure>
+        <div class="flowwrap">
+          <svg class="flowsvg" viewBox="0 0 700 200" role="img" aria-label="A payload is first signed into a three-part token, and that whole token is then encrypted as the payload of a five-part token.">
+            <defs>
+              <marker id="ar2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <polygon points="0,1 9,5 0,9" fill="currentColor"></polygon>
+              </marker>
+            </defs>
+
+            <path class="edge live" d="M156 100 L 214 100" marker-end="url(#ar2)"></path>
+            <text class="elabel live" x="185" y="90" text-anchor="middle">sign first</text>
+
+            <path class="edge live" d="M392 100 L 450 100" marker-end="url(#ar2)"></path>
+            <text class="elabel live" x="421" y="90" text-anchor="middle">then encrypt</text>
+
+            <rect class="node" x="20" y="66" width="132" height="68" rx="6"></rect>
+            <text class="nlabel" x="86" y="94" text-anchor="middle">Your data</text>
+            <text class="nsub" x="86" y="112" text-anchor="middle">PLAIN JSON</text>
+
+            <rect class="node" x="218" y="52" width="172" height="96" rx="6"></rect>
+            <text class="nlabel" x="304" y="80" text-anchor="middle">Signed token</text>
+            <text class="nsub" x="304" y="98" text-anchor="middle">3 PARTS · PROVES WHO</text>
+            <text class="nsub" x="304" y="122" text-anchor="middle">READABLE BY ANYONE</text>
+
+            <rect class="node" x="454" y="38" width="222" height="124" rx="6"></rect>
+            <text class="nlabel" x="565" y="70" text-anchor="middle">Encrypted token</text>
+            <text class="nsub" x="565" y="88" text-anchor="middle">5 PARTS · PROVES WHO + HIDES</text>
+            <rect class="node" x="478" y="102" width="174" height="42" rx="4" stroke-dasharray="4 3"></rect>
+            <text class="nsub" x="565" y="128" text-anchor="middle">THE SIGNED TOKEN, INSIDE</text>
+          </svg>
+        </div>
+        <figcaption>The signed token becomes the payload of the encrypted one. The header of the outer token carries <code>"cty": "JWT"</code> — the line that tells the reader "there is another token in here, keep going".</figcaption>
+      </figure>
+
+      <div class="prose stack">
+        <h4>Why signing has to come first</h4>
+        <p>Sign then encrypt, and the signature ends up <em>inside</em> the envelope. An attacker cannot cut it off, because they cannot get in there at all &mdash; and the whole stripping trick from part one dies quietly.</p>
+        <p>Do it the other way round and the signature sits on the outside of a box nobody can inspect. Anyone can peel it off and stick their own on.</p>
+        <p style="font-size:.92rem;color:var(--ink-3)">The handbook adds a careful footnote: this order only works because JWE always carries that authentication tag, so the locked message is already protected from tampering. For encryption schemes without one, the usual advice runs the other way.</p>
+        <div class="callout">
+          <span class="h">And when you do not need both</span>
+          If the same system writes and reads the token, a shared-secret encrypted token already tells you both things &mdash; nobody else could have made it. Nesting matters when the writer and the reader are genuinely different parties.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="perf">
+
+<!-- ============================= QUIZ ============================= -->
+<section class="chapter" id="quiz">
+  <div class="wrap stack-lg">
+    <div class="prose">
+      <div class="chapnum">
+        <span class="n">✓</span>
+        <span class="l">Check yourself</span>
+        <span class="rule"></span>
+      </div>
+      <h2>Six more questions</h2>
+      <p class="lede" style="margin-top:.6em">Chapters 4 and 5 only. Every answer explains itself.</p>
+    </div>
+    <div class="lab">
+      <div class="quiz" id="quizBox"></div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" style="padding-block:0 clamp(40px,6vw,72px)">
+  <div class="wrap lab">
+    <div class="panel" style="box-shadow:var(--shadow-lift)">
+      <div class="panel-head"><span class="k">Keep going</span><span class="sub">Handbook chapters 6, 7 and Annex A</span></div>
+      <div class="panel-body stack">
+        <h3 style="font-family:var(--serif);font-size:clamp(1.5rem,3vw,2rem);font-weight:700">The Locksmith's Manual</h3>
+        <p style="max-width:62ch;color:var(--ink-2)">Twice now, something has been labelled &ldquo;the maths&rdquo; and skipped over. Part three opens it: <strong>Base64 down to the individual bit</strong>, a hash you can watch avalanche, <strong>HMAC built by hand</strong> and checked against your browser, <strong>RSA with numbers small enough to follow</strong> &mdash; and an elliptic curve you place points on yourself.</p>
+        <p style="max-width:62ch;color:var(--ink-2)">Then the other half: six real attacks, and the eight rules that stop all of them.</p>
+        <div class="btnrow"><a class="btn primary" href="part-3.html" style="text-decoration:none">Read part three &nbsp;&rarr;</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="wrap prose stack">
+    <div class="eyebrow">Colophon</div>
+    <p class="byline">Recreated by <strong>Swaraj Bangar</strong><span class="hb" role="img" aria-label="love">❤️</span></p>
+    <p class="srcnote">
+      Part two of a hands-on reading of <strong>The JWT Handbook</strong> (v0.14.2) by Sebastián E. Peyrott, published by Auth0. This page follows chapters 4 and 5 &mdash; JSON Web Signatures and JSON Web Encryption. The rubber stamps, suggestion boxes and locked trunks are this page's own.
+    </p>
+    <p class="srcnote">
+      The cryptography here is real: key pairs, signatures and encryption all run in your browser through Web Crypto. Nothing you type is sent anywhere, and nothing here is production code &mdash; real systems need proper libraries and proper key handling.
+    </p>
+    <p class="srcnote" style="color:var(--ink-3)">
+      Set in Bodoni Moda, Public&nbsp;Sans and IBM Plex Mono. &nbsp;·&nbsp; <a href="part-1.html" style="color:var(--pay)">Part one</a> &nbsp;·&nbsp; <a href="part-3.html" style="color:var(--pay)">Part three</a> &nbsp;·&nbsp; <a href="index.html" style="color:var(--pay)">All three parts</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var box = document.querySelector("#jwepipe");
+  if (!box || !window.FlowKit) return;
+  var FK = window.FlowKit, svg = box.querySelector("svg"), chip = svg.querySelector("#pchip");
+  var running = false;
+
+  function on(id){ var n = svg.querySelector(id); if (n){ n.classList.remove("muted"); n.classList.add("on"); } }
+  function done(id){ var n = svg.querySelector(id); if (n){ n.classList.remove("on","muted"); n.classList.add("pass"); } }
+
+  var SCRIPT = [
+    { edge:"#pe2", lab:"#pl2", node:"#pnCek", pre:"#pnCek",
+      msg:"<b>Step 1 &mdash; make a key nobody has ever used.</b> Sixteen random bytes, invented for this one message and thrown away afterwards. The handbook calls it the <b>Content Encryption Key</b>." },
+    { edge:"#pe1", lab:"#pl1", node:"#pnEnc", pre:"#pnMsg",
+      msg:"<b>Step 2 &mdash; the payload goes in.</b> Whatever you were going to put in a signed token goes here instead, in the clear, for now." },
+    { edge:"#pe3", lab:"#pl3", node:"#pnEnc",
+      msg:"<b>Step 3 &mdash; add randomness.</b> Twelve fresh bytes so that locking the same message twice never looks the same twice." },
+    { edge:"#pe5", lab:"#pl5", node:"#pnEnc",
+      msg:"<b>Step 4 &mdash; lock the trunk.</b> AES-GCM is fast and handles any amount of data. Out comes the hidden message <em>and</em> a tag &mdash; tamper-evident tape, produced by the same operation.", finish:"#pnEnc", parts:["#pp4","#pp5"] },
+    { edge:"#pe4", lab:"#pl4", node:"#pnWrap",
+      msg:"<b>Step 5 &mdash; now the problem.</b> Your reader needs that random key, and it cannot simply be posted alongside. So it goes to the second lock." },
+    { edge:"#pe6", lab:"#pl6", node:"#pnWrap",
+      msg:"<b>Step 6 &mdash; lock the key in the little box.</b> RSA is slow and can only handle a tiny amount of data &mdash; which is fine, because sixteen bytes is all it has to carry.", finish:"#pnWrap", parts:["#pp2"] },
+    { edge:"#pe7", lab:"#pl7", node:"#pnOut",
+      msg:"<b>Step 7 &mdash; the IV rides along in the open.</b> It is not a secret and never was. Without the key it gives nothing away; without it, the same message would encrypt identically every time.", parts:["#pp3","#pp1"] }
+  ];
+
+  async function run(){
+    if (running) return;
+    running = true;
+    FK.clearAll(box);
+    svg.querySelectorAll(".fn").forEach(function(n){ n.classList.add("muted"); });
+    chip.classList.add("show");
+
+    for (var i=0;i<SCRIPT.length;i++){
+      var s = SCRIPT[i];
+      if (s.pre) on(s.pre);
+      var e = svg.querySelector(s.edge), l = svg.querySelector(s.lab);
+      e.classList.add("lit"); l.classList.add("lit");
+      FK.log(box, "", String(i+1), s.msg);
+      on(s.node);
+      await FK.travel(e, chip, 620);
+      e.classList.remove("lit"); e.classList.add("done");
+      l.classList.remove("lit"); l.classList.add("done");
+      if (s.pre) done(s.pre);
+      if (s.finish) done(s.finish);
+      if (s.parts) s.parts.forEach(function(p){ var n = svg.querySelector(p); n.classList.remove("muted"); n.classList.add("pass"); });
+      await FK.sleep(620);
+    }
+    done("#pnOut"); done("#pnIv");
+    chip.classList.add("ok");
+    FK.log(box, "ok", "&#10003;",
+      "<b>Five parts, joined by four dots.</b> Two locks did two different jobs: a fast one on the message because it can be any size, and a slow careful one on the key because it only had sixteen bytes to protect."+
+      "<span class='why'>This is why the header names two algorithms. <code>enc</code> is the trunk. <code>alg</code> is the little box.</span>");
+    running = false;
+  }
+
+  box.querySelector('[data-jwe="run"]').addEventListener("click", run);
+  box.querySelector('[data-jwe="reset"]').addEventListener("click", function(){
+    if (running) return;
+    FK.clearAll(box);
+    FK.log(box, "", "&#183;", "Two separate locks are at work here, and mixing them up is the usual source of confusion. Press play to follow each one.");
+  });
+})();
+</script>
+
+<script>
+(function(){
+"use strict";
+
+var TE = new TextEncoder(), TD = new TextDecoder();
+
+function bytesToB64url(bytes){
+  var s = "";
+  for (var i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
+}
+function b64url(str){ return bytesToB64url(TE.encode(str)); }
+function unb64urlBytes(s){
+  var t = s.replace(/-/g,"+").replace(/_/g,"/");
+  while (t.length % 4) t += "=";
+  var bin = atob(t), out = new Uint8Array(bin.length);
+  for (var i=0;i<bin.length;i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+                  .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function shorten(s, n){
+  s = String(s);
+  return s.length <= n ? s : s.slice(0, n) + "…";
+}
+function prettyJson(obj){
+  var s = JSON.stringify(obj, null, 2);
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/"([^"]+)":/g,'<span class="key">"$1"</span>:')
+    .replace(/:\s*"([^"]*)"/g,': <span class="str">"$1"</span>')
+    .replace(/:\s*(-?\d+(\.\d+)?)/g,': <span class="num">$1</span>')
+    .replace(/:\s*(true|false|null)/g,': <span class="num">$1</span>');
+}
+
+/* ---------------- guilloche ---------------- */
+(function guilloche(){
+  var cv = document.getElementById("guilloche");
+  if (!cv) return;
+  function draw(){
+    var host = cv.parentElement, w = host.offsetWidth, h = host.offsetHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = w*dpr; cv.height = h*dpr;
+    var g = cv.getContext("2d");
+    g.scale(dpr, dpr); g.clearRect(0,0,w,h);
+    g.strokeStyle = getComputedStyle(document.body).getPropertyValue("--engrave").trim() || "rgba(0,0,0,.1)";
+    g.lineWidth = 0.6;
+    var cx = w*0.92, cy = h*0.46, scale = Math.min(w,h)*0.62;
+    var R = scale, r = scale*0.1379, d = scale*0.118;
+    for (var pass=0; pass<16; pass++){
+      var phase = pass*0.0393, rr = r*(1 + pass*0.0042), k = (R-rr)/rr;
+      g.beginPath();
+      for (var i=0;i<=720;i++){
+        var t = (i/720)*Math.PI*2*8 + phase;
+        var x = cx + (R-rr)*Math.cos(t) + d*Math.cos(k*t);
+        var y = cy + (R-rr)*Math.sin(t) - d*Math.sin(k*t);
+        if (i===0) g.moveTo(x,y); else g.lineTo(x,y);
+      }
+      g.stroke();
+    }
+  }
+  draw();
+  var t=null;
+  window.addEventListener("resize", function(){ clearTimeout(t); t=setTimeout(draw,180); });
+  if (window.matchMedia){
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+  }
+})();
+
+/* ---------------- hero: five-part specimen ---------------- */
+(function hero(){
+  var el = document.getElementById("heroToken"), out = document.getElementById("heroDecoded");
+  if (!el) return;
+  var P = {
+    h: "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMTI4R0NNIiwia2lkIjoiMjAyNi1zcHJpbmcifQ",
+    k: "QRuFPq3lM9dYoT2xVbA7cHkNzs1WgE0jIuL5rXfPmB8vCnDqZaSyKt4eJhGw",
+    i: "b7Kq2ZmXsPvA0tRe",
+    c: "yT4nQpLxVdW9sHcB2mKfEuZaR7gJ0iNvXoY3tSlC1hDpMwqOe6bA",
+    t: "9hH0vgRfYgPnAHOd8stkvw"
+  };
+  el.innerHTML =
+    '<b class="t-h">'+P.h+'</b><b class="t-dot">.</b>'+
+    '<b class="t-k">'+P.k+'</b><b class="t-dot">.</b>'+
+    '<b class="t-i">'+P.i+'</b><b class="t-dot">.</b>'+
+    '<b class="t-p">'+P.c+'</b><b class="t-dot">.</b>'+
+    '<b class="t-s">'+P.t+'</b>';
+
+  var views = {
+    h: function(){
+      return prettyJson({alg:"RSA-OAEP-256", enc:"A128GCM", kid:"2026-spring"}) +
+        '\n<span class="cm">// alg = the little lock-box, enc = the padlock</span>';
+    },
+    k: function(){ return '<span class="cm">// the padlock key, sealed so only the reader can open it.\n// not text — just bytes, written out in base64.</span>'; },
+    i: function(){ return '<span class="cm">// twelve random bytes, freshly made for this one message,\n// so the same message never looks the same twice.</span>'; },
+    c: function(){ return '<span class="cm">// your actual payload, locked. this is the trunk.\n// without the key it is noise, and it stays noise.</span>'; },
+    t: function(){ return '<span class="cm">// tamper-evident tape. change one bit of the ciphertext\n// and unlocking refuses to even start.</span>'; }
+  };
+  var tabs = document.querySelectorAll(".parts5 button");
+  function select(which){
+    tabs.forEach(function(b){ b.setAttribute("aria-selected", b.dataset.p === which ? "true":"false"); });
+    out.innerHTML = views[which]();
+    var map = {h:"t-h", k:"t-k", i:"t-i", c:"t-p", t:"t-s"};
+    el.querySelectorAll("b").forEach(function(b){
+      if (b.classList.contains("t-dot")) return;
+      b.classList.toggle("dim", !b.classList.contains(map[which]));
+    });
+  }
+  tabs.forEach(function(b){ b.addEventListener("click", function(){ select(b.dataset.p); }); });
+  select("h");
+})();
+
+/* ---------------- twelve branch offices ---------------- */
+(function offices(){
+  var grid = document.getElementById("offices");
+  if (!grid) return;
+  var note = document.getElementById("officeNote");
+  var hs = document.getElementById("swHs"), rs = document.getElementById("swRs");
+  var mode = "hs";
+
+  function render(){
+    var html = '<div class="office hq"><span class="oi">HQ</span><span class="os">signs</span></div>';
+    for (var i=1;i<=12;i++){
+      var cls = mode === "hs" ? "forge" : "safe";
+      var label = mode === "hs" ? "can forge" : "checks only";
+      html += '<div class="office '+cls+'"><span class="oi">BR-'+String(i).padStart(2,"0")+'</span><span class="os">'+label+'</span></div>';
+    }
+    grid.innerHTML = html;
+    hs.setAttribute("aria-pressed", mode === "hs" ? "true":"false");
+    rs.setAttribute("aria-pressed", mode === "rs" ? "true":"false");
+    if (mode === "hs"){
+      note.style.borderLeftColor = "var(--bad)";
+      note.innerHTML = '<span class="h">Twelve offices can now forge tokens</span>'+
+        'You had to send them the stamp so they could check. The stamp does not know the difference between checking and stamping. One careless branch, one leaked copy, one unhappy employee — and somebody is writing their own admin tokens.';
+    } else {
+      note.style.borderLeftColor = "var(--ok)";
+      note.innerHTML = '<span class="h">Twelve offices can check, none can forge</span>'+
+        'You sent a sample of your signature, not your hand. They can compare it forever. If a branch is broken into, the thief gets something that was already public and is worth nothing on its own.';
+    }
+  }
+  hs.addEventListener("click", function(){ mode="hs"; render(); });
+  rs.addEventListener("click", function(){ mode="rs"; render(); });
+  render();
+})();
+
+/* ---------------- real key pairs: RS256 / ES256 ---------------- */
+(function keygen(){
+  var bRsa = document.getElementById("kgRsa");
+  if (!bRsa) return;
+  var bEc = document.getElementById("kgEc"), state = document.getElementById("kgState");
+  var privEl = document.getElementById("kgPriv"), pubEl = document.getElementById("kgPub");
+  var szPriv = document.getElementById("kgSizePriv"), szPub = document.getElementById("kgSizePub"), szSig = document.getElementById("kgSigLen");
+  var tokEl = document.getElementById("kgToken"), verdict = document.getElementById("kgVerdict");
+  var bVerify = document.getElementById("kgVerify"), bForge = document.getElementById("kgForge");
+
+  var pair = null, kind = null, signingInput = "", sigB64 = "";
+  var PAYLOAD = {sub:"402", name:"Ana Moreau", admin:false};
+
+  function busy(msg){
+    state.className = "pill warn";
+    state.innerHTML = '<span class="dot"></span>' + msg;
+  }
+  async function make(which){
+    kind = which;
+    busy(which === "rsa" ? "generating 2048-bit RSA…" : "generating P-256…");
+    bRsa.disabled = true; bEc.disabled = true;
+    verdict.innerHTML = "";
+    try {
+      if (which === "rsa"){
+        pair = await crypto.subtle.generateKey(
+          {name:"RSASSA-PKCS1-v1_5", modulusLength:2048,
+           publicExponent:new Uint8Array([1,0,1]), hash:"SHA-256"}, true, ["sign","verify"]);
+      } else {
+        pair = await crypto.subtle.generateKey(
+          {name:"ECDSA", namedCurve:"P-256"}, true, ["sign","verify"]);
+      }
+    } catch(e){
+      state.className = "pill bad";
+      state.innerHTML = '<span class="dot"></span>this browser refused';
+      bRsa.disabled = false; bEc.disabled = false;
+      return;
+    }
+
+    var pkcs8 = new Uint8Array(await crypto.subtle.exportKey("pkcs8", pair.privateKey));
+    var spki  = new Uint8Array(await crypto.subtle.exportKey("spki",  pair.publicKey));
+    var jwkPub = await crypto.subtle.exportKey("jwk", pair.publicKey);
+
+    privEl.textContent = shorten(bytesToB64url(pkcs8), 320);
+    pubEl.innerHTML = prettyJson(
+      which === "rsa"
+        ? {kty:jwkPub.kty, n:shorten(jwkPub.n, 44), e:jwkPub.e}
+        : {kty:jwkPub.kty, crv:jwkPub.crv, x:shorten(jwkPub.x,26), y:shorten(jwkPub.y,26)}
+    );
+    szPriv.textContent = pkcs8.length;
+    szPub.textContent = spki.length;
+
+    var header = which === "rsa" ? {alg:"RS256", typ:"JWT"} : {alg:"ES256", typ:"JWT"};
+    signingInput = b64url(JSON.stringify(header)) + "." + b64url(JSON.stringify(PAYLOAD));
+    var algo = which === "rsa" ? "RSASSA-PKCS1-v1_5" : {name:"ECDSA", hash:"SHA-256"};
+    var sig = new Uint8Array(await crypto.subtle.sign(algo, pair.privateKey, TE.encode(signingInput)));
+    sigB64 = bytesToB64url(sig);
+    szSig.textContent = sig.length;
+
+    var bits = signingInput.split(".");
+    tokEl.innerHTML = '<b class="t-h">'+bits[0]+'</b><b class="t-dot">.</b><b class="t-p">'+bits[1]+
+                      '</b><b class="t-dot">.</b><b class="t-s">'+esc(sigB64)+'</b>';
+
+    state.className = "pill ok";
+    state.innerHTML = '<span class="dot"></span>' + (which === "rsa" ? "RSA 2048 ready" : "P-256 ready");
+    bRsa.disabled = false; bEc.disabled = false;
+    bVerify.disabled = false; bForge.disabled = false;
+  }
+  bRsa.addEventListener("click", function(){ make("rsa"); });
+  bEc.addEventListener("click", function(){ make("ec"); });
+
+  bVerify.addEventListener("click", async function(){
+    if (!pair) return;
+    var algo = kind === "rsa" ? "RSASSA-PKCS1-v1_5" : {name:"ECDSA", hash:"SHA-256"};
+    var ok = await crypto.subtle.verify(algo, pair.publicKey, unb64urlBytes(sigB64), TE.encode(signingInput));
+    verdict.innerHTML = ok
+      ? '<div class="vcard ok"><h4>The public key says yes</h4><p>It checked the signature without ever holding the private key. This is what you can safely hand to twelve branch offices, or to the whole internet.</p><span class="pill ok"><span class="dot"></span>verified</span></div>'
+      : '<div class="vcard bad"><h4>Verification failed</h4><p>Something is off — regenerate the pair and try again.</p></div>';
+  });
+
+  bForge.addEventListener("click", async function(){
+    if (!pair) return;
+    var algo = kind === "rsa" ? "RSASSA-PKCS1-v1_5" : {name:"ECDSA", hash:"SHA-256"};
+    var evil = signingInput.split(".")[0] + "." + b64url(JSON.stringify({sub:"402", name:"Ana Moreau", admin:true}));
+    var msg = "";
+    try {
+      await crypto.subtle.sign(algo, pair.publicKey, TE.encode(evil));
+      msg = "Unexpectedly succeeded.";
+    } catch(e){
+      msg = e && e.name ? (e.name + ": " + (e.message || "operation not permitted for this key")) : "the key refused";
+    }
+    verdict.innerHTML = '<div class="vcard bad"><h4>The forgery does not even start</h4>'+
+      '<p>Asking the public key to sign is not a thing you can do. It is not that the answer comes out wrong — the operation does not exist for that key. Your browser said:</p>'+
+      '<pre class="code" style="font-size:.72rem">'+esc(msg)+'</pre>'+
+      '<span class="pill ok"><span class="dot"></span>attack impossible, not merely difficult</span></div>';
+  });
+})();
+
+/* ---------------- key rotation ---------------- */
+(function rotate(){
+  var ring = document.getElementById("keyring");
+  if (!ring) return;
+  var bRot = document.getElementById("krRotate"), bDrop = document.getElementById("krDrop"), bReset = document.getElementById("krReset");
+  var bTraffic = document.getElementById("krTraffic");
+  var okEl = document.getElementById("krOk"), failEl = document.getElementById("krFail"), ageEl = document.getElementById("krAge");
+  var note = document.getElementById("krNote");
+  var st;
+
+  function reset(){
+    st = { keys:[{id:"2026-spring", accepted:true, signing:true}], ok:0, fail:0, outstanding:20, rotated:false, dropped:false };
+    bDrop.disabled = true; bRot.disabled = false;
+    note.style.borderLeftColor = "var(--pay)";
+    note.innerHTML = '<span class="h">One key, everything quiet</span>Twenty tokens are out there in people\'s browsers right now, all signed with <code>2026-spring</code>.';
+    render();
+  }
+  function render(){
+    ring.innerHTML = st.keys.map(function(k){
+      var cls = k.accepted ? (k.signing ? "keyrow active" : "keyrow") : "keyrow retired";
+      var role = k.signing ? "signing new tokens · still accepted" : (k.accepted ? "old tokens only · still accepted" : "thrown away · rejected");
+      return '<div class="'+cls+'"><span class="kk">kid: '+k.id+'</span><span class="kd">'+role+'</span>'+
+             '<span class="pill '+(k.accepted?"ok":"bad")+'"><span class="dot"></span>'+(k.accepted?"accepted":"gone")+'</span></div>';
+    }).join("");
+    okEl.textContent = st.ok; failEl.textContent = st.fail;
+    var signing = st.keys.filter(function(k){ return k.signing; })[0];
+    ageEl.textContent = signing ? signing.id.replace("2026-","") : "—";
+    ageEl.style.fontSize = ".95rem";
+  }
+  function traffic(){
+    for (var i=0;i<20;i++){
+      var old = st.outstanding > 0 && Math.random() < st.outstanding/20;
+      var usedKid = old ? "2026-spring" : (st.rotated ? "2026-autumn" : "2026-spring");
+      if (old) st.outstanding = Math.max(0, st.outstanding - 1);
+      var k = st.keys.filter(function(x){ return x.id === usedKid; })[0];
+      if (k && k.accepted) st.ok++; else st.fail++;
+    }
+    if (st.dropped && st.fail > 0){
+      note.style.borderLeftColor = "var(--bad)";
+      note.innerHTML = '<span class="h">You dropped it too early</span>Every person still carrying an old token was thrown out mid-session. They did nothing wrong — their token is perfectly signed, you just stopped recognising the handwriting. The fix is patience: keep accepting the old key until the last old token has expired.';
+    }
+    render();
+  }
+  bRot.addEventListener("click", function(){
+    st.rotated = true;
+    st.keys.forEach(function(k){ k.signing = false; });
+    st.keys.push({id:"2026-autumn", accepted:true, signing:true});
+    bRot.disabled = true; bDrop.disabled = false;
+    note.style.borderLeftColor = "var(--ok)";
+    note.innerHTML = '<span class="h">Two keys, nobody notices</span>New tokens are signed with <code>2026-autumn</code>. Old ones still say <code>kid: 2026-spring</code>, and the server still has that key, so they keep working until they expire. This overlap is the whole trick.';
+    render();
+  });
+  bDrop.addEventListener("click", function(){
+    st.dropped = true;
+    st.keys.forEach(function(k){ if (k.id === "2026-spring") k.accepted = false; });
+    bDrop.disabled = true;
+    note.style.borderLeftColor = "var(--warn)";
+    note.innerHTML = '<span class="h">Old key thrown away</span>Now send some traffic and see who gets hurt.';
+    render();
+  });
+  bTraffic.addEventListener("click", traffic);
+  bReset.addEventListener("click", reset);
+  reset();
+})();
+
+/* ---------------- serialization shapes ---------------- */
+(function serial(){
+  var out = document.getElementById("serOut");
+  if (!out) return;
+  var note = document.getElementById("serNote");
+  var bC = document.getElementById("serCompact"), bF = document.getElementById("serFlat"), bG = document.getElementById("serGeneral");
+
+  var PAYLOAD = "eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ";
+  var RS = "cC4hiUPoj9Eetdgtv3hF80EGrhuB__dzERat0XF9g2VtQgr9PJbu3XOiZj5RZmh7";
+  var ES = "DtEhU3ljbEg8L38VWAfUAqOyKAM6-Xx-F4GawxaepmXFCgfTjDxw5djxLa8ISlSA";
+
+  var shapes = {
+    compact: {
+      body: '<span class="cm">// header . payload . signature — exactly one signature, always</span>\n\n' +
+            '<span style="color:var(--hdr)">eyJhbGciOiJSUzI1NiJ9</span>.\n' +
+            '<span style="color:var(--pay)">' + PAYLOAD.slice(0,60) + '…</span>.\n' +
+            '<span style="color:var(--sig)">' + RS + '…</span>',
+      note: 'The form you already know. Small, URL-safe, and it fits in an HTTP header — which is why it is what nearly everyone actually sends. One signature, no room for anything else.'
+    },
+    flat: {
+      body: prettyJson({
+        payload: PAYLOAD.slice(0,48) + "…",
+        protected: "eyJhbGciOiJFUzI1NiJ9",
+        header: { kid: "e9bc097a-ce51-4036-9562" },
+        signature: ES + "…"
+      }),
+      note: 'The written-out form with a single signature. Larger, but it can carry an unprotected header — the "sticky note" — which the compact form has nowhere to put. Notice <code>kid</code> living there.'
+    },
+    general: {
+      body: prettyJson({
+        payload: PAYLOAD.slice(0,48) + "…",
+        signatures: [
+          { protected: "eyJhbGciOiJSUzI1NiJ9", header: {kid:"2010-12-29"}, signature: RS + "…" },
+          { protected: "eyJhbGciOiJFUzI1NiJ9", header: {kid:"e9bc097a-ce51-4036"}, signature: ES + "…" }
+        ]
+      }),
+      note: 'The contract. <strong>One payload, signed twice</strong> — once with RSA, once with elliptic curve. A reader who only understands one of the two still has something they can check. This example is taken straight from the specification.'
+    }
+  };
+  function show(which, btn){
+    [bC,bF,bG].forEach(function(b){ b.setAttribute("aria-pressed", b === btn ? "true":"false"); });
+    out.innerHTML = shapes[which].body;
+    note.innerHTML = shapes[which].note;
+  }
+  bC.addEventListener("click", function(){ show("compact", bC); });
+  bF.addEventListener("click", function(){ show("flat", bF); });
+  bG.addEventListener("click", function(){ show("general", bG); });
+  show("compact", bC);
+})();
+
+/* ---------------- real JWE: RSA-OAEP-256 + A128GCM ---------------- */
+(function jwe(){
+  var go = document.getElementById("jweGo");
+  if (!go) return;
+  var again = document.getElementById("jweAgain"), open = document.getElementById("jweOpen"), tamper = document.getElementById("jweTamper");
+  var inEl = document.getElementById("jweIn"), tokEl = document.getElementById("jweToken");
+  var partsEl = document.getElementById("jweParts"), outEl = document.getElementById("jweOut"), pill = document.getElementById("jwePill");
+
+  var rsaPair = null, current = null, lastToken = null;
+
+  var HEADER = {alg:"RSA-OAEP-256", enc:"A128GCM"};
+  var HEADER_B64 = b64url(JSON.stringify(HEADER));
+
+  async function ensureKeys(){
+    if (rsaPair) return;
+    pill.className = "pill warn";
+    pill.innerHTML = '<span class="dot"></span>making the reader\'s key pair…';
+    rsaPair = await crypto.subtle.generateKey(
+      {name:"RSA-OAEP", modulusLength:2048, publicExponent:new Uint8Array([1,0,1]), hash:"SHA-256"},
+      true, ["encrypt","decrypt"]);
+  }
+
+  async function encryptOnce(){
+    await ensureKeys();
+    var cek = crypto.getRandomValues(new Uint8Array(16));
+    var iv  = crypto.getRandomValues(new Uint8Array(12));
+    var cekKey = await crypto.subtle.importKey("raw", cek, "AES-GCM", false, ["encrypt","decrypt"]);
+    var aad = TE.encode(HEADER_B64);
+    var sealed = new Uint8Array(await crypto.subtle.encrypt(
+      {name:"AES-GCM", iv:iv, additionalData:aad, tagLength:128}, cekKey, TE.encode(inEl.value)));
+    var ct  = sealed.slice(0, sealed.length - 16);
+    var tag = sealed.slice(sealed.length - 16);
+    var wrapped = new Uint8Array(await crypto.subtle.encrypt({name:"RSA-OAEP"}, rsaPair.publicKey, cek));
+    return {
+      header: HEADER_B64,
+      key: bytesToB64url(wrapped),
+      iv: bytesToB64url(iv),
+      ct: bytesToB64url(ct),
+      tag: bytesToB64url(tag),
+      cekPreview: bytesToB64url(cek)
+    };
+  }
+
+  function paint(p, tone){
+    tokEl.innerHTML =
+      '<b class="t-h">'+p.header+'</b><b class="t-dot">.</b>'+
+      '<b class="t-k">'+shorten(p.key, 120)+'</b><b class="t-dot">.</b>'+
+      '<b class="t-i">'+p.iv+'</b><b class="t-dot">.</b>'+
+      '<b class="t-p">'+p.ct+'</b><b class="t-dot">.</b>'+
+      '<b class="t-s">'+p.tag+'</b>';
+    partsEl.innerHTML =
+      '<dt style="color:var(--pay)">padlock key (CEK)</dt><dd>'+p.cekPreview+' <span style="color:var(--ink-3)">— made fresh, never sent in the clear</span></dd>'+
+      '<dt style="color:var(--iv)">iv</dt><dd>'+p.iv+'</dd>'+
+      '<dt style="color:var(--sig)">tag</dt><dd>'+p.tag+'</dd>';
+    pill.className = "pill " + (tone || "ok");
+    pill.innerHTML = '<span class="dot"></span>locked';
+  }
+
+  go.addEventListener("click", async function(){
+    outEl.innerHTML = "";
+    try {
+      current = await encryptOnce();
+      lastToken = null;
+      paint(current);
+      again.disabled = false; open.disabled = false; tamper.disabled = false;
+    } catch(e){
+      pill.className = "pill bad";
+      pill.innerHTML = '<span class="dot"></span>this browser refused';
+    }
+  });
+
+  again.addEventListener("click", async function(){
+    var prevCt = current ? current.ct : null;
+    current = await encryptOnce();
+    paint(current);
+    outEl.innerHTML = '<div class="vcard ok"><h4>Same message in, different token out</h4>'+
+      '<p>Nothing about the message changed. A new random padlock key and a new IV were made, so every one of the last three pieces is completely different.</p>'+
+      '<div class="sigcompare">'+
+      '<div class="sigline"><span class="sl">before</span><span class="sv">'+esc(shorten(prevCt||"—", 78))+'</span></div>'+
+      '<div class="sigline"><span class="sl">now</span><span class="sv">'+esc(shorten(current.ct, 78))+'</span></div>'+
+      '</div></div>';
+  });
+
+  open.addEventListener("click", async function(){
+    if (!current) return;
+    try {
+      var cek = new Uint8Array(await crypto.subtle.decrypt({name:"RSA-OAEP"}, rsaPair.privateKey, unb64urlBytes(current.key)));
+      var cekKey = await crypto.subtle.importKey("raw", cek, "AES-GCM", false, ["decrypt"]);
+      var ct = unb64urlBytes(current.ct), tag = unb64urlBytes(current.tag);
+      var joined = new Uint8Array(ct.length + tag.length);
+      joined.set(ct, 0); joined.set(tag, ct.length);
+      var plain = await crypto.subtle.decrypt(
+        {name:"AES-GCM", iv:unb64urlBytes(current.iv), additionalData:TE.encode(current.header), tagLength:128},
+        cekKey, joined);
+      outEl.innerHTML = '<div class="vcard ok"><h4>Opened</h4>'+
+        '<p>The private key opened the little box and got the padlock key. The padlock key opened the trunk.</p>'+
+        '<pre class="code">'+esc(TD.decode(plain))+'</pre>'+
+        '<span class="pill ok"><span class="dot"></span>decrypted</span></div>';
+    } catch(e){
+      outEl.innerHTML = '<div class="vcard bad"><h4>It refused to open</h4>'+
+        '<p>The tape was broken, so the algorithm would not even try. It does not hand back a partial answer or a garbled one — it hands back nothing at all.</p>'+
+        '<span class="pill bad"><span class="dot"></span>rejected</span></div>';
+    }
+  });
+
+  tamper.addEventListener("click", function(){
+    if (!current) return;
+    var bytes = unb64urlBytes(current.ct);
+    if (bytes.length) bytes[Math.floor(bytes.length/2)] ^= 0x40;
+    current.ct = bytesToB64url(bytes);
+    paint(current, "bad");
+    pill.innerHTML = '<span class="dot"></span>tampered with';
+    outEl.innerHTML = '<div class="callout warn" style="padding:12px 16px"><span class="h">One character of the locked text changed</span>'+
+      'You could not read it and you still cannot. But you changed it. Now press <strong>Unlock it</strong> and watch the tag do its job.</div>';
+  });
+})();
+
+/* ---------------- quiz ---------------- */
+(function quiz(){
+  var box = document.getElementById("quizBox");
+  if (!box) return;
+  var QS = [
+    { q:"Your login server signs tokens with <code>HS256</code> and forty other services check them. What is the real problem?",
+      a:["The tokens are too big","All forty can also create tokens","HS256 is slow"],
+      c:1,
+      why:"Rubber stamp. To let them check, you had to send them the stamp — and a stamp cannot tell checking apart from stamping. One leak anywhere among the forty and someone is writing their own tokens. This is exactly the case <code>RS256</code> exists for." },
+    { q:"A token's signature checks out perfectly. Is the token valid?",
+      a:["Yes, that is what valid means","Not necessarily — it may have expired, or not be for you","Only if it also has a kid"],
+      c:1,
+      why:"Validating means satisfying <em>everything</em> the header and payload ask for, plus whatever you require. A flawless hologram on yesterday's ticket is still yesterday's ticket." },
+    { q:"A token arrives carrying its own public key in the <code>jwk</code> header. Should you check it against that key?",
+      a:["Yes, that is what the field is for","No — check against a key you already trust","Yes, if the token is not expired"],
+      c:1,
+      why:"That is a note saying \"compare my signature to the sample I enclosed.\" Of course it matches — the forger wrote both. Only ever verify against a key you fetched yourself or were configured with." },
+    { q:"With encryption, who holds the <em>public</em> key?",
+      a:["The reader, so they can decrypt","The writers, so they can encrypt","Nobody — encryption uses a shared secret"],
+      c:1,
+      why:"The suggestion box. Anyone can drop a note through the slot (public key, encrypt); only the box owner can open it (private key, decrypt). This is the exact reverse of signing, and it is the single most confusing thing in chapter 5." },
+    { q:"Why does an encrypted token have a separate, wrapped key inside it?",
+      a:["As a backup in case the first key fails","Because the fast lock can't be shared safely and the safe lock is too slow for big data","To let the token be read by the server twice"],
+      c:1,
+      why:"Locked trunk. A fresh random key locks the message quickly (that is the CEK), and the slow public-key algorithm only has to protect that one small key. Best of both — and the reason there are five pieces instead of three." },
+    { q:"You need a token that proves who wrote it AND hides its contents. What order?",
+      a:["Encrypt, then sign","Sign, then encrypt","Either works the same"],
+      c:1,
+      why:"Sign first, so the signature ends up inside the envelope where nobody can reach it to strip it off. Sign last and it sits on the outside of a sealed box — anyone can peel it off and stick their own on." }
+  ];
+  var html = "";
+  QS.forEach(function(item, qi){
+    html += '<div class="q" data-q="'+qi+'"><div class="qq"><span class="qn">'+String(qi+1).padStart(2,"0")+'</span><span>'+item.q+'</span></div><div class="opts">';
+    item.a.forEach(function(opt, ai){ html += '<button class="opt" type="button" data-a="'+ai+'">'+opt+'</button>'; });
+    html += '</div><div class="qwhy" hidden></div></div>';
+  });
+  box.innerHTML = html;
+
+  box.addEventListener("click", function(e){
+    var btn = e.target.closest(".opt");
+    if (!btn || btn.disabled) return;
+    var w = btn.closest(".q"), qi = +w.dataset.q, pick = +btn.dataset.a, item = QS[qi];
+    w.querySelectorAll(".opt").forEach(function(b){
+      b.disabled = true;
+      var ai = +b.dataset.a;
+      if (ai === item.c) b.classList.add("right"); else if (ai === pick) b.classList.add("wrong");
+    });
+    var why = w.querySelector(".qwhy");
+    why.innerHTML = (pick === item.c ? "<strong>Yes. </strong>" : "<strong>Not quite. </strong>") + item.why;
+    why.hidden = false;
+  });
+})();
+
+/* ---------------- claim list hover ---------------- */
+document.querySelectorAll(".claimlist button").forEach(function(b){
+  b.addEventListener("click", function(){
+    b.classList.add("hi");
+    setTimeout(function(){ b.classList.remove("hi"); }, 1200);
+  });
+});
+
+/* ---------------- nav ---------------- */
+(function nav(){
+  var barEl = document.getElementById("progressbar");
+  var links = Array.prototype.slice.call(document.querySelectorAll("[data-nav]"));
+  var secs = links.map(function(a){ return document.getElementById(a.dataset.nav); }).filter(Boolean);
+  function onScroll(){
+    var doc = document.documentElement, max = doc.scrollHeight - doc.clientHeight;
+    barEl.style.width = (max > 0 ? (doc.scrollTop/max)*100 : 0) + "%";
+    var y = doc.scrollTop + 140, active = null;
+    secs.forEach(function(s){ if (s.offsetTop <= y) active = s.id; });
+    links.forEach(function(a){ a.classList.toggle("on", a.dataset.nav === active); });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+})();
+
+})();
+</script>
+</body>
+</html>
