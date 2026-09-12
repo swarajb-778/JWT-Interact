@@ -62,7 +62,7 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 
-  --step:clamp(.9rem.86rem + .2vw,1rem);
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
 }
 
 @media (prefers-color-scheme:dark){
@@ -208,7 +208,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
   font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
   color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
 }
-.navlinks a:hover.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
 .navlinks a.on{color:var(--pay);background:var(--pay-bg)}
 .progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
 
@@ -231,7 +231,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
 }
 .tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .token{
-  font-family:var(--mono);font-size:clamp(.72rem,1.5vw.86rem);line-height:2;
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
   word-break:break-all;padding:16px 14px;margin:0;
 }
 .token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
@@ -413,7 +413,7 @@ pre.code .cm{color:var(--ink-3);font-style:italic}
   padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
 }
 .claimlist button:last-child{border-bottom:0}
-.claimlist button:hover.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
 .claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
 .claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
 .claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
@@ -525,9 +525,9 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 .srcnote a{color:var(--pay)}
 
 @media (max-width:760px){
-  .sim2,.ticketgrid.grid2,.verdict.b64grid{grid-template-columns:1fr}
+  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
   .b64arrow{flex-direction:row;justify-content:center;gap:10px}
-  .grid3,.statgrid.parts{grid-template-columns:1fr}
+  .grid3,.statgrid,.parts{grid-template-columns:1fr}
   .parts button{border-right:0;border-bottom:1px solid var(--rule)}
   .ticket{grid-template-columns:1fr}
   .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
@@ -566,7 +566,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
   border-right:1px solid var(--rule);transition:background .16s;
 }
 .parts5 button:last-child{border-right:0}
-.parts5 button:hover.parts5 button[aria-selected="true"]{background:var(--paper-3)}
+.parts5 button:hover,.parts5 button[aria-selected="true"]{background:var(--paper-3)}
 .parts5 button:focus-visible{outline:2px solid var(--pay);outline-offset:-3px}
 .parts5 .pn{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase}
 .parts5 .pd{font-size:.74rem;color:var(--ink-3);line-height:1.35}
@@ -601,7 +601,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 
 /* direction table */
 .dirtable{width:100%;border-collapse:collapse;font-size:.87rem}
-.dirtable th.dirtable td{padding:10px 13px;border:1px solid var(--rule);text-align:left}
+.dirtable th,.dirtable td{padding:10px 13px;border:1px solid var(--rule);text-align:left}
 .dirtable thead th{background:var(--paper-3);font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .dirtable tbody th{font-weight:600;background:var(--paper-3);width:110px}
 .dirtable td b{color:var(--pay)}
@@ -654,7 +654,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
   .moderow{grid-template-columns:1fr;gap:5px}
   .moderow .mp{text-align:left}
   .dirtable{font-size:.8rem}
-  .dirtable th.dirtable td{padding:8px 9px}
+  .dirtable th,.dirtable td{padding:8px 9px}
 }
 </style>
 <style>
@@ -666,18 +666,18 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 .flowscroll{overflow-x:auto;padding:14px 10px}
 .flowsvg2{display:block;width:100%;height:auto;margin-inline:auto}
 
-.fn rect.fn path.shape{
+.fn rect,.fn path.shape{
   fill:var(--paper-2);stroke:var(--rule-2);stroke-width:1.5;
   transition:stroke .3s,fill .3s,stroke-width .3s;
 }
 .fn text{fill:var(--ink);font-family:var(--sans);font-size:12.5px;font-weight:600;transition:fill .3s}
 .fn text.sub{fill:var(--ink-3);font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.07em}
-.fn.on rect.fn.on path.shape{stroke:var(--pay);stroke-width:2.4;fill:var(--pay-bg)}
-.fn.pass rect.fn.pass path.shape{stroke:var(--ok);stroke-width:2;fill:var(--ok-bg)}
+.fn.on rect,.fn.on path.shape{stroke:var(--pay);stroke-width:2.4;fill:var(--pay-bg)}
+.fn.pass rect,.fn.pass path.shape{stroke:var(--ok);stroke-width:2;fill:var(--ok-bg)}
 .fn.pass text{fill:var(--ok)}
-.fn.bad rect.fn.bad path.shape{stroke:var(--bad);stroke-width:2.4;fill:var(--bad-bg)}
+.fn.bad rect,.fn.bad path.shape{stroke:var(--bad);stroke-width:2.4;fill:var(--bad-bg)}
 .fn.bad text{fill:var(--bad)}
-.fn.muted rect.fn.muted path.shape{opacity:.5}
+.fn.muted rect,.fn.muted path.shape{opacity:.5}
 .fn.muted text{opacity:.5}
 
 .fe{stroke:var(--rule-2);stroke-width:2;fill:none;opacity:.62;transition:stroke .3s,opacity .3s}
@@ -875,7 +875,7 @@ h2{font-weight:760;letter-spacing:-.028em;line-height:1.08;font-size:clamp(1.85r
 h3{font-weight:700;letter-spacing:-.02em;line-height:1.25;font-size:clamp(1.14rem,1.9vw,1.34rem)}
 h4{font-weight:660;letter-spacing:-.014em;font-size:1.02rem;line-height:1.35}
 .hero h1{margin-block:var(--s4) var(--s5)}
-.hero h1 .thin.cover h1 .thin{font-weight:300;font-style:normal;color:var(--ink-3);letter-spacing:-.036em}
+.hero h1 .thin,.cover h1 .thin{font-weight:300;font-style:normal;color:var(--ink-3);letter-spacing:-.036em}
 .cover h1{font-weight:800;letter-spacing:-.04em;line-height:1.01;font-size:clamp(2.3rem,5.2vw,4.1rem)}
 /* the specimen belongs in the first frame, beside the headline */
 @media (min-width:1340px){
@@ -885,22 +885,22 @@ h4{font-weight:660;letter-spacing:-.014em;font-size:1.02rem;line-height:1.35}
 .lede{font-weight:400;font-size:clamp(1.06rem,1.6vw,1.22rem);line-height:1.58;color:var(--ink-2);letter-spacing:-.008em}
 .dropcap::first-letter{font-weight:800;font-size:3.1em;line-height:.88;padding-right:.09em;color:var(--pay)}
 strong{font-weight:660}
-.eyebrow.coverline{font-family:var(--mono);font-size:.66rem;letter-spacing:.17em;font-weight:500}
+.eyebrow,.coverline{font-family:var(--mono);font-size:.66rem;letter-spacing:.17em;font-weight:500}
 code{background:var(--paper-3);border-radius:5px;font-size:.86em;padding:.14em .4em}
 .prose{max-width:var(--read)}
 
 /* ================= dividers: hairlines, never harsh ================= */
-.perf.perf-thick{background:none;height:0;border:0;border-top:1px solid var(--rule)}
-.panel-head.tokenbox-head{border-bottom:1px solid var(--rule)}
+.perf,.perf-thick{background:none;height:0;border:0;border-top:1px solid var(--rule)}
+.panel-head,.tokenbox-head{border-bottom:1px solid var(--rule)}
 
 /* ================= surfaces ================= */
-.panel.tokenbox.quiz.claimlist.toc.keyring.modes.attackgrid.flowbox.ticket{
+.panel,.tokenbox,.quiz,.claimlist,.toc,.keyring,.modes,.attackgrid,.flowbox,.ticket{
   border:1px solid var(--rule);border-radius:var(--r3);box-shadow:var(--shadow);
 }
-.panel-head.tokenbox-head{background:transparent;padding:var(--s4) var(--s5)}
-.panel-head .k.tokenbox-title{font-weight:600;letter-spacing:.13em}
+.panel-head,.tokenbox-head{background:transparent;padding:var(--s4) var(--s5)}
+.panel-head .k,.tokenbox-title{font-weight:600;letter-spacing:.13em}
 .panel-body{padding:var(--s5)}
-.minicard.vcard.lockcard.jwkslot.stepnote.flowout{border-radius:var(--r2)}
+.minicard,.vcard,.lockcard,.jwkslot,.stepnote,.flowout{border-radius:var(--r2)}
 .minicard{border:1px solid var(--rule);background:var(--paper-2);padding:var(--s4) var(--s5)}
 .hook{
   background:var(--paper-3);border:0;border-left:2px solid var(--pay-ed);
@@ -910,8 +910,8 @@ code{background:var(--paper-3);border-radius:5px;font-size:.86em;padding:.14em .
 .hook .tag::after{background:var(--rule-2)}
 .callout{border-left-width:2px;padding-left:var(--s5)}
 pre.code{background:var(--paper-3);border:0;border-radius:var(--r2);padding:var(--s4) var(--s5);font-size:.8rem}
-.statgrid.numgrid{border-radius:var(--r2);border-color:var(--rule);background:var(--rule)}
-.statgrid div.numgrid div{background:var(--paper-2);padding:var(--s4) var(--s5)}
+.statgrid,.numgrid{border-radius:var(--r2);border-color:var(--rule);background:var(--rule)}
+.statgrid div,.numgrid div{background:var(--paper-2);padding:var(--s4) var(--s5)}
 
 /* ================= controls: bigger targets, clearer rank ================= */
 .btn{
@@ -1155,7 +1155,7 @@ footer.colophon{padding-block:var(--s10)}
 html{color-scheme:light dark}
 :root.theme-light{color-scheme:light}
 :root.theme-dark{color-scheme:dark}
-body.topbar.panel.tokenbox.stickybar{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
 
 /* ---------- the control ---------- */
 .themetoggle{
@@ -1179,7 +1179,7 @@ body.topbar.panel.tokenbox.stickybar{transition:background-color .25s ease,borde
   .navlinks{order:3;width:100%}
 }
 @media (prefers-reduced-motion:reduce){
-  body.topbar.panel.tokenbox.stickybar{transition:none}
+  body,.topbar,.panel,.tokenbox,.stickybar{transition:none}
 }
 </style>
 
@@ -1380,7 +1380,7 @@ body.topbar.panel.tokenbox.stickybar{transition:background-color .25s ease,borde
   .sidebar{box-shadow:var(--shadow-lift)}
 }
 @media (prefers-reduced-motion:reduce){
-  .sidebar.scrim.modal.sb-scrim.sb-bar i{transition:none}
+  .sidebar,.scrim,.modal,.sb-scrim,.sb-bar i{transition:none}
 }
 </style>
 
