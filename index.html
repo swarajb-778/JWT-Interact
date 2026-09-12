@@ -62,7 +62,7 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 
-  --step:clamp(.9rem.86rem + .2vw,1rem);
+  --step:clamp(.9rem,.86rem + .2vw,1rem);
 }
 
 @media (prefers-color-scheme:dark){
@@ -231,7 +231,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
 }
 .tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .token{
-  font-family:var(--mono);font-size:clamp(.72rem,1.5vw.86rem);line-height:2;
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
   word-break:break-all;padding:16px 14px;margin:0;
 }
 .token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
