@@ -62,7 +62,7 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 
-  --step:clamp(.9rem,.86rem + .2vw,1rem);
+  --step:clamp(.9rem.86rem + .2vw,1rem);
 }
 
 @media (prefers-color-scheme:dark){
@@ -231,7 +231,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
 }
 .tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .token{
-  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw.86rem);line-height:2;
   word-break:break-all;padding:16px 14px;margin:0;
 }
 .token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
@@ -868,20 +868,16 @@ window.FlowKit = (function(){
 body{
   font-family:var(--sans);font-size:var(--step);line-height:1.65;
   letter-spacing:-.004em;font-weight:400;
+  padding-bottom:76px;                       /* room for the sticky bar */
 }
 h1,h2,h3,h4{font-family:var(--sans);text-wrap:balance}
-h1{font-weight:800;letter-spacing:-.038em;line-height:1.02;font-size:clamp(2.3rem,5vw,3.9rem)}
+h1{font-weight:800;letter-spacing:-.038em;line-height:1.01;font-size:clamp(2.5rem,6.2vw,4.4rem)}
 h2{font-weight:760;letter-spacing:-.028em;line-height:1.08;font-size:clamp(1.85rem,3.5vw,2.55rem)}
 h3{font-weight:700;letter-spacing:-.02em;line-height:1.25;font-size:clamp(1.14rem,1.9vw,1.34rem)}
 h4{font-weight:660;letter-spacing:-.014em;font-size:1.02rem;line-height:1.35}
 .hero h1{margin-block:var(--s4) var(--s5)}
 .hero h1 .thin,.cover h1 .thin{font-weight:300;font-style:normal;color:var(--ink-3);letter-spacing:-.036em}
-.cover h1{font-weight:800;letter-spacing:-.04em;line-height:1.01;font-size:clamp(2.3rem,5.2vw,4.1rem)}
-/* the specimen belongs in the first frame, beside the headline */
-@media (min-width:1340px){
-  .hero-grid{grid-template-columns:1.04fr .96fr;align-items:center;gap:var(--s9)}
-  .hero-in{padding-block:clamp(var(--s9),6.5vw,var(--s11))}
-}
+.cover h1{font-weight:800;letter-spacing:-.04em;line-height:1;font-size:clamp(2.5rem,6.2vw,4.6rem)}
 .lede{font-weight:400;font-size:clamp(1.06rem,1.6vw,1.22rem);line-height:1.58;color:var(--ink-2);letter-spacing:-.008em}
 .dropcap::first-letter{font-weight:800;font-size:3.1em;line-height:.88;padding-right:.09em;color:var(--pay)}
 strong{font-weight:660}
@@ -932,10 +928,7 @@ label.fld .lb{font-weight:500;letter-spacing:.13em}
 .topbar{background:color-mix(in srgb,var(--paper) 82%,transparent);border-bottom:1px solid var(--rule)}
 .topbar-in{padding:var(--s3) var(--gutter);max-width:var(--rail)}
 .brandmark{font-weight:600;letter-spacing:.15em}
-.navlinks a{border-radius:var(--r1);padding:6px 9px;font-size:.685rem;font-weight:500}
-.topbar-in{flex-wrap:nowrap}
-.navlinks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{border-radius:var(--r1);padding:6px 10px;font-size:.7rem;font-weight:500}
 .wrap{max-width:var(--rail);padding-inline:var(--gutter)}
 
 /* ================= trust row, identity and assurance together ============ */
@@ -1024,6 +1017,7 @@ label.fld .lb{font-weight:500;letter-spacing:.13em}
   .sb-mid{display:none}
   .sb-in{gap:var(--s3);padding-inline:var(--s4)}
   .sb-actions .btn.ghost{display:none}
+  body{padding-bottom:70px}
 }
 
 /* ================= chapter marker ================= */
@@ -1175,7 +1169,7 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
 .themetoggle .auto{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.06em}
 
 @media (max-width:760px){
-  .themetoggle{margin-left:var(--s2,8px)}
+  .themetoggle{margin-left:auto}
   .navlinks{order:3;width:100%}
 }
 @media (prefers-reduced-motion:reduce){
@@ -1298,6 +1292,7 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
   .sb-scrim{display:none}
   .menubtn{display:none}
   body{padding-left:var(--sbw);padding-bottom:0}
+  .stickybar{display:none}
   .navlinks{display:none}
 }
 
@@ -1340,19 +1335,19 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
 .setrow input[type=text]{max-width:190px}
 
 /* switch */
-.switch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
-.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
-.switch .track{
+.uiswitch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
+.uiswitch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.uiswitch .track{
   position:absolute;inset:0;border-radius:99px;background:var(--paper-3);
   border:1px solid var(--rule-2);transition:background .2s,border-color .2s;pointer-events:none;
 }
-.switch .track::after{
+.uiswitch .track::after{
   content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
   background:var(--paper-2);box-shadow:0 1px 3px rgba(20,26,23,.25);transition:transform .2s;
 }
-.switch input:checked + .track{background:var(--pay);border-color:var(--pay)}
-.switch input:checked + .track::after{transform:translateX(18px)}
-.switch input:focus-visible + .track{outline:2px solid var(--pay);outline-offset:2px}
+.uiswitch input:checked + .track{background:var(--pay);border-color:var(--pay)}
+.uiswitch input:checked + .track::after{transform:translateX(18px)}
+.uiswitch input:focus-visible + .track{outline:2px solid var(--pay);outline-offset:2px}
 
 .modal-actions{display:flex;gap:var(--s2);flex-wrap:wrap}
 .linkdanger{
@@ -1417,6 +1412,22 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
   :root.sb-collapsed body{padding-left:0}
 }
 @media (prefers-reduced-motion:reduce){ .progressbar{transition:none} }
+@media (max-width:620px){
+      }
+
+/* chip control: label plus what it is for, on one button */
+.caseb{
+  all:unset;box-sizing:border-box;cursor:pointer;font-family:var(--sans);
+  display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;
+  font-size:.82rem;font-weight:600;line-height:1.3;letter-spacing:-.006em;
+  padding:9px 15px;min-height:38px;border-radius:var(--r1);
+  border:1px solid var(--rule-2);background:var(--paper-2);color:var(--ink);
+  transition:background .15s,border-color .15s,color .15s;
+}
+.caseb:hover{background:var(--paper-3)}
+.caseb:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.caseb[aria-pressed="true"]{background:var(--pay);border-color:var(--pay);color:var(--paper-2)}
+.caseb .cd{display:block;font-weight:400;font-size:.7rem;opacity:.74}
 </style>
 
 <nav class="topbar">
@@ -1511,12 +1522,17 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
       <div class="panel">
         <div class="panel-head">
           <span class="k">Try it · one head office, twelve branches</span>
-          <span class="sub">Every branch needs to check tokens. Which method do you send them?</span>
+          <span class="sub">All twelve need to check tokens. What do you post them?</span>
         </div>
         <div class="panel-body stack">
-          <div class="switch" role="group" aria-label="Signing method">
-            <button id="swHs" aria-pressed="true">Send the rubber stamp &nbsp;<span style="opacity:.7;font-weight:400">HS256</span></button>
-            <button id="swRs" aria-pressed="false">Send the signature sample &nbsp;<span style="opacity:.7;font-weight:400">RS256</span></button>
+          <p style="font-size:.9rem;color:var(--ink-2);margin:0;max-width:64ch">
+            Your head office issues the tokens. Twelve branches have to check them, so you must send
+            each branch something. <strong>Press each option</strong> and watch what those twelve
+            branches can then do.
+          </p>
+          <div class="btnrow" role="group" aria-label="What you send to the branches">
+            <button class="caseb" type="button" id="swHs" aria-pressed="true">Send the rubber stamp<span class="cd">HS256 · one shared secret</span></button>
+            <button class="caseb" type="button" id="swRs" aria-pressed="false">Send the signature sample<span class="cd">RS256 · the public half of a key pair</span></button>
           </div>
           <div class="offices" id="offices"></div>
           <div id="officeNote" class="callout" style="border-left-color:var(--warn)"></div>
@@ -1663,13 +1679,17 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
       <div class="panel">
         <div class="panel-head">
           <span class="k">Three shapes, one token</span>
-          <span class="sub">Same payload throughout.</span>
+          <span class="sub">The payload never changes. Only the way it is written down does.</span>
         </div>
         <div class="panel-body stack">
-          <div class="switch" role="group" aria-label="Serialization shape">
-            <button id="serCompact" aria-pressed="true">Compact</button>
-            <button id="serFlat" aria-pressed="false">Flattened JSON</button>
-            <button id="serGeneral" aria-pressed="false">General JSON</button>
+          <p style="font-size:.9rem;color:var(--ink-2);margin:0;max-width:62ch">
+            A signed token can be written in three different shapes. Press one to see
+            <strong>the same token</strong> in that shape, and what it buys you.
+          </p>
+          <div class="btnrow" role="group" aria-label="Write the token in this shape">
+            <button class="caseb" type="button" id="serCompact" aria-pressed="true">Compact<span class="cd">one signature, fits in a header</span></button>
+            <button class="caseb" type="button" id="serFlat" aria-pressed="false">Flattened JSON<span class="cd">one signature, written out</span></button>
+            <button class="caseb" type="button" id="serGeneral" aria-pressed="false">General JSON<span class="cd">several signatures at once</span></button>
           </div>
           <pre class="code" id="serOut" style="max-height:340px;overflow:auto"></pre>
           <div id="serNote" style="font-size:.86rem;line-height:1.55;color:var(--ink-2)"></div>
@@ -1827,7 +1847,7 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
   <text id="pl6" class="fl" x="556" y="278" text-anchor="start">wrapped key</text>
 
   <path id="pe7" class="fe" d="M110 348 L 110 386 L 700 386 L 700 296" marker-end="url(#fa2)"></path>
-  <text id="pl7" class="fl" x="404" y="400" text-anchor="middle">the IV travels in the clear &#8212; it is not a secret</text>
+  <text id="pl7" class="fl" x="404" y="400" text-anchor="middle">the IV travels in the clear; it is not a secret</text>
 </g>
 
 <g id="pnMsg" class="fn"><rect x="20" y="48" width="166" height="52" rx="7"></rect>
@@ -3251,7 +3271,7 @@ function buildModal(){
       '<div class="modal-body">' +
         '<p class="modal-lede">A little more room to read. A place to return to.</p>' +
         '<div class="setrow"><span class="sl"><b>Larger reading text</b><span>Give explanations a little extra breathing room.</span></span>' +
-          '<label class="switch"><input type="checkbox" id="bigText"><span class="track"></span></label></div>' +
+          '<label class="uiswitch"><input type="checkbox" id="bigText"><span class="track"></span></label></div>' +
         '<hr>' +
         '<div class="setrow"><span class="sl"><b>Your name</b><span>Used in the examples throughout the handbook.</span></span>' +
           '<input type="text" id="ownerName" placeholder="Your name" maxlength="28" autocomplete="off"></div>' +

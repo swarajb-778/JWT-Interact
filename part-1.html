@@ -62,7 +62,7 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 
-  --step:clamp(.9rem,.86rem + .2vw,1rem);
+  --step:clamp(.9rem.86rem + .2vw,1rem);
 }
 
 @media (prefers-color-scheme:dark){
@@ -231,7 +231,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
 }
 .tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .token{
-  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw.86rem);line-height:2;
   word-break:break-all;padding:16px 14px;margin:0;
 }
 .token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
@@ -753,20 +753,16 @@ window.FlowKit = (function(){
 body{
   font-family:var(--sans);font-size:var(--step);line-height:1.65;
   letter-spacing:-.004em;font-weight:400;
+  padding-bottom:76px;                       /* room for the sticky bar */
 }
 h1,h2,h3,h4{font-family:var(--sans);text-wrap:balance}
-h1{font-weight:800;letter-spacing:-.038em;line-height:1.02;font-size:clamp(2.3rem,5vw,3.9rem)}
+h1{font-weight:800;letter-spacing:-.038em;line-height:1.01;font-size:clamp(2.5rem,6.2vw,4.4rem)}
 h2{font-weight:760;letter-spacing:-.028em;line-height:1.08;font-size:clamp(1.85rem,3.5vw,2.55rem)}
 h3{font-weight:700;letter-spacing:-.02em;line-height:1.25;font-size:clamp(1.14rem,1.9vw,1.34rem)}
 h4{font-weight:660;letter-spacing:-.014em;font-size:1.02rem;line-height:1.35}
 .hero h1{margin-block:var(--s4) var(--s5)}
 .hero h1 .thin,.cover h1 .thin{font-weight:300;font-style:normal;color:var(--ink-3);letter-spacing:-.036em}
-.cover h1{font-weight:800;letter-spacing:-.04em;line-height:1.01;font-size:clamp(2.3rem,5.2vw,4.1rem)}
-/* the specimen belongs in the first frame, beside the headline */
-@media (min-width:1340px){
-  .hero-grid{grid-template-columns:1.04fr .96fr;align-items:center;gap:var(--s9)}
-  .hero-in{padding-block:clamp(var(--s9),6.5vw,var(--s11))}
-}
+.cover h1{font-weight:800;letter-spacing:-.04em;line-height:1;font-size:clamp(2.5rem,6.2vw,4.6rem)}
 .lede{font-weight:400;font-size:clamp(1.06rem,1.6vw,1.22rem);line-height:1.58;color:var(--ink-2);letter-spacing:-.008em}
 .dropcap::first-letter{font-weight:800;font-size:3.1em;line-height:.88;padding-right:.09em;color:var(--pay)}
 strong{font-weight:660}
@@ -817,10 +813,7 @@ label.fld .lb{font-weight:500;letter-spacing:.13em}
 .topbar{background:color-mix(in srgb,var(--paper) 82%,transparent);border-bottom:1px solid var(--rule)}
 .topbar-in{padding:var(--s3) var(--gutter);max-width:var(--rail)}
 .brandmark{font-weight:600;letter-spacing:.15em}
-.navlinks a{border-radius:var(--r1);padding:6px 9px;font-size:.685rem;font-weight:500}
-.topbar-in{flex-wrap:nowrap}
-.navlinks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
-.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{border-radius:var(--r1);padding:6px 10px;font-size:.7rem;font-weight:500}
 .wrap{max-width:var(--rail);padding-inline:var(--gutter)}
 
 /* ================= trust row, identity and assurance together ============ */
@@ -909,6 +902,7 @@ label.fld .lb{font-weight:500;letter-spacing:.13em}
   .sb-mid{display:none}
   .sb-in{gap:var(--s3);padding-inline:var(--s4)}
   .sb-actions .btn.ghost{display:none}
+  body{padding-bottom:70px}
 }
 
 /* ================= chapter marker ================= */
@@ -1060,7 +1054,7 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
 .themetoggle .auto{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.06em}
 
 @media (max-width:760px){
-  .themetoggle{margin-left:var(--s2,8px)}
+  .themetoggle{margin-left:auto}
   .navlinks{order:3;width:100%}
 }
 @media (prefers-reduced-motion:reduce){
@@ -1183,6 +1177,7 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
   .sb-scrim{display:none}
   .menubtn{display:none}
   body{padding-left:var(--sbw);padding-bottom:0}
+  .stickybar{display:none}
   .navlinks{display:none}
 }
 
@@ -1225,19 +1220,19 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
 .setrow input[type=text]{max-width:190px}
 
 /* switch */
-.switch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
-.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
-.switch .track{
+.uiswitch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
+.uiswitch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.uiswitch .track{
   position:absolute;inset:0;border-radius:99px;background:var(--paper-3);
   border:1px solid var(--rule-2);transition:background .2s,border-color .2s;pointer-events:none;
 }
-.switch .track::after{
+.uiswitch .track::after{
   content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
   background:var(--paper-2);box-shadow:0 1px 3px rgba(20,26,23,.25);transition:transform .2s;
 }
-.switch input:checked + .track{background:var(--pay);border-color:var(--pay)}
-.switch input:checked + .track::after{transform:translateX(18px)}
-.switch input:focus-visible + .track{outline:2px solid var(--pay);outline-offset:2px}
+.uiswitch input:checked + .track{background:var(--pay);border-color:var(--pay)}
+.uiswitch input:checked + .track::after{transform:translateX(18px)}
+.uiswitch input:focus-visible + .track{outline:2px solid var(--pay);outline-offset:2px}
 
 .modal-actions{display:flex;gap:var(--s2);flex-wrap:wrap}
 .linkdanger{
@@ -2278,8 +2273,8 @@ eyJpdGVtcyI6WzAsMiw0XSwiaWF0IjoxNDkzMTM5NjU5LCJleHAiOjE0OTMxNDMyNTl9.
 </g>
 <g id="fnStart" class="fn"><rect x="56" y="8" width="248" height="44" rx="7"></rect><text x="180" y="27" text-anchor="middle">A token arrives</text><text class="sub" x="180" y="42" text-anchor="middle">FROM A BROWSER YOU DO NOT CONTROL</text></g>
 <g id="fng1" class="fn"><rect x="56" y="84" width="248" height="52" rx="7"></rect><text x="180" y="106" text-anchor="middle">Split it on the dots</text><text class="sub" x="180" y="122" text-anchor="middle">TWO DOTS &#183; THREE PARTS</text></g>
-<g id="frg1" class="fn"><rect x="490" y="89" width="310" height="42" rx="6"></rect><text x="504" y="107" text-anchor="start" font-size="11.5">Malformed &#8212; not a token at all</text><text class="sub" x="504" y="122" text-anchor="start">A truncated string, four dots, or none</text></g>
-<g id="fng2" class="fn"><rect x="56" y="168" width="248" height="52" rx="7"></rect><text x="180" y="190" text-anchor="middle">Is this algorithm on <tspan font-style="italic">my</tspan> list?</text><text class="sub" x="180" y="206" text-anchor="middle">ALG &#8212; MY LIST, NOT THE TOKEN'S</text></g>
+<g id="frg1" class="fn"><rect x="490" y="89" width="310" height="42" rx="6"></rect><text x="504" y="107" text-anchor="start" font-size="11.5">Malformed, not a token at all</text><text class="sub" x="504" y="122" text-anchor="start">A truncated string, four dots, or none</text></g>
+<g id="fng2" class="fn"><rect x="56" y="168" width="248" height="52" rx="7"></rect><text x="180" y="190" text-anchor="middle">Is this algorithm on <tspan font-style="italic">my</tspan> list?</text><text class="sub" x="180" y="206" text-anchor="middle">ALG, MY LIST, NOT THE TOKEN'S</text></g>
 <g id="frg2" class="fn"><rect x="490" y="173" width="310" height="42" rx="6"></rect><text x="504" y="191" text-anchor="start" font-size="11.5">Algorithm refused</text><text class="sub" x="504" y="206" text-anchor="start">alg:none, or RS256 swapped for HS256</text></g>
 <g id="fng3" class="fn"><rect x="56" y="252" width="248" height="52" rx="7"></rect><text x="180" y="274" text-anchor="middle">Do I actually hold this key?</text><text class="sub" x="180" y="290" text-anchor="middle">KID &#8594; MY KEY SET</text></g>
 <g id="frg3" class="fn"><rect x="490" y="257" width="310" height="42" rx="6"></rect><text x="504" y="275" text-anchor="start" font-size="11.5">Nothing to check it against</text><text class="sub" x="504" y="290" text-anchor="start">Unknown kid, or a key retired too early</text></g>
@@ -2287,7 +2282,7 @@ eyJpdGVtcyI6WzAsMiw0XSwiaWF0IjoxNDkzMTM5NjU5LCJleHAiOjE0OTMxNDMyNTl9.
 <g id="frg4" class="fn"><rect x="490" y="341" width="310" height="42" rx="6"></rect><text x="504" y="359" text-anchor="start" font-size="11.5">Tampered, or signed by someone else</text><text class="sub" x="504" y="374" text-anchor="start">One edited character is enough</text></g>
 <g id="fng5" class="fn"><rect x="56" y="420" width="248" height="52" rx="7"></rect><text x="180" y="442" text-anchor="middle">Is it awake, and still alive?</text><text class="sub" x="180" y="458" text-anchor="middle">EXP &#183; NBF &#183; CLOCK SKEW</text></g>
 <g id="frg5" class="fn"><rect x="490" y="425" width="310" height="42" rx="6"></rect><text x="504" y="443" text-anchor="start" font-size="11.5">Expired, or not valid yet</text><text class="sub" x="504" y="458" text-anchor="start">A flawless seal on yesterday's ticket</text></g>
-<g id="fng6" class="fn"><rect x="56" y="504" width="248" height="52" rx="7"></rect><text x="180" y="526" text-anchor="middle">Is it addressed to me?</text><text class="sub" x="180" y="542" text-anchor="middle">ISS &#183; AUD &#8212; EXACT MATCH</text></g>
+<g id="fng6" class="fn"><rect x="56" y="504" width="248" height="52" rx="7"></rect><text x="180" y="526" text-anchor="middle">Is it addressed to me?</text><text class="sub" x="180" y="542" text-anchor="middle">ISS &#183; AUD, EXACT MATCH</text></g>
 <g id="frg6" class="fn"><rect x="490" y="509" width="310" height="42" rx="6"></rect><text x="504" y="527" text-anchor="start" font-size="11.5">Genuine, but somebody else's</text><text class="sub" x="504" y="542" text-anchor="start">Right signature, wrong door</text></g>
 <g id="fnAccept" class="fn"><rect x="56" y="592" width="248" height="48" rx="7"></rect><text x="180" y="613" text-anchor="middle">Now trust the payload</text><text class="sub" x="180" y="629" text-anchor="middle">AND NOT ONE STEP BEFORE</text></g>
 <g id="fchip" class="chip"><circle r="12"></circle><text y="3.5">JWT</text></g>
@@ -3633,7 +3628,7 @@ function buildModal(){
       '<div class="modal-body">' +
         '<p class="modal-lede">A little more room to read. A place to return to.</p>' +
         '<div class="setrow"><span class="sl"><b>Larger reading text</b><span>Give explanations a little extra breathing room.</span></span>' +
-          '<label class="switch"><input type="checkbox" id="bigText"><span class="track"></span></label></div>' +
+          '<label class="uiswitch"><input type="checkbox" id="bigText"><span class="track"></span></label></div>' +
         '<hr>' +
         '<div class="setrow"><span class="sl"><b>Your name</b><span>Used in the examples throughout the handbook.</span></span>' +
           '<input type="text" id="ownerName" placeholder="Your name" maxlength="28" autocomplete="off"></div>' +
