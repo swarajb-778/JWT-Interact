@@ -1,6 +1,6 @@
 # JWT in Three Parts
 
-An interactive, plain-English reading of **The JWT Handbook** (v0.14.2) by Sebastián E. Peyrott — all eight chapters, rebuilt as something you press on rather than read.
+An interactive, plain-English reading of **The JWT Handbook** (v0.14.2) by Sebastián E. Peyrott, all eight chapters, rebuilt as something you press on rather than read.
 
 Recreated by **Swaraj Bangar** ❤️
 
@@ -15,7 +15,7 @@ Recreated by **Swaraj Bangar** ❤️
 
 ## It really runs
 
-Every cryptographic operation happens in your browser through the Web Crypto API — real HMAC-SHA256, real RSA and P-256 key pairs, real AES-GCM encryption. Nothing you type is sent anywhere, and there is no backend.
+Every cryptographic operation happens in your browser through the Web Crypto API, real HMAC-SHA256, real RSA and P-256 key pairs, real AES-GCM encryption. Nothing you type is sent anywhere, and there is no backend.
 
 **None of this is production code.** Real systems need battle-tested libraries, careful key handling and proper testing.
 
@@ -36,13 +36,13 @@ python3 -m http.server 8000
 
 ## Publishing it
 
-The folder is ready for GitHub Pages as-is — no build step, no dependencies. Push it to a repository, turn Pages on, and the site is live.
+The folder is ready for GitHub Pages as-is, no build step, no dependencies. Push it to a repository, turn Pages on, and the site is live.
 
 ## Credits
 
 - **Source material:** [The JWT Handbook](https://auth0.com/resources/ebooks/jwt-handbook) by Sebastián E. Peyrott, published by Auth0. The structure, specifications and examples throughout come from it.
 - **Chapter 8** draws on the IETF OAuth Working Group's [JWT Best Current Practices](https://tools.ietf.org/wg/oauth/draft-ietf-oauth-jwt-bcp/) draft.
 - The wristbands, coat checks, railway tickets, rubber stamps, suggestion boxes, locked trunks and signature books are this retelling's own, added so the ideas land without a background in cryptography.
-- Set in Bodoni Moda, Public Sans and IBM Plex Mono, loaded from Google Fonts.
+- Set in Schibsted Grotesk with IBM Plex Mono for code, loaded from Google Fonts.
 
 The original handbook is Auth0's work and remains theirs. This is an independent educational retelling.

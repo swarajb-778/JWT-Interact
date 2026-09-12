@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>JWT in Three Parts</title>
-  <meta name="description" content="An interactive reading of the JWT Handbook — all eight chapters in plain English, with real cryptography you can press on.">
+  <meta name="description" content="An interactive reading of the JWT Handbook: all eight chapters in plain English, with real cryptography you can press on.">
   <meta name="author" content="Swaraj Bangar">
+  <meta name="theme-color" content="#F3F4F0">
   <meta property="og:title" content="JWT in Three Parts">
-  <meta property="og:description" content="An interactive reading of the JWT Handbook — all eight chapters in plain English, with real cryptography you can press on.">
+  <meta property="og:description" content="An interactive reading of the JWT Handbook: all eight chapters in plain English, with real cryptography you can press on.">
   <meta property="og:type" content="article">
   <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Ctext%20y%3D%27.9em%27%20font-size%3D%2756%27%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
   <style>
-    :root{color-scheme:light dark}
     html{-webkit-text-size-adjust:100%}
     body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
     img{max-width:100%}
@@ -24,7 +24,7 @@
 <body>
 <style>
 /* ============================================================
-   JWT, Piece by Piece — security-print / pass-office identity
+   JWT, Piece by Piece, security-print / pass-office identity
    ============================================================ */
 
 :root{
@@ -62,7 +62,7 @@
   --sans:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 
-  --step:clamp(.9rem,.86rem + .2vw,1rem);
+  --step:clamp(.9rem.86rem + .2vw,1rem);
 }
 
 @media (prefers-color-scheme:dark){
@@ -208,7 +208,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
   font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-decoration:none;
   color:var(--ink-3);padding:5px 9px;border-radius:4px;transition:color .16s,background .16s;
 }
-.navlinks a:hover,.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
+.navlinks a:hover.navlinks a:focus-visible{color:var(--ink);background:var(--paper-3)}
 .navlinks a.on{color:var(--pay);background:var(--pay-bg)}
 .progressbar{position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0}
 
@@ -231,7 +231,7 @@ code{font-family:var(--mono);font-size:.87em;background:var(--paper-3);padding:.
 }
 .tokenbox-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
 .token{
-  font-family:var(--mono);font-size:clamp(.72rem,1.5vw,.86rem);line-height:2;
+  font-family:var(--mono);font-size:clamp(.72rem,1.5vw.86rem);line-height:2;
   word-break:break-all;padding:16px 14px;margin:0;
 }
 .token b{font-weight:500;border-radius:3px;padding:.16em .12em;transition:background .16s,box-shadow .16s}
@@ -413,7 +413,7 @@ pre.code .cm{color:var(--ink-3);font-style:italic}
   padding:10px 13px;border-bottom:1px solid var(--rule);transition:background .15s;
 }
 .claimlist button:last-child{border-bottom:0}
-.claimlist button:hover,.claimlist button.hi{background:var(--pay-bg)}
+.claimlist button:hover.claimlist button.hi{background:var(--pay-bg)}
 .claimlist button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
 .claimlist .ck{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--pay)}
 .claimlist .cx{font-size:.85rem;line-height:1.5;color:var(--ink-2)}
@@ -525,9 +525,9 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 .srcnote a{color:var(--pay)}
 
 @media (max-width:760px){
-  .sim2,.ticketgrid,.grid2,.verdict,.b64grid{grid-template-columns:1fr}
+  .sim2,.ticketgrid.grid2,.verdict.b64grid{grid-template-columns:1fr}
   .b64arrow{flex-direction:row;justify-content:center;gap:10px}
-  .grid3,.statgrid,.parts{grid-template-columns:1fr}
+  .grid3,.statgrid.parts{grid-template-columns:1fr}
   .parts button{border-right:0;border-bottom:1px solid var(--rule)}
   .ticket{grid-template-columns:1fr}
   .ticket-stub{border-left:0;border-top:1px dashed var(--rule-2);flex-direction:row;align-items:center}
@@ -559,9 +559,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 
 /* ---- cover ---- */
 .cover h1{font-size:clamp(2.5rem,6.4vw,4.9rem);line-height:1;letter-spacing:-.025em}
-@media (min-width:1000px){
-  .cover .hero-grid{grid-template-columns:1.12fr .88fr;align-items:center;gap:44px}
-}
+
 .cover h1 .thin{font-weight:500;font-style:italic;color:var(--ink-2);display:block}
 .coverline{
   display:flex;align-items:center;gap:14px;
@@ -577,7 +575,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
   box-shadow:var(--shadow);overflow:hidden;
   transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
 }
-.partcard:hover,.partcard:focus-visible{
+.partcard:hover.partcard:focus-visible{
   transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--ink-3);
 }
 .partcard:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
@@ -609,14 +607,14 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
   transition:background .15s;
 }
 .tocrow:last-child{border-bottom:0}
-.tocrow:hover,.tocrow:focus-visible{background:var(--paper-3)}
+.tocrow:hover.tocrow:focus-visible{background:var(--paper-3)}
 .tocrow:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
 .tocrow .tn{font-family:var(--mono);font-size:.82rem;font-weight:600;color:var(--ink-3)}
 .tocrow .tt{font-weight:600;font-size:.94rem;line-height:1.3}
 .tocrow .tt small{display:block;font-weight:400;font-size:.8rem;color:var(--ink-3);margin-top:2px;line-height:1.4}
 .tocrow .tp{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .tocrow .tg{font-family:var(--mono);font-size:.66rem;color:var(--pay);text-align:right;opacity:0;transition:opacity .15s}
-.tocrow:hover .tg,.tocrow:focus-visible .tg{opacity:1}
+.tocrow:hover .tg.tocrow:focus-visible .tg{opacity:1}
 .tochead{
   display:grid;grid-template-columns:38px 1fr 128px 92px;gap:14px;
   padding:9px 16px;background:var(--paper-3);border-bottom:1px solid var(--rule);
@@ -649,10 +647,653 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 
 @media (max-width:860px){
   .parts3,.chooser{grid-template-columns:1fr}
-  .tocrow,.tochead{grid-template-columns:32px 1fr;gap:10px}
-  .tocrow .tp,.tocrow .tg,.tochead span:nth-child(3),.tochead span:nth-child(4){display:none}
+  .tocrow.tochead{grid-template-columns:32px 1fr;gap:10px}
+  .tocrow .tp.tocrow .tg.tochead span:nth-child(3),.tochead span:nth-child(4){display:none}
 }
 </style>
+<style id="v2">
+/* ==========================================================================
+   Design system v2; one type family, a 4px rhythm, calmer colour,
+   hairline dividers, and a sticky action layer.
+   Everything below is token-first: components inherit, nothing is hardcoded.
+   ========================================================================== */
+
+:root{
+  /* ---- one family. hierarchy comes from size, weight and line-height ---- */
+  --serif:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --sans:"Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  /* ---- 4px spacing scale. every gap is a step on this ladder ---- */
+  --s1:4px;  --s2:8px;  --s3:12px; --s4:16px; --s5:20px; --s6:24px;
+  --s7:32px; --s8:40px; --s9:56px; --s10:72px; --s11:96px; --s12:128px;
+
+  /* ---- radii ---- */
+  --r1:8px; --r2:12px; --r3:16px; --r4:22px; --rf:999px;
+
+  /* ---- rails ---- */
+  --rail:1180px; --read:68ch; --wide:980px;
+  --gutter:clamp(18px,4vw,32px);
+
+  /* ---- surfaces ---- */
+  --paper:#FAFBFA;
+  --paper-2:#FFFFFF;
+  --paper-3:#F1F4F2;
+  --ink:#161C19;
+  --ink-2:#4B564F;
+  --ink-3:#7B857E;
+  --rule:#EAEEEB;
+  --rule-2:#DBE1DD;
+  --engrave:rgba(20,99,86,.075);
+
+  /* ---- accents: fewer hues, lower saturation ---- */
+  --pay:#146356;  --pay-bg:rgba(20,99,86,.075);  --pay-ed:rgba(20,99,86,.26);
+  --hdr:#8A5A1B;  --hdr-bg:rgba(138,90,27,.075); --hdr-ed:rgba(138,90,27,.26);
+  --sig:#9B3B2E;  --sig-bg:rgba(155,59,46,.075); --sig-ed:rgba(155,59,46,.26);
+  --key:#5F3B78;  --key-bg:rgba(95,59,120,.075); --key-ed:rgba(95,59,120,.26);
+  --iv:#2E5478;   --iv-bg:rgba(46,84,120,.075);  --iv-ed:rgba(46,84,120,.26);
+
+  --ok:#2C6A50;   --ok-bg:rgba(44,106,80,.075);
+  --warn:#8A5A1B; --warn-bg:rgba(138,90,27,.075);
+  --bad:#9B3B2E;  --bad-bg:rgba(155,59,46,.075);
+
+  /* ---- elevation: soft, not stamped ---- */
+  --shadow:0 1px 2px rgba(22,28,25,.035), 0 4px 12px -7px rgba(22,28,25,.10);
+  --shadow-lift:0 2px 5px rgba(22,28,25,.04), 0 18px 36px -20px rgba(22,28,25,.18);
+
+  --step:1.0625rem;
+}
+
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D110F; --paper-2:#151B18; --paper-3:#1C2320;
+    --ink:#E9EDEA; --ink-2:#A7B1AB; --ink-3:#79837C;
+    --rule:#232B27; --rule-2:#333C37;
+    --engrave:rgba(110,196,180,.10);
+    --pay:#6CC9B7;  --pay-bg:rgba(108,201,183,.10);  --pay-ed:rgba(108,201,183,.30);
+    --hdr:#DFAE6E;  --hdr-bg:rgba(223,174,110,.10);  --hdr-ed:rgba(223,174,110,.30);
+    --sig:#E88C7A;  --sig-bg:rgba(232,140,122,.10);  --sig-ed:rgba(232,140,122,.30);
+    --key:#C5A0DA;  --key-bg:rgba(197,160,218,.10);  --key-ed:rgba(197,160,218,.30);
+    --iv:#8AB8E6;   --iv-bg:rgba(138,184,230,.10);   --iv-ed:rgba(138,184,230,.30);
+    --ok:#74CB9E;   --ok-bg:rgba(116,203,158,.10);
+    --warn:#DFAE6E; --warn-bg:rgba(223,174,110,.10);
+    --bad:#E88C7A;  --bad-bg:rgba(232,140,122,.10);
+    --shadow:0 1px 2px rgba(0,0,0,.30), 0 4px 14px -8px rgba(0,0,0,.55);
+    --shadow-lift:0 2px 6px rgba(0,0,0,.32), 0 20px 40px -22px rgba(0,0,0,.75);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D110F; --paper-2:#151B18; --paper-3:#1C2320;
+  --ink:#E9EDEA; --ink-2:#A7B1AB; --ink-3:#79837C;
+  --rule:#232B27; --rule-2:#333C37;
+  --engrave:rgba(110,196,180,.10);
+  --pay:#6CC9B7;  --pay-bg:rgba(108,201,183,.10);  --pay-ed:rgba(108,201,183,.30);
+  --hdr:#DFAE6E;  --hdr-bg:rgba(223,174,110,.10);  --hdr-ed:rgba(223,174,110,.30);
+  --sig:#E88C7A;  --sig-bg:rgba(232,140,122,.10);  --sig-ed:rgba(232,140,122,.30);
+  --key:#C5A0DA;  --key-bg:rgba(197,160,218,.10);  --key-ed:rgba(197,160,218,.30);
+  --iv:#8AB8E6;   --iv-bg:rgba(138,184,230,.10);   --iv-ed:rgba(138,184,230,.30);
+  --ok:#74CB9E;   --ok-bg:rgba(116,203,158,.10);
+  --warn:#DFAE6E; --warn-bg:rgba(223,174,110,.10);
+  --bad:#E88C7A;  --bad-bg:rgba(232,140,122,.10);
+  --shadow:0 1px 2px rgba(0,0,0,.30), 0 4px 14px -8px rgba(0,0,0,.55);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.32), 0 20px 40px -22px rgba(0,0,0,.75);
+}
+
+/* ================= type: one family, hierarchy by weight ================= */
+body{
+  font-family:var(--sans);font-size:var(--step);line-height:1.65;
+  letter-spacing:-.004em;font-weight:400;
+}
+h1,h2,h3,h4{font-family:var(--sans);text-wrap:balance}
+h1{font-weight:800;letter-spacing:-.038em;line-height:1.02;font-size:clamp(2.3rem,5vw,3.9rem)}
+h2{font-weight:760;letter-spacing:-.028em;line-height:1.08;font-size:clamp(1.85rem,3.5vw,2.55rem)}
+h3{font-weight:700;letter-spacing:-.02em;line-height:1.25;font-size:clamp(1.14rem,1.9vw,1.34rem)}
+h4{font-weight:660;letter-spacing:-.014em;font-size:1.02rem;line-height:1.35}
+.hero h1{margin-block:var(--s4) var(--s5)}
+.hero h1 .thin.cover h1 .thin{font-weight:300;font-style:normal;color:var(--ink-3);letter-spacing:-.036em}
+.cover h1{font-weight:800;letter-spacing:-.04em;line-height:1.01;font-size:clamp(2.3rem,5.2vw,4.1rem)}
+/* the specimen belongs in the first frame, beside the headline */
+@media (min-width:1340px){
+  .hero-grid{grid-template-columns:1.04fr .96fr;align-items:center;gap:var(--s9)}
+  .hero-in{padding-block:clamp(var(--s9),6.5vw,var(--s11))}
+}
+.lede{font-weight:400;font-size:clamp(1.06rem,1.6vw,1.22rem);line-height:1.58;color:var(--ink-2);letter-spacing:-.008em}
+.dropcap::first-letter{font-weight:800;font-size:3.1em;line-height:.88;padding-right:.09em;color:var(--pay)}
+strong{font-weight:660}
+.eyebrow.coverline{font-family:var(--mono);font-size:.66rem;letter-spacing:.17em;font-weight:500}
+code{background:var(--paper-3);border-radius:5px;font-size:.86em;padding:.14em .4em}
+.prose{max-width:var(--read)}
+
+/* ================= dividers: hairlines, never harsh ================= */
+.perf.perf-thick{background:none;height:0;border:0;border-top:1px solid var(--rule)}
+.panel-head.tokenbox-head{border-bottom:1px solid var(--rule)}
+
+/* ================= surfaces ================= */
+.panel.tokenbox.quiz.claimlist.toc.keyring.modes.attackgrid.flowbox.ticket{
+  border:1px solid var(--rule);border-radius:var(--r3);box-shadow:var(--shadow);
+}
+.panel-head.tokenbox-head{background:transparent;padding:var(--s4) var(--s5)}
+.panel-head .k.tokenbox-title{font-weight:600;letter-spacing:.13em}
+.panel-body{padding:var(--s5)}
+.minicard.vcard.lockcard.jwkslot.stepnote.flowout{border-radius:var(--r2)}
+.minicard{border:1px solid var(--rule);background:var(--paper-2);padding:var(--s4) var(--s5)}
+.hook{
+  background:var(--paper-3);border:0;border-left:2px solid var(--pay-ed);
+  border-radius:0 var(--r2) var(--r2) 0;box-shadow:none;padding:var(--s5) var(--s6);
+}
+.hook .tag{font-weight:600;letter-spacing:.15em;color:var(--pay)}
+.hook .tag::after{background:var(--rule-2)}
+.callout{border-left-width:2px;padding-left:var(--s5)}
+pre.code{background:var(--paper-3);border:0;border-radius:var(--r2);padding:var(--s4) var(--s5);font-size:.8rem}
+.statgrid.numgrid{border-radius:var(--r2);border-color:var(--rule);background:var(--rule)}
+.statgrid div.numgrid div{background:var(--paper-2);padding:var(--s4) var(--s5)}
+
+/* ================= controls: bigger targets, clearer rank ================= */
+.btn{
+  padding:10px 18px;border-radius:var(--r1);font-size:.875rem;font-weight:600;
+  letter-spacing:-.006em;border-color:var(--rule-2);min-height:38px;
+}
+.btn.primary{box-shadow:0 1px 2px rgba(20,99,86,.22)}
+.btn.primary:hover{filter:none;background:color-mix(in srgb,var(--pay) 88%,#000)}
+.caseb{border-radius:var(--r1);padding:9px 15px;min-height:38px}
+.opt{border-radius:var(--r1);padding:11px 15px}
+.pill{border-radius:var(--rf);font-weight:600;letter-spacing:.09em}
+input[type=text],textarea,select{border-radius:var(--r1);border-color:var(--rule-2);background:var(--paper-3);padding:11px 13px}
+input[type=text]:focus,textarea:focus,select:focus{background:var(--paper-2)}
+label.fld .lb{font-weight:500;letter-spacing:.13em}
+.btnrow{gap:var(--s2)}
+
+/* ================= nav ================= */
+.topbar{background:color-mix(in srgb,var(--paper) 82%,transparent);border-bottom:1px solid var(--rule)}
+.topbar-in{padding:var(--s3) var(--gutter);max-width:var(--rail)}
+.brandmark{font-weight:600;letter-spacing:.15em}
+.navlinks a{border-radius:var(--r1);padding:6px 9px;font-size:.685rem;font-weight:500}
+.topbar-in{flex-wrap:nowrap}
+.navlinks{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.navlinks::-webkit-scrollbar{display:none}
+.wrap{max-width:var(--rail);padding-inline:var(--gutter)}
+
+/* ================= trust row, identity and assurance together ============ */
+.trustrow{
+  display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3);align-items:center;
+  padding-top:var(--s2);
+}
+.trust{
+  display:inline-flex;align-items:center;gap:var(--s2);
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;color:var(--ink-2);
+  background:var(--paper-2);border:1px solid var(--rule);
+  border-radius:var(--rf);padding:6px 13px 6px 10px;white-space:nowrap;
+}
+.trust i{
+  font-style:normal;width:15px;height:15px;border-radius:50%;flex:none;
+  display:grid;place-items:center;font-size:.62rem;font-weight:700;
+  background:var(--pay-bg);color:var(--pay);
+}
+.trust.verified i{background:var(--ok-bg);color:var(--ok)}
+
+/* ================= preset chips, smart defaults, one tap ================= */
+.presets{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;margin-bottom:var(--s1)}
+.presets .pl{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);margin-right:var(--s1);
+}
+.chipb{
+  all:unset;box-sizing:border-box;cursor:pointer;font-size:.78rem;font-weight:550;
+  padding:6px 12px;border-radius:var(--rf);border:1px solid var(--rule-2);
+  background:var(--paper-2);color:var(--ink-2);transition:all .15s;white-space:nowrap;
+}
+.chipb:hover{border-color:var(--pay-ed);color:var(--pay);background:var(--pay-bg)}
+.chipb:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.chipb[aria-pressed="true"]{background:var(--pay);border-color:var(--pay);color:#fff}
+
+/* ================= "make it yours" ================= */
+.ownercard{
+  display:flex;flex-direction:column;gap:var(--s3);
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r3);
+  padding:var(--s5) var(--s6);box-shadow:var(--shadow);
+}
+.ownercard .oc-h{font-weight:700;font-size:1.02rem;letter-spacing:-.016em}
+.ownercard .oc-s{font-size:.87rem;line-height:1.55;color:var(--ink-2)}
+.ownerrow{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center}
+.ownerrow input{flex:1;min-width:180px}
+.ocpreview{
+  font-family:var(--mono);font-size:.76rem;word-break:break-all;line-height:1.9;
+  background:var(--paper-3);border-radius:var(--r2);padding:var(--s3) var(--s4);
+}
+
+/* ================= sticky action bar ================= */
+.stickybar{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;
+  background:color-mix(in srgb,var(--paper-2) 92%,transparent);
+  backdrop-filter:blur(14px);border-top:1px solid var(--rule);
+  transform:translateY(0);transition:transform .28s ease;
+}
+.stickybar[data-hidden="1"]{transform:translateY(105%)}
+.sb-in{
+  max-width:var(--rail);margin-inline:auto;padding:var(--s3) var(--gutter);
+  display:flex;align-items:center;gap:var(--s4);
+}
+.sb-prog{display:flex;align-items:center;gap:var(--s3);flex:none}
+.sb-ring{width:34px;height:34px;flex:none;transform:rotate(-90deg)}
+.sb-ring circle{fill:none;stroke-width:3.4}
+.sb-ring .bg{stroke:var(--rule-2)}
+.sb-ring .arc{stroke:var(--pay);stroke-linecap:round;transition:stroke-dasharray .5s ease}
+.sb-txt{display:flex;flex-direction:column;line-height:1.25}
+.sb-txt b{font-size:.84rem;font-weight:700;letter-spacing:-.012em}
+.sb-txt span{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3)}
+.sb-mid{
+  flex:1;min-width:0;font-size:.84rem;color:var(--ink-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sb-mid b{color:var(--ink);font-weight:650}
+.sb-actions{display:flex;gap:var(--s2);flex:none;align-items:center}
+.sb-actions .btn{min-height:36px;padding:8px 15px;font-size:.83rem}
+.sb-close{
+  all:unset;cursor:pointer;width:28px;height:28px;border-radius:var(--r1);flex:none;
+  display:grid;place-items:center;color:var(--ink-3);font-size:1rem;
+}
+.sb-close:hover{background:var(--paper-3);color:var(--ink)}
+.sb-close:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+
+@media (max-width:760px){
+  .sb-mid{display:none}
+  .sb-in{gap:var(--s3);padding-inline:var(--s4)}
+  .sb-actions .btn.ghost{display:none}
+}
+
+/* ================= chapter marker ================= */
+.chapdone{
+  display:inline-flex;align-items:center;gap:var(--s2);
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ok);background:var(--ok-bg);border:1px solid var(--ok);
+  border-radius:var(--rf);padding:4px 11px;
+}
+
+/* ================= misc alignment corrections ================= */
+section.chapter{padding-block:clamp(var(--s9),6.5vw,var(--s11));scroll-margin-top:64px}
+.stack{gap:var(--s4)}
+.stack-lg{gap:var(--s7)}
+.stack-xl{gap:var(--s10)}
+.grid2,.grid3,.parts3,.checklist{gap:var(--s3)}
+figure{gap:var(--s3)}
+figcaption{font-size:.81rem;line-height:1.55}
+footer.colophon{padding-block:var(--s10)}
+.byline{font-family:var(--sans);font-style:normal;font-weight:760;letter-spacing:-.026em}
+.byline strong{font-weight:800}
+
+@media (prefers-reduced-motion:reduce){
+  .stickybar{transition:none}
+  .sb-ring .arc{transition:none}
+}
+</style>
+
+
+<style id="v3">
+/* ==========================================================================
+   Theme v3, a reading surface, not a lightbulb.
+
+   Pure white (#FFF) behind dark text is 21:1 and reads like a torch pointed
+   at the eye; pure black text on it causes halation, which is worst for
+   readers with astigmatism. So: a soft warm-neutral ground, charcoal rather
+   than black, and contrast that stays high (13:1) without being maximal.
+   Every pairing below is checked against WCAG AA.
+
+   Three states: follow the system (no class), or an explicit choice.
+   ========================================================================== */
+
+/* ---------- the default: follow the system, light side ---------- */
+:root{
+  --paper:#F3F4F0;      /* ground, soft warm neutral, never #FFF        */
+  --paper-2:#FAFAF7;    /* raised cards, lighter than the ground        */
+  --paper-3:#E9EBE4;    /* sunken: code, fields, chips                   */
+  --ink:#252B28;        /* body, charcoal, 13.1:1, not 21:1             */
+  --ink-2:#4E5A54;      /* secondary, 6.5:1                             */
+  --ink-3:#68726B;      /* metadata, 4.5:1, still AA at small sizes     */
+  --rule:#E1E4DB;
+  --rule-2:#CBD0C6;
+  --engrave:rgba(20,99,86,.085);
+
+  --pay:#146356;  --pay-bg:rgba(20,99,86,.08);   --pay-ed:rgba(20,99,86,.28);
+  --hdr:#7F5215;  --hdr-bg:rgba(127,82,21,.08);  --hdr-ed:rgba(127,82,21,.28);
+  --sig:#93382B;  --sig-bg:rgba(147,56,43,.08);  --sig-ed:rgba(147,56,43,.28);
+  --key:#59366F;  --key-bg:rgba(89,54,111,.08);  --key-ed:rgba(89,54,111,.28);
+  --iv:#2A4E70;   --iv-bg:rgba(42,78,112,.08);   --iv-ed:rgba(42,78,112,.28);
+  --ok:#296349;   --ok-bg:rgba(41,99,73,.08);
+  --warn:#7F5215; --warn-bg:rgba(127,82,21,.08);
+  --bad:#93382B;  --bad-bg:rgba(147,56,43,.08);
+
+  --shadow:0 1px 2px rgba(37,43,40,.045), 0 4px 12px -7px rgba(37,43,40,.12);
+  --shadow-lift:0 2px 5px rgba(37,43,40,.05), 0 18px 36px -20px rgba(37,43,40,.20);
+}
+
+/* ---------- the default: follow the system, dark side ---------- */
+@media (prefers-color-scheme:dark){
+  :root:not(.theme-light){
+    --paper:#171B19;    /* charcoal, not black, black + light text halates */
+    --paper-2:#1E2320;
+    --paper-3:#262C29;
+    --ink:#E4E8E4;      /* off-white, 14:1, not #FFF                        */
+    --ink-2:#A9B3AD;
+    --ink-3:#7C8781;
+    --rule:#2C332F;
+    --rule-2:#3D453F;
+    --engrave:rgba(111,204,186,.11);
+
+    --pay:#6FCCBA;  --pay-bg:rgba(111,204,186,.11);  --pay-ed:rgba(111,204,186,.32);
+    --hdr:#E0B172;  --hdr-bg:rgba(224,177,114,.11);  --hdr-ed:rgba(224,177,114,.32);
+    --sig:#EC907E;  --sig-bg:rgba(236,144,126,.11);  --sig-ed:rgba(236,144,126,.32);
+    --key:#C7A4DC;  --key-bg:rgba(199,164,220,.11);  --key-ed:rgba(199,164,220,.32);
+    --iv:#8CBAE8;   --iv-bg:rgba(140,186,232,.11);   --iv-ed:rgba(140,186,232,.32);
+    --ok:#78CFA2;   --ok-bg:rgba(120,207,162,.11);
+    --warn:#E0B172; --warn-bg:rgba(224,177,114,.11);
+    --bad:#EC907E;  --bad-bg:rgba(236,144,126,.11);
+
+    --shadow:0 1px 2px rgba(0,0,0,.32), 0 4px 14px -8px rgba(0,0,0,.55);
+    --shadow-lift:0 2px 6px rgba(0,0,0,.34), 0 20px 40px -22px rgba(0,0,0,.72);
+  }
+}
+
+/* ---------- an explicit choice always wins ---------- */
+:root.theme-light{
+  --paper:#F3F4F0; --paper-2:#FAFAF7; --paper-3:#E9EBE4;
+  --ink:#252B28; --ink-2:#4E5A54; --ink-3:#68726B;
+  --rule:#E1E4DB; --rule-2:#CBD0C6;
+  --engrave:rgba(20,99,86,.085);
+  --pay:#146356;  --pay-bg:rgba(20,99,86,.08);   --pay-ed:rgba(20,99,86,.28);
+  --hdr:#7F5215;  --hdr-bg:rgba(127,82,21,.08);  --hdr-ed:rgba(127,82,21,.28);
+  --sig:#93382B;  --sig-bg:rgba(147,56,43,.08);  --sig-ed:rgba(147,56,43,.28);
+  --key:#59366F;  --key-bg:rgba(89,54,111,.08);  --key-ed:rgba(89,54,111,.28);
+  --iv:#2A4E70;   --iv-bg:rgba(42,78,112,.08);   --iv-ed:rgba(42,78,112,.28);
+  --ok:#296349;   --ok-bg:rgba(41,99,73,.08);
+  --warn:#7F5215; --warn-bg:rgba(127,82,21,.08);
+  --bad:#93382B;  --bad-bg:rgba(147,56,43,.08);
+  --shadow:0 1px 2px rgba(37,43,40,.045), 0 4px 12px -7px rgba(37,43,40,.12);
+  --shadow-lift:0 2px 5px rgba(37,43,40,.05), 0 18px 36px -20px rgba(37,43,40,.20);
+}
+:root.theme-dark{
+  --paper:#171B19; --paper-2:#1E2320; --paper-3:#262C29;
+  --ink:#E4E8E4; --ink-2:#A9B3AD; --ink-3:#7C8781;
+  --rule:#2C332F; --rule-2:#3D453F;
+  --engrave:rgba(111,204,186,.11);
+  --pay:#6FCCBA;  --pay-bg:rgba(111,204,186,.11);  --pay-ed:rgba(111,204,186,.32);
+  --hdr:#E0B172;  --hdr-bg:rgba(224,177,114,.11);  --hdr-ed:rgba(224,177,114,.32);
+  --sig:#EC907E;  --sig-bg:rgba(236,144,126,.11);  --sig-ed:rgba(236,144,126,.32);
+  --key:#C7A4DC;  --key-bg:rgba(199,164,220,.11);  --key-ed:rgba(199,164,220,.32);
+  --iv:#8CBAE8;   --iv-bg:rgba(140,186,232,.11);   --iv-ed:rgba(140,186,232,.32);
+  --ok:#78CFA2;   --ok-bg:rgba(120,207,162,.11);
+  --warn:#E0B172; --warn-bg:rgba(224,177,114,.11);
+  --bad:#EC907E;  --bad-bg:rgba(236,144,126,.11);
+  --shadow:0 1px 2px rgba(0,0,0,.32), 0 4px 14px -8px rgba(0,0,0,.55);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.34), 0 20px 40px -22px rgba(0,0,0,.72);
+}
+
+html{color-scheme:light dark}
+:root.theme-light{color-scheme:light}
+:root.theme-dark{color-scheme:dark}
+body.topbar.panel.tokenbox.stickybar{transition:background-color .25s ease,border-color .25s ease,color .25s ease}
+
+/* ---------- the control ---------- */
+.themetoggle{
+  display:inline-flex;align-items:center;gap:2px;flex:none;
+  background:var(--paper-3);border:1px solid var(--rule);
+  border-radius:var(--rf,999px);padding:3px;margin-left:var(--s3,12px);
+}
+.themetoggle button{
+  all:unset;box-sizing:border-box;cursor:pointer;
+  display:grid;place-items:center;width:30px;height:26px;border-radius:999px;
+  color:var(--ink-3);transition:background .16s,color .16s;
+}
+.themetoggle button:hover{color:var(--ink);background:var(--paper-2)}
+.themetoggle button:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.themetoggle button[aria-pressed="true"]{background:var(--paper-2);color:var(--pay);box-shadow:var(--shadow)}
+.themetoggle svg{width:15px;height:15px;display:block;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.themetoggle .auto{font-family:var(--mono);font-size:.56rem;font-weight:700;letter-spacing:.06em}
+
+@media (max-width:760px){
+  .themetoggle{margin-left:var(--s2,8px)}
+  .navlinks{order:3;width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  body.topbar.panel.tokenbox.stickybar{transition:none}
+}
+</style>
+
+
+<style id="v4">
+/* ==========================================================================
+   v4, a learning path you can see, and a space you can adjust.
+   Structure and interaction taken from the reference; colour stays on the
+   handbook's own tokens so both themes keep working.
+   ========================================================================== */
+
+:root{ --sbw:288px; }
+
+/* ---------------- sidebar ---------------- */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:var(--sbw);z-index:90;
+  background:var(--paper-2);border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;
+  transform:translateX(-101%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+}
+.sidebar[data-open="1"]{transform:translateX(0)}
+.sb-scroll{flex:1;overflow-y:auto;padding:var(--s6) var(--s5) var(--s4);display:flex;flex-direction:column;gap:var(--s5)}
+.sb-scroll::-webkit-scrollbar{width:8px}
+.sb-scroll::-webkit-scrollbar-thumb{background:var(--rule-2);border-radius:99px}
+
+.sb-label{
+  font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--s3);
+}
+.sb-sec{display:flex;flex-direction:column}
+.sb-div{border:0;border-top:1px solid var(--rule);margin:0}
+
+/* learning path */
+.pathitem{
+  display:grid;grid-template-columns:30px 1fr;gap:var(--s3);align-items:start;
+  padding:var(--s3);border-radius:var(--r2);text-decoration:none;color:inherit;
+  transition:background .16s;margin-bottom:2px;
+}
+.pathitem:hover{background:var(--paper-3)}
+.pathitem:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.pathitem .pnum{
+  font-family:var(--mono);font-size:.68rem;font-weight:700;letter-spacing:.02em;
+  width:28px;height:26px;border-radius:7px;display:grid;place-items:center;
+  background:var(--paper-3);color:var(--ink-3);border:1px solid var(--rule);
+}
+.pathitem .pb{display:flex;flex-direction:column;gap:1px;min-width:0}
+.pathitem .pt{font-weight:660;font-size:.88rem;line-height:1.3;letter-spacing:-.012em}
+.pathitem .ps{font-size:.75rem;color:var(--ink-3);line-height:1.4}
+.pathitem[aria-current="true"]{background:var(--pay-bg)}
+.pathitem[aria-current="true"] .pnum{background:var(--pay);color:var(--paper-2);border-color:var(--pay)}
+.pathitem[aria-current="true"] .pt{color:var(--pay)}
+.pathitem.done .pnum{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+
+/* section checklist */
+.secitem{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;
+  grid-template-columns:20px 1fr;gap:var(--s3);align-items:center;
+  padding:9px var(--s3);border-radius:var(--r2);border-left:2px solid transparent;
+  transition:background .16s,border-color .16s;
+}
+.secitem:hover{background:var(--paper-3)}
+.secitem:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
+.secitem .mark{
+  width:17px;height:17px;border-radius:50%;border:1.6px solid var(--rule-2);
+  display:grid;place-items:center;transition:all .2s;
+}
+.secitem .mark svg{width:10px;height:10px;stroke:var(--paper-2);stroke-width:3;fill:none;opacity:0;transition:opacity .15s}
+.secitem .st{font-size:.85rem;line-height:1.35;color:var(--ink-2)}
+.secitem[aria-current="true"]{background:var(--pay-bg);border-left-color:var(--pay)}
+.secitem[aria-current="true"] .st{color:var(--ink);font-weight:600}
+.secitem[aria-current="true"] .mark{border-color:var(--pay)}
+.secitem.done .mark{background:var(--ok);border-color:var(--ok)}
+.secitem.done .mark svg{opacity:1}
+.secitem.done .st{color:var(--ink-3)}
+
+/* footer */
+.sb-foot{
+  border-top:1px solid var(--rule);padding:var(--s4) var(--s5) var(--s5);
+  display:flex;flex-direction:column;gap:var(--s3);background:var(--paper-2);
+}
+.sb-bar{height:5px;border-radius:99px;background:var(--paper-3);overflow:hidden}
+.sb-bar i{display:block;height:100%;background:var(--pay);border-radius:99px;transition:width .45s ease;width:0}
+.sb-meta{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2)}
+.sb-meta b{font-size:.8rem;font-weight:700}
+.sb-meta span{font-family:var(--mono);font-size:.64rem;letter-spacing:.09em;color:var(--ink-3)}
+.sb-hint{font-size:.76rem;line-height:1.5;color:var(--ink-3);margin:0}
+.sb-link{
+  all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:var(--s2);
+  font-size:.82rem;font-weight:550;color:var(--ink-2);padding:7px 8px;margin-inline:-8px;
+  border-radius:var(--r1);transition:background .15s,color .15s;text-decoration:none;
+}
+.sb-link:hover{background:var(--paper-3);color:var(--pay)}
+.sb-link:focus-visible{outline:2px solid var(--pay);outline-offset:1px}
+.sb-link svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;flex:none}
+
+/* drawer scrim */
+.sb-scrim{
+  position:fixed;inset:0;z-index:85;background:rgba(20,26,23,.44);
+  backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:opacity .24s;
+}
+.sb-scrim[data-open="1"]{opacity:1;pointer-events:auto}
+
+/* menu button */
+.menubtn{
+  all:unset;box-sizing:border-box;cursor:pointer;display:grid;place-items:center;
+  width:32px;height:30px;border-radius:var(--r1);color:var(--ink-2);flex:none;
+  border:1px solid var(--rule);background:var(--paper-2);
+}
+.menubtn:hover{background:var(--paper-3);color:var(--ink)}
+.menubtn:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.menubtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round}
+
+/* ---- desktop: the path is always there ---- */
+@media (min-width:1120px){
+  .sidebar{transform:translateX(0)}
+  .sb-scrim{display:none}
+  .menubtn{display:none}
+  body{padding-left:var(--sbw);padding-bottom:0}
+  .navlinks{display:none}
+}
+
+/* ---------------- "make it your space" ---------------- */
+.scrim{
+  position:fixed;inset:0;z-index:120;display:grid;place-items:center;
+  background:rgba(20,26,23,.42);backdrop-filter:blur(3px);padding:var(--s5);
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.scrim[data-open="1"]{opacity:1;pointer-events:auto}
+.modal{
+  width:min(520px,100%);max-height:min(86vh,760px);overflow:auto;
+  background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r3);
+  box-shadow:0 24px 60px -20px rgba(20,26,23,.4);
+  transform:translateY(10px) scale(.99);transition:transform .22s cubic-bezier(.4,0,.2,1);
+}
+.scrim[data-open="1"] .modal{transform:none}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+  padding:var(--s5) var(--s6);border-bottom:1px solid var(--rule);
+  position:sticky;top:0;background:var(--paper-2);z-index:1;
+}
+.modal-head h3{font-size:1.18rem;font-weight:740;letter-spacing:-.022em;margin:0}
+.modal-x{
+  all:unset;cursor:pointer;width:32px;height:32px;border-radius:var(--r1);
+  display:grid;place-items:center;color:var(--ink-3);border:1px solid var(--rule);flex:none;
+}
+.modal-x:hover{background:var(--paper-3);color:var(--ink)}
+.modal-x:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.modal-x svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round}
+.modal-body{padding:var(--s5) var(--s6) var(--s6);display:flex;flex-direction:column;gap:var(--s4)}
+.modal-lede{font-size:.92rem;color:var(--ink-2);margin:0;line-height:1.55}
+.modal-note{font-size:.84rem;line-height:1.6;color:var(--ink-2);margin:0}
+.modal hr{border:0;border-top:1px solid var(--rule);margin:0}
+
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:var(--s5)}
+.setrow .sl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.setrow .sl b{font-weight:640;font-size:.93rem;letter-spacing:-.01em}
+.setrow .sl span{font-size:.81rem;color:var(--ink-3);line-height:1.45}
+.setrow input[type=text]{max-width:190px}
+
+/* switch */
+.switch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
+.switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.switch .track{
+  position:absolute;inset:0;border-radius:99px;background:var(--paper-3);
+  border:1px solid var(--rule-2);transition:background .2s,border-color .2s;pointer-events:none;
+}
+.switch .track::after{
+  content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--paper-2);box-shadow:0 1px 3px rgba(20,26,23,.25);transition:transform .2s;
+}
+.switch input:checked + .track{background:var(--pay);border-color:var(--pay)}
+.switch input:checked + .track::after{transform:translateX(18px)}
+.switch input:focus-visible + .track{outline:2px solid var(--pay);outline-offset:2px}
+
+.modal-actions{display:flex;gap:var(--s2);flex-wrap:wrap}
+.linkdanger{
+  all:unset;cursor:pointer;font-size:.86rem;font-weight:600;color:var(--bad);
+  padding:6px 2px;border-radius:4px;align-self:flex-start;
+}
+.linkdanger:hover{text-decoration:underline}
+.linkdanger:focus-visible{outline:2px solid var(--bad);outline-offset:2px}
+.codebox{
+  font-family:var(--mono);font-size:.74rem;line-height:1.6;width:100%;
+  background:var(--paper-3);border:1px solid var(--rule-2);border-radius:var(--r1);
+  padding:var(--s3);resize:vertical;min-height:78px;word-break:break-all;
+}
+.modal-msg{font-size:.82rem;color:var(--ok);font-weight:600;margin:0}
+.modal-msg.err{color:var(--bad)}
+
+/* ---------------- larger reading text ---------------- */
+:root.big-text{--step:1.1875rem}
+:root.big-text .prose p,:root.big-text .prose li{line-height:1.78}
+:root.big-text .lede{font-size:clamp(1.16rem,1.8vw,1.34rem);line-height:1.62}
+:root.big-text .hook p{font-size:1.04em;line-height:1.7}
+:root.big-text .callout{font-size:1em;line-height:1.7}
+
+@media (max-width:1119px){
+  .sidebar{box-shadow:var(--shadow-lift)}
+}
+@media (prefers-reduced-motion:reduce){
+  .sidebar.scrim.modal.sb-scrim.sb-bar i{transition:none}
+}
+</style>
+
+
+<style id="v5">
+/* ---- one progress bar, driven by where you are in the whole handbook ---- */
+.progressbar{
+  position:absolute;left:0;bottom:-1px;height:2px;background:var(--pay);width:0;
+  transition:width .12s linear;
+}
+:root.sb-collapsed .sidebar{transform:translateX(-101%)}
+
+/* sidebar header: close is always reachable */
+.sb-head{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s4) var(--s5) 0;
+}
+.sb-head .sbt{
+  font-family:var(--mono);font-size:.64rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.sb-x{
+  all:unset;box-sizing:border-box;cursor:pointer;width:28px;height:28px;flex:none;
+  border-radius:var(--r1);display:grid;place-items:center;color:var(--ink-3);
+  border:1px solid var(--rule);background:var(--paper-2);
+}
+.sb-x:hover{background:var(--paper-3);color:var(--ink)}
+.sb-x:focus-visible{outline:2px solid var(--pay);outline-offset:2px}
+.sb-x svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+@media (min-width:1120px){
+  .menubtn{display:none}
+  :root.sb-collapsed .menubtn{display:grid}
+  :root.sb-collapsed body{padding-left:0}
+}
+@media (prefers-reduced-motion:reduce){ .progressbar{transition:none} }
+</style>
+
 <nav class="topbar">
   <div class="topbar-in">
     <div class="brandmark">JWT <span>/ handbook</span></div>
@@ -672,7 +1313,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
       <div class="prose stack" style="margin-inline:0">
         <div class="coverline">An interactive reading of the JWT Handbook</div>
         <h1>JWT<span class="thin">in three parts</span></h1>
-        <p class="lede">All eight chapters of Sebasti&aacute;n Peyrott's handbook, retold in plain words for people who have never done any of this &mdash; and rebuilt as something you press on rather than read.</p>
+        <p class="lede">All eight chapters of Sebasti&aacute;n Peyrott's handbook, retold in plain words for people who have never done any of this, and rebuilt as something you press on rather than read.</p>
         <p style="color:var(--ink-3);font-size:.88rem">Nothing here is a simulation. The pages generate real key pairs, compute real signatures, and really encrypt things, in your own browser. Nothing you type is sent anywhere.</p>
       </div>
 
@@ -771,7 +1412,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
           <span class="pcch">Chapters 4 – 5</span>
           <span class="pctitle">The Seal and the Envelope</span>
           <span class="pcdesc">A rubber stamp everyone can copy versus a signature only you can write. Then the reversal that catches everybody: encryption runs the opposite way round, and does not replace signing.</span>
-          <span class="pcdo">You will <b>generate real key pairs</b>, fail to forge with a public key, and really encrypt something &mdash; then break the seal and watch it refuse to open.</span>
+          <span class="pcdo">You will <b>generate real key pairs</b>, fail to forge with a public key, and really encrypt something, then break the seal and watch it refuse to open.</span>
           <span class="pcgo">Read part two →</span>
         </div>
       </a>
@@ -781,7 +1422,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
         <div class="pcbody">
           <span class="pcch">Chapters 6 – 8</span>
           <span class="pctitle">The Locksmith's Manual</span>
-          <span class="pcdesc">Everything the first two parts labelled "the maths" and skipped. Base64 to the bit, hashing, HMAC, RSA and elliptic curves &mdash; then six real attacks and the eight rules that stop them.</span>
+          <span class="pcdesc">Everything the first two parts labelled "the maths" and skipped. Base64 to the bit, hashing, HMAC, RSA and elliptic curves, then six real attacks and the eight rules that stop them.</span>
           <span class="pcdo">You will <b>watch one letter move half a hash</b>, build HMAC by hand, break an RSA key, and draw on an elliptic curve.</span>
           <span class="pcgo">Read part three →</span>
         </div>
@@ -837,7 +1478,7 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
         </a>
         <a class="tocrow" href="part-2.html#nested">
           <span class="tn">✦</span>
-          <span class="tt">Nested tokens<small>Sign first, then encrypt — and why that order is not a matter of taste</small></span>
+          <span class="tt">Nested tokens<small>Sign first, then encrypt, and why that order is not a matter of taste</small></span>
           <span class="tp">Part two</span><span class="tg">open →</span>
         </a>
 
@@ -878,10 +1519,10 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
     <div class="eyebrow">Colophon</div>
     <p class="byline">Recreated by <strong>Swaraj Bangar</strong><span class="hb" role="img" aria-label="love">❤️</span></p>
     <p class="srcnote">
-      Based on <strong>The JWT Handbook</strong>, version 0.14.2, by Sebasti&aacute;n E. Peyrott, published by Auth0 &mdash; the source of the structure, the specifications and the examples throughout. The best-practice chapter draws on the IETF OAuth Working Group's JWT Best Current Practices draft. The wristbands, coat checks, railway tickets, rubber stamps, suggestion boxes, locked trunks and signature books are these pages' own, added so the ideas land without a background in cryptography.
+      Based on <strong>The JWT Handbook</strong>, version 0.14.2, by Sebasti&aacute;n E. Peyrott, published by Auth0, the source of the structure, the specifications and the examples throughout. The best-practice chapter draws on the IETF OAuth Working Group's JWT Best Current Practices draft. The wristbands, coat checks, railway tickets, rubber stamps, suggestion boxes, locked trunks and signature books are these pages' own, added so the ideas land without a background in cryptography.
     </p>
     <p class="srcnote">
-      Every cryptographic operation across the three parts runs in your browser through Web Crypto &mdash; real HMAC, real RSA and ECDSA key pairs, real AES-GCM encryption. Nothing you type leaves the page. None of it is production code: real systems need battle-tested libraries, careful key handling and proper testing.
+      Every cryptographic operation across the three parts runs in your browser through Web Crypto, real HMAC, real RSA and ECDSA key pairs, real AES-GCM encryption. Nothing you type leaves the page. None of it is production code: real systems need battle-tested libraries, careful key handling and proper testing.
     </p>
     <p class="srcnote" style="color:var(--ink-3)">
       Set in Bodoni Moda, Public&nbsp;Sans and IBM Plex Mono. &nbsp;·&nbsp;
@@ -929,6 +1570,7 @@ var P1 = "part-1.html", P2 = "part-2.html", P3 = "part-3.html";
   if (window.matchMedia){
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
     if (mq.addEventListener) mq.addEventListener("change", function(){ setTimeout(draw,60); });
+    window.addEventListener("jwt:theme", function(){ setTimeout(draw,60); });
   }
 })();
 
@@ -945,13 +1587,13 @@ var P1 = "part-1.html", P2 = "part-2.html", P3 = "part-3.html";
   var SHAPES = {
     none: {
       html: part("t-h","eyJhbGciOiJub25lIn0") + DOT + part("t-p","eyJzdWIiOiI0MDIiLCJuYW1lIjoiQW5hIn0") + DOT,
-      note: '<strong>Two pieces, and a trailing dot that leads nowhere.</strong> The label says <code>alg: none</code> &mdash; there is no seal, so the third slot is empty, but the dot is still written. Anyone can read it and anyone can change it. Fine for remembering which page you were on. Useless for anything that matters. <em>Covered in part one.</em>'
+      note: '<strong>Two pieces, and a trailing dot that leads nowhere.</strong> The label says <code>alg: none</code>; there is no seal, so the third slot is empty, but the dot is still written. Anyone can read it and anyone can change it. Fine for remembering which page you were on. Useless for anything that matters. <em>Covered in part one.</em>'
     },
     sig: {
       html: part("t-h","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9") + DOT +
             part("t-p","eyJzdWIiOiI0MDIiLCJuYW1lIjoiQW5hIiwiYWRtaW4iOnRydWV9") + DOT +
             part("t-s","TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ"),
-      note: '<strong>Three pieces. This is the one you will meet.</strong> Header, payload, signature. Everyone can still read every word &mdash; the seal does not hide anything, it only proves nobody changed it since it was written. A postcard with a wax seal. <em>Parts one and two.</em>'
+      note: '<strong>Three pieces. This is the one you will meet.</strong> Header, payload, signature. Everyone can still read every word, the seal does not hide anything, it only proves nobody changed it since it was written. A postcard with a wax seal. <em>Parts one and two.</em>'
     },
     enc: {
       html: part("t-h","eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMTI4R0NNIn0") + DOT +
@@ -985,13 +1627,13 @@ var P1 = "part-1.html", P2 = "part-2.html", P3 = "part-3.html";
 
   var ADVICE = {
     a: { head: "Start at the very beginning",
-         text: "Part one, and read it straight through. It assumes nothing at all — the first thing it does is compare a token to the paper band somebody puts on your wrist at a concert, and it builds from there. Do not skip the labs; the coat-check simulator and the three attack labs are where the ideas stop being words. By the end you will be able to look at any token and say what it holds and whether you should trust it.",
+         text: "Part one, and read it straight through. It assumes nothing at all, the first thing it does is compare a token to the paper band somebody puts on your wrist at a concert, and it builds from there. Do not skip the labs; the coat-check simulator and the three attack labs are where the ideas stop being words. By the end you will be able to look at any token and say what it holds and whether you should trust it.",
          href: P1, label: "Open part one →" },
     b: { head: "Skim part one, then slow down",
-         text: "Read part one quickly — you will recognise most of it, and the ticket-shaped view of the claims is worth five minutes even if you already know them. Then part two is your page. It answers the two questions people in your position usually cannot answer: why anyone would choose RS256 over HS256, and why encrypting a token does not mean you can stop signing it.",
+         text: "Read part one quickly; you will recognise most of it, and the ticket-shaped view of the claims is worth five minutes even if you already know them. Then part two is your page. It answers the two questions people in your position usually cannot answer: why anyone would choose RS256 over HS256, and why encrypting a token does not mean you can stop signing it.",
          href: P2, label: "Open part two →" },
     c: { head: "Go straight to part three",
-         text: "It opens with a bank's book of signature samples and ends with an elliptic curve you place points on yourself. In between: Base64 down to the individual bit, a live SHA-256 avalanche, HMAC assembled from XOR and hashing then checked against your browser's own, and a complete RSA key small enough to verify by hand — which the page then factors in front of you. If a term goes unexplained, it was explained in part one.",
+         text: "It opens with a bank's book of signature samples and ends with an elliptic curve you place points on yourself. In between: Base64 down to the individual bit, a live SHA-256 avalanche, HMAC assembled from XOR and hashing then checked against your browser's own, and a complete RSA key small enough to verify by hand, which the page then factors in front of you. If a term goes unexplained, it was explained in part one.",
          href: P3, label: "Open part three →" }
   };
 
@@ -1025,6 +1667,737 @@ var P1 = "part-1.html", P2 = "part-2.html", P3 = "part-3.html";
   onScroll();
 })();
 
+})();
+</script>
+
+<script>window.__JWTPAGE={id:"index",chapters:[],next:{href:"part-1.html",label:"Start part one"}};</script>
+<script>
+/* ==========================================================================
+   Interaction layer v2
+   - progress that never starts at zero (opening the handbook is step one)
+   - a name you choose, carried through every page
+   - one-tap presets on every lab, so nothing starts blank
+   - a sticky bar so the next action is always in reach
+   ========================================================================== */
+(function(){
+"use strict";
+
+var LS = {
+  get: function(k, d){ try{ var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set: function(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+var CH = ["ch1","ch2","ch3","ch4","ch5","ch6","ch7","ch8"];
+var TITLES = {
+  ch1:"Introduction", ch2:"Practical applications", ch3:"Tokens in detail",
+  ch4:"JSON Web Signatures", ch5:"JSON Web Encryption",
+  ch6:"JSON Web Keys", ch7:"The algorithms", ch8:"Best practices"
+};
+var PAGE = window.__JWTPAGE || {};            /* {id, chapters:[], next:{href,label}} */
+var PKEY = "jwtHandbook.v2";
+
+function state(){
+  var s = LS.get(PKEY, null);
+  if (!s || typeof s !== "object") s = {};
+  if (!s.read) s.read = {};
+  if (!s.started) s.started = true;           /* you are here; that counts */
+  return s;
+}
+function save(s){ LS.set(PKEY, s); }
+
+/* ---- progress: 8 chapters + the act of starting = 9 steps ---- */
+function progress(){
+  var s = state();
+  var done = CH.filter(function(c){ return s.read[c]; }).length;
+  return { done: done, total: CH.length, pct: Math.round(((done + 1) / (CH.length + 1)) * 100) };
+}
+
+/* ---------------- the name you choose ---------------- */
+function owner(){ return state().name || ""; }
+function setOwner(n){
+  var s = state();
+  s.name = (n || "").trim().slice(0, 28);
+  save(s);
+  applyOwner();
+}
+function applyOwner(){
+  var n = owner();
+  document.querySelectorAll("[data-owner]").forEach(function(el){
+    el.textContent = n || el.dataset.owner;
+  });
+  document.querySelectorAll(".ocpreview").forEach(function(el){ paintOwnerToken(el, n); });
+  var g = document.getElementById("sbGreet");
+  if (g) g.textContent = n ? n : "";
+  var badge = document.getElementById("sbName");
+  if (badge) badge.hidden = !n;
+}
+function b64url(str){
+  var bytes = new TextEncoder().encode(str), s = "";
+  for (var i=0;i<bytes.length;i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/=+$/,"").replace(/\+/g,"-").replace(/\//g,"_");
+}
+function paintOwnerToken(el, name){
+  var payload = { sub:"402", name: name || "Ana Moreau", admin:false };
+  var h = b64url(JSON.stringify({alg:"HS256", typ:"JWT"}));
+  var p = b64url(JSON.stringify(payload));
+  el.innerHTML = '<span style="color:var(--hdr)">'+h+'</span>'+
+                 '<span style="color:var(--ink-3)">.</span>'+
+                 '<span style="color:var(--pay)">'+p+'</span>'+
+                 '<span style="color:var(--ink-3)">.</span>'+
+                 '<span style="color:var(--sig)">TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span>';
+}
+
+/* ---------------- sticky action bar ---------------- */
+function buildBar(){
+  return;   /* replaced by the single handbook-wide bar */
+
+  var bar = document.createElement("div");
+  bar.className = "stickybar";
+  bar.id = "stickybar";
+  bar.innerHTML =
+    '<div class="sb-in">' +
+      '<div class="sb-prog">' +
+        '<svg class="sb-ring" viewBox="0 0 36 36" aria-hidden="true">' +
+          '<circle class="bg" cx="18" cy="18" r="15.5"></circle>' +
+          '<circle class="arc" id="sbArc" cx="18" cy="18" r="15.5" stroke-dasharray="0 100"></circle>' +
+        '</svg>' +
+        '<span class="sb-txt"><b id="sbPct">0%</b><span id="sbLabel">of the handbook</span></span>' +
+      '</div>' +
+      '<div class="sb-mid" id="sbMid"></div>' +
+      '<div class="sb-actions">' +
+        '<button class="btn ghost" id="sbMark" type="button">Mark read</button>' +
+        '<a class="btn primary" id="sbNext" href="#">Next</a>' +
+        '<button class="sb-close" id="sbHide" type="button" aria-label="Hide this bar">&times;</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(bar);
+
+  document.getElementById("sbHide").addEventListener("click", function(){
+    bar.dataset.hidden = "1";
+    LS.set("jwtHandbook.barHidden", true);
+    document.body.style.paddingBottom = "0";
+  });
+  if (LS.get("jwtHandbook.barHidden", false)){
+    bar.dataset.hidden = "1";
+    document.body.style.paddingBottom = "0";
+  }
+  document.getElementById("sbMark").addEventListener("click", markCurrent);
+}
+
+var currentCh = null;
+
+function renderBar(){
+  var pr = progress();
+  var arc = document.getElementById("sbArc");
+  if (arc) arc.setAttribute("stroke-dasharray", (pr.pct * 0.974) + " 100");
+  var pct = document.getElementById("sbPct");
+  if (pct) pct.textContent = pr.pct + "%";
+  var lab = document.getElementById("sbLabel");
+  if (lab) lab.textContent = pr.done === 0 ? "just started" : pr.done + " of " + pr.total + " chapters";
+
+  var mid = document.getElementById("sbMid");
+  if (mid){
+    var name = owner();
+    var who = name ? '<b>' + name + '</b>, ' : "";
+    if (currentCh && TITLES[currentCh]){
+      var isDone = state().read[currentCh];
+      mid.innerHTML = who + (isDone ? "finished " : "reading ") + "<b>" + TITLES[currentCh] + "</b>";
+    } else if (pr.done === 0){
+      mid.innerHTML = who + "you are one step in already, eight chapters to go";
+    } else {
+      mid.innerHTML = who + "<b>" + pr.done + "</b> of " + pr.total + " chapters behind you";
+    }
+  }
+
+  var mark = document.getElementById("sbMark");
+  if (mark){
+    if (!currentCh){ mark.disabled = true; mark.textContent = "Mark read"; }
+    else {
+      mark.disabled = false;
+      mark.textContent = state().read[currentCh] ? "Read ✓" : "Mark read";
+    }
+  }
+
+  var next = document.getElementById("sbNext");
+  if (next){
+    var n = nextTarget();
+    next.href = n.href;
+    next.textContent = n.label;
+  }
+}
+
+function markCurrent(){
+  if (!currentCh) return;
+  var s = state();
+  s.read[currentCh] = !s.read[currentCh];
+  save(s);
+  renderBar();
+  paintChapterBadges();
+}
+
+function nextTarget(){
+  if (PAGE.next) return PAGE.next;
+  return { href:"#", label:"Next" };
+}
+
+function paintChapterBadges(){
+  var s = state();
+  (PAGE.chapters || []).forEach(function(id){
+    var sec = document.getElementById(id);
+    if (!sec) return;
+    var head = sec.querySelector(".chapnum");
+    if (!head) return;
+    var badge = head.querySelector(".chapdone");
+    if (s.read[id]){
+      if (!badge){
+        badge = document.createElement("span");
+        badge.className = "chapdone";
+        badge.innerHTML = "&#10003; read";
+        head.appendChild(badge);
+      }
+    } else if (badge){
+      badge.remove();
+    }
+  });
+}
+
+/* ---------------- which chapter am I looking at ---------------- */
+function watchChapters(){
+  var secs = (PAGE.chapters || []).map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  if (!secs.length) return;
+  function onScroll(){
+    var y = window.scrollY + 160, found = null;
+    secs.forEach(function(s){ if (s.offsetTop <= y) found = s.id; });
+    if (found !== currentCh){ currentCh = found; renderBar(); }
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+}
+
+/* ---------------- presets: nothing starts blank ---------------- */
+function presets(targetId, label, list){
+  var t = document.getElementById(targetId);
+  if (!t) return;
+  var host = t.closest("label.fld") || t.parentElement;
+  if (!host) return;
+  /* a preset row must never become an extra cell in a grid */
+  while (host.parentElement && /grid2|grid3|b64grid|twolock/.test(host.parentElement.className)) host = host.parentElement;
+  var prev = host.previousElementSibling;
+  if (prev && prev.classList.contains("presets")) return;
+  var row = document.createElement("div");
+  row.className = "presets";
+  row.innerHTML = '<span class="pl">' + label + '</span>';
+  list.forEach(function(p, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "chipb";
+    b.textContent = p.label;
+    b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+    b.addEventListener("click", function(){
+      row.querySelectorAll(".chipb").forEach(function(x){ x.setAttribute("aria-pressed","false"); });
+      b.setAttribute("aria-pressed","true");
+      t.value = p.value;
+      t.dispatchEvent(new Event("input", {bubbles:true}));
+      t.dispatchEvent(new Event("change", {bubbles:true}));
+    });
+    row.appendChild(b);
+  });
+  host.parentElement.insertBefore(row, host);
+}
+
+/* ---------------- trust row under the headline ---------------- */
+function trustRow(items){
+  var lede = document.querySelector(".hero .lede.cover .lede");
+  if (!lede || document.querySelector(".trustrow")) return;
+  var row = document.createElement("div");
+  row.className = "trustrow";
+  row.innerHTML = items.map(function(it){
+    return '<span class="trust' + (it.v ? " verified" : "") + '"><i>' + it.i + '</i>' + it.t + '</span>';
+  }).join("");
+  lede.parentElement.insertBefore(row, lede.nextSibling);
+}
+
+window.JWTUI = {
+  presets: presets,
+  trustRow: trustRow,
+  setOwner: setOwner,
+  owner: owner,
+  applyOwner: applyOwner,
+  refresh: function(){ renderBar(); paintChapterBadges(); }
+};
+
+function init(){
+  buildBar();
+  watchChapters();
+  paintChapterBadges();
+  applyOwner();
+  renderBar();
+  document.addEventListener("input", function(e){
+    if (e.target && (e.target.id === "ownerName" || e.target.id === "ownerNameHero")) {
+      setOwner(e.target.value);
+      document.querySelectorAll("#ownerName,#ownerNameHero").forEach(function(x){ if (x !== e.target) x.value = e.target.value; });
+    }
+  });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+
+})();
+</script>
+<script>(function(){function go(){if(!window.JWTUI)return setTimeout(go,60);window.JWTUI.trustRow([{"i": "8", "t": "8 chapters", "v": false}, {"i": "~", "t": "about 2 hours", "v": false}, {"i": "\u2713", "t": "Real crypto, in your browser", "v": true}, {"i": "\u2713", "t": "Nothing you type is sent anywhere", "v": true}]);setTimeout(function(){if(window.__JWTPRESETS)window.__JWTPRESETS();},0);}go();})();</script>
+
+<script>
+/* ============ theme: system / light / dark, shared across the handbook ============ */
+(function(){
+"use strict";
+var KEY = "jwtHandbook.theme";
+
+function stored(){
+  try{ var v = localStorage.getItem(KEY); return v === "light" || v === "dark" ? v : "auto"; }
+  catch(e){ return "auto"; }
+}
+function apply(mode){
+  var r = document.documentElement;
+  r.classList.remove("theme-light","theme-dark");
+  if (mode === "light") r.classList.add("theme-light");
+  if (mode === "dark")  r.classList.add("theme-dark");
+  document.querySelectorAll(".themetoggle button").forEach(function(b){
+    b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false");
+  });
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta){
+    var dark = mode === "dark" || (mode === "auto" && window.matchMedia &&
+               window.matchMedia("(prefers-color-scheme: dark)").matches);
+    meta.setAttribute("content", dark ? "#171B19" : "#F3F4F0");
+  }
+  /* canvases read their colours from the computed tokens, nudge them to redraw */
+  window.dispatchEvent(new Event("jwt:theme"));
+  window.dispatchEvent(new Event("resize"));
+}
+function set(mode){
+  try{ mode === "auto" ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, mode); }catch(e){}
+  apply(mode);
+}
+
+var ICONS = {
+  light:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"></circle>'+
+        '<path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.1 5.1l1.4 1.4M17.5 17.5l1.4 1.4M18.9 5.1l-1.4 1.4M6.5 17.5l-1.4 1.4"></path></svg>',
+  dark: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5a8.7 8.7 0 1 0 10.9 10.9z"></path></svg>',
+  auto: '<span class="auto">AUTO</span>'
+};
+
+function build(){
+  var bar = document.querySelector(".topbar-in");
+  if (!bar || bar.querySelector(".themetoggle")) return;
+  var wrap = document.createElement("div");
+  wrap.className = "themetoggle";
+  wrap.setAttribute("role","group");
+  wrap.setAttribute("aria-label","Colour theme");
+  [["auto","Match my system"],["light","Light"],["dark","Dark"]].forEach(function(m){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.dataset.mode = m[0];
+    b.title = m[1];
+    b.setAttribute("aria-label", m[1] + " theme");
+    b.innerHTML = ICONS[m[0]];
+    b.addEventListener("click", function(){ set(m[0]); });
+    wrap.appendChild(b);
+  });
+  var brand = bar.querySelector(".brandmark");
+  if (brand && brand.nextSibling) bar.insertBefore(wrap, brand.nextSibling);
+  else bar.appendChild(wrap);
+  apply(stored());
+}
+
+/* paint before first frame so there is no flash of the wrong theme */
+apply(stored());
+if (window.matchMedia){
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", function(){ if (stored() === "auto") apply("auto"); });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+else build();
+})();
+</script>
+
+<script>window.__JWTSECTIONS=[];</script>
+<script>
+/* ==========================================================================
+   v4, learning path sidebar + "Make it your space"
+   ========================================================================== */
+(function(){
+"use strict";
+
+var KEY = "jwtHandbook.v2";
+var PARTS = [
+  {n:"01", t:"Foundations",              s:"Chapters 1–3 · ~40 min", href:"part-1.html", id:"p1", keys:["p1:ch1","p1:ch2","p1:ch3","p1:flow","p1:quiz"]},
+  {n:"02", t:"Signatures & encryption",  s:"Chapters 4–5 · ~40 min", href:"part-2.html", id:"p2", keys:["p2:ch4","p2:ch5","p2:nested","p2:quiz"]},
+  {n:"03", t:"Algorithms & best practices", s:"Chapters 6–8 · ~45 min", href:"part-3.html", id:"p3", keys:["p3:ch6","p3:ch7","p3:ch8","p3:rules","p3:quiz"]}
+];
+var ALL = PARTS.reduce(function(a,p){ return a.concat(p.keys); }, []);
+var PAGE = window.__JWTPAGE || {};
+var SECTIONS = window.__JWTSECTIONS || [];   /* [{id, key, label}] */
+
+function load(){
+  var s;
+  try{ s = JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ s = {}; }
+  if (!s.read) s.read = {};
+  return s;
+}
+function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+function doneCount(){ var r = load().read; return ALL.filter(function(k){ return r[k]; }).length; }
+/* goal gradient: opening the handbook is already a step */
+function pct(){ return Math.round(((doneCount() + 1) / (ALL.length + 1)) * 100); }
+
+var svgTick = '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 12 9.5 18 20 6"></polyline></svg>';
+
+/* ---------------- build ---------------- */
+function build(){
+  if (document.getElementById("sidebar")) return;
+
+  var aside = document.createElement("aside");
+  aside.className = "sidebar";
+  aside.id = "sidebar";
+  aside.setAttribute("aria-label","Learning path");
+
+  var path = PARTS.map(function(p){
+    var r = load().read;
+    var allDone = p.keys.every(function(k){ return r[k]; });
+    var cur = PAGE.id === p.id;
+    return '<a class="pathitem' + (allDone ? " done" : "") + '" href="' + p.href + '"' +
+           (cur ? ' aria-current="true"' : '') + '>' +
+           '<span class="pnum">' + (allDone && !cur ? "✓" : p.n) + '</span>' +
+           '<span class="pb"><span class="pt">' + p.t + '</span><span class="ps">' + p.s + '</span></span></a>';
+  }).join("");
+
+  var list = SECTIONS.map(function(s){
+    return '<button class="secitem" type="button" data-sec="' + s.key + '" data-target="' + s.id + '">' +
+           '<span class="mark">' + svgTick + '</span><span class="st">' + s.label + '</span></button>';
+  }).join("");
+
+  aside.innerHTML =
+    '<div class="sb-scroll">' +
+      '<div class="sb-sec"><div class="sb-label">Your learning path</div>' + path + '</div>' +
+      (SECTIONS.length ? '<hr class="sb-div"><div class="sb-sec"><div class="sb-label">In this part</div>' + list + '</div>' : "") +
+    '</div>' +
+    '<div class="sb-foot">' +
+      '<div class="sb-meta"><b id="sbPctB">0%</b><span id="sbCount">0 of ' + ALL.length + '</span></div>' +
+      '<div class="sb-bar"><i id="sbBarFill"></i></div>' +
+      '<p class="sb-hint">Complete a section when it clicks. You can come back anytime.</p>' +
+      '<a class="sb-link" href="index.html">' +
+        '<svg viewBox="0 0 24 24"><path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H11v18H5.5A2.5 2.5 0 0 1 3 18.5z"></path><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H13v18h5.5a2.5 2.5 0 0 0 2.5-2.5z"></path></svg>' +
+        'View the full contents</a>' +
+      '<button class="sb-link" type="button" id="openSpace">' +
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-2.9-1.2l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.2-2.9l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 10 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 2.9 1.2l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0 1.2 2.9H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.5 1z"></path></svg>' +
+        'Make it your space</button>' +
+    '</div>';
+  document.body.appendChild(aside);
+
+  var scrim = document.createElement("div");
+  scrim.className = "sb-scrim";
+  scrim.id = "sbScrim";
+  document.body.appendChild(scrim);
+  scrim.addEventListener("click", function(){ drawer(false); });
+
+  /* menu button in the top bar */
+  var bar = document.querySelector(".topbar-in");
+  if (bar && !bar.querySelector(".menubtn")){
+    var mb = document.createElement("button");
+    mb.className = "menubtn";
+    mb.type = "button";
+    mb.setAttribute("aria-label","Open the learning path");
+    mb.setAttribute("aria-expanded","false");
+    mb.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
+    mb.addEventListener("click", function(){ drawer(aside.dataset.open !== "1"); });
+    bar.insertBefore(mb, bar.firstChild);
+  }
+
+  aside.querySelectorAll(".secitem").forEach(function(b){
+    b.addEventListener("click", function(e){
+      /* tapping the circle marks it; tapping the label jumps to it */
+      var onMark = e.target.closest(".mark");
+      if (onMark){ toggle(b.dataset.sec); return; }
+      var t = document.getElementById(b.dataset.target);
+      if (t) t.scrollIntoView({behavior: prefersReduced() ? "auto" : "smooth", block:"start"});
+      drawer(false);
+    });
+  });
+
+  buildModal();
+  render();
+  watch();
+}
+
+function prefersReduced(){
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+function drawer(open){
+  var a = document.getElementById("sidebar"), s = document.getElementById("sbScrim");
+  var m = document.querySelector(".menubtn");
+  if (a) a.dataset.open = open ? "1" : "0";
+  if (s) s.dataset.open = open ? "1" : "0";
+  if (m) m.setAttribute("aria-expanded", open ? "true" : "false");
+}
+function toggle(key){
+  var s = load();
+  s.read[key] = !s.read[key];
+  save(s);
+  render();
+}
+
+function render(){
+  var r = load().read;
+  document.querySelectorAll(".secitem").forEach(function(b){
+    b.classList.toggle("done", !!r[b.dataset.sec]);
+    b.setAttribute("aria-pressed", r[b.dataset.sec] ? "true" : "false");
+  });
+  var p = pct(), d = doneCount();
+  var f = document.getElementById("sbBarFill"); if (f) f.style.width = p + "%";
+  var pb = document.getElementById("sbPctB"); if (pb) pb.textContent = p + "%";
+  var c = document.getElementById("sbCount");
+  if (c) c.textContent = d === 0 ? "just started" : d + " of " + ALL.length;
+  var mp = document.getElementById("mdProg");
+  if (mp) mp.textContent = d + " of " + ALL.length + " sections";
+  /* keep the older bottom bar in step on small screens */
+  var arc = document.getElementById("sbArc"); if (arc) arc.setAttribute("stroke-dasharray", (p*0.974) + " 100");
+  var op = document.getElementById("sbPct"); if (op) op.textContent = p + "%";
+}
+
+/* ---------------- which section am I in ---------------- */
+function watch(){
+  if (!SECTIONS.length) return;
+  var els = SECTIONS.map(function(s){ return {key:s.key, el:document.getElementById(s.id)}; })
+                    .filter(function(x){ return x.el; })
+                    .sort(function(a,b){ return a.el.offsetTop - b.el.offsetTop; });
+  function onScroll(){
+    var y = window.scrollY + 170, cur = null;
+    els.forEach(function(x){ if (x.el.offsetTop <= y) cur = x.key; });
+    document.querySelectorAll(".secitem").forEach(function(b){
+      if (b.dataset.sec === cur) b.setAttribute("aria-current","true");
+      else b.removeAttribute("aria-current");
+    });
+  }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  onScroll();
+}
+
+/* ---------------- the modal ---------------- */
+function buildModal(){
+  if (document.getElementById("spaceScrim")) return;
+  var sc = document.createElement("div");
+  sc.className = "scrim";
+  sc.id = "spaceScrim";
+  sc.innerHTML =
+    '<div class="modal" role="dialog" aria-modal="true" aria-labelledby="spaceTitle">' +
+      '<div class="modal-head"><h3 id="spaceTitle">Make it your space</h3>' +
+        '<button class="modal-x" type="button" id="spaceX" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"></path></svg></button></div>' +
+      '<div class="modal-body">' +
+        '<p class="modal-lede">A little more room to read. A place to return to.</p>' +
+        '<div class="setrow"><span class="sl"><b>Larger reading text</b><span>Give explanations a little extra breathing room.</span></span>' +
+          '<label class="switch"><input type="checkbox" id="bigText"><span class="track"></span></label></div>' +
+        '<hr>' +
+        '<div class="setrow"><span class="sl"><b>Your name</b><span>Used in the examples throughout the handbook.</span></span>' +
+          '<input type="text" id="ownerName" placeholder="Your name" maxlength="28" autocomplete="off"></div>' +
+        '<hr>' +
+        '<div class="setrow"><span class="sl"><b>Your learning progress</b><span>Progress saved in this browser</span></span>' +
+          '<span class="pill mute"><span class="dot"></span><span id="mdProg">0 of 14</span></span></div>' +
+        '<hr>' +
+        '<p class="modal-note">Keep what you have learned: export your progress before switching browsers or devices. Lab messages and private keys are never saved.</p>' +
+        '<div class="modal-actions">' +
+          '<button class="btn primary" type="button" id="expProg">Export progress</button>' +
+          '<button class="btn" type="button" id="impProg">Restore progress</button>' +
+        '</div>' +
+        '<textarea class="codebox" id="progBox" hidden spellcheck="false" aria-label="Your progress code"></textarea>' +
+        '<p class="modal-msg" id="progMsg" hidden></p>' +
+        '<button class="linkdanger" type="button" id="resetProg">Reset learning progress</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(sc);
+
+  sc.addEventListener("click", function(e){ if (e.target === sc) openSpace(false); });
+  document.getElementById("spaceX").addEventListener("click", function(){ openSpace(false); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && sc.dataset.open === "1") openSpace(false);
+  });
+  var opener = document.getElementById("openSpace");
+  if (opener) opener.addEventListener("click", function(){ openSpace(true); });
+
+  var on = document.getElementById("ownerName");
+  if (on && window.JWTUI && window.JWTUI.owner) on.value = window.JWTUI.owner();
+  var big = document.getElementById("bigText");
+  big.checked = !!load().bigText;
+  document.documentElement.classList.toggle("big-text", big.checked);
+  big.addEventListener("change", function(){
+    var s = load(); s.bigText = big.checked; save(s);
+    document.documentElement.classList.toggle("big-text", big.checked);
+  });
+
+  var box = document.getElementById("progBox"), msg = document.getElementById("progMsg");
+  function say(t, err){ msg.textContent = t; msg.className = "modal-msg" + (err ? " err":""); msg.hidden = false; }
+
+  document.getElementById("expProg").addEventListener("click", function(){
+    var code = btoa(unescape(encodeURIComponent(JSON.stringify(load()))));
+    box.hidden = false; box.value = code; box.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(
+      function(){ say("Copied. Paste it into Restore on your other browser."); },
+      function(){ say("Select the code above and copy it."); }
+    );
+    else say("Select the code above and copy it.");
+  });
+  document.getElementById("impProg").addEventListener("click", function(){
+    if (box.hidden || !box.value.trim()){
+      box.hidden = false; box.value = ""; box.placeholder = "Paste your progress code here, then press Restore again";
+      box.focus(); msg.hidden = true; return;
+    }
+    try{
+      var s = JSON.parse(decodeURIComponent(escape(atob(box.value.trim()))));
+      if (!s || typeof s !== "object" || !s.read) throw new Error("shape");
+      save(s); render();
+      document.getElementById("bigText").checked = !!s.bigText;
+      document.documentElement.classList.toggle("big-text", !!s.bigText);
+      if (window.JWTUI && window.JWTUI.applyOwner) window.JWTUI.applyOwner();
+      say("Restored. Your sections are back.");
+    }catch(e){ say("That code could not be read. Check it was copied whole.", true); }
+  });
+  document.getElementById("resetProg").addEventListener("click", function(){
+    if (!confirm("Clear every completed section and start again?")) return;
+    var s = load(); s.read = {}; save(s); render();
+    say("Cleared. Everything is unticked.");
+  });
+}
+function openSpace(open){
+  var sc = document.getElementById("spaceScrim");
+  if (!sc) return;
+  sc.dataset.open = open ? "1" : "0";
+  if (open){
+    drawer(false);
+    var f = sc.querySelector("#bigText"); if (f) f.focus();
+  }
+}
+
+window.JWTPath = { render: render, openSpace: openSpace, toggle: toggle };
+
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+else build();
+})();
+</script>
+
+<script>
+/* ==========================================================================
+   v5, a single progress bar for the whole handbook, driven by scroll.
+   Position, not achievement: scroll down and it fills, scroll back up and it
+   falls. Each part occupies its own slice of the same eight-chapter scale.
+   ========================================================================== */
+(function(){
+"use strict";
+
+/* chapters per part, so the scale is the handbook and not the page */
+var PLAN = { index:{off:0, w:0}, p1:{off:0, w:3}, p2:{off:3, w:2}, p3:{off:5, w:3} };
+var TOTAL = 8;
+var PAGE = window.__JWTPAGE || {};
+var slot = PLAN[PAGE.id] || PLAN.index;
+
+function frac(){
+  var d = document.documentElement;
+  var span = d.scrollHeight - d.clientHeight;
+  if (span <= 0) return 0;
+  return Math.min(1, Math.max(0, d.scrollTop / span));
+}
+function overall(){
+  if (!slot.w) return 0;
+  return Math.min(1, (slot.off + frac() * slot.w) / TOTAL);
+}
+
+var raf = null;
+function paint(){
+  raf = null;
+  var v = overall(), p = Math.round(v * 100);
+
+  var line = document.getElementById("progressbar");
+  if (line) line.style.width = (slot.w ? frac() * 100 : 0) + "%";
+
+  var fill = document.getElementById("sbBarFill");
+  if (fill) fill.style.width = p + "%";
+
+  var pctEl = document.getElementById("sbPctB");
+  if (pctEl) pctEl.textContent = p + "%";
+
+  var cnt = document.getElementById("sbCount");
+  if (cnt){
+    if (!slot.w) cnt.textContent = "start at part one";
+    else {
+      var chapterNow = Math.min(slot.off + slot.w, Math.floor(slot.off + frac() * slot.w) + 1);
+      cnt.textContent = "chapter " + chapterNow + " of " + TOTAL;
+    }
+  }
+}
+function onScroll(){ if (raf === null) raf = requestAnimationFrame(paint); }
+
+window.addEventListener("scroll", onScroll, {passive:true});
+window.addEventListener("resize", onScroll, {passive:true});
+
+/* the section ticks are a separate, deliberate act, keep them off this bar */
+function guard(){
+  if (window.JWTPath && window.JWTPath.render){
+    var orig = window.JWTPath.render;
+    window.JWTPath.render = function(){ orig(); paint(); };
+  }
+  paint();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", guard);
+else guard();
+setTimeout(paint, 400);
+
+/* ---------------- open / close the sidebar on any screen ---------------- */
+var CKEY = "jwtHandbook.sbCollapsed";
+function collapsed(){ try{ return localStorage.getItem(CKEY) === "1"; }catch(e){ return false; } }
+function setCollapsed(v){
+  try{ v ? localStorage.setItem(CKEY,"1") : localStorage.removeItem(CKEY); }catch(e){}
+  document.documentElement.classList.toggle("sb-collapsed", v);
+  var m = document.querySelector(".menubtn");
+  if (m) m.setAttribute("aria-expanded", v ? "false" : "true");
+  setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 300);
+}
+
+function wire(){
+  var side = document.getElementById("sidebar");
+  if (!side){ setTimeout(wire, 80); return; }
+
+  if (!side.querySelector(".sb-head")){
+    var head = document.createElement("div");
+    head.className = "sb-head";
+    head.innerHTML = '<span class="sbt">JWT handbook</span>' +
+      '<button class="sb-x" type="button" id="sbClose" aria-label="Close the learning path" title="Close">' +
+      '<svg viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6"></path><path d="M19 4v16"></path></svg></button>';
+    side.insertBefore(head, side.firstChild);
+    head.querySelector("#sbClose").addEventListener("click", function(){
+      if (window.matchMedia("(min-width:1120px)").matches) setCollapsed(true);
+      else {
+        side.dataset.open = "0";
+        var sc = document.getElementById("sbScrim"); if (sc) sc.dataset.open = "0";
+      }
+    });
+  }
+
+  var menu = document.querySelector(".menubtn");
+  if (menu){
+    var fresh = menu.cloneNode(true);           /* drop the old handler */
+    menu.parentNode.replaceChild(fresh, menu);
+    fresh.addEventListener("click", function(){
+      if (window.matchMedia("(min-width:1120px)").matches) setCollapsed(!collapsed());
+      else {
+        var open = side.dataset.open !== "1";
+        side.dataset.open = open ? "1" : "0";
+        var sc = document.getElementById("sbScrim"); if (sc) sc.dataset.open = open ? "1" : "0";
+        fresh.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+    });
+  }
+  document.documentElement.classList.toggle("sb-collapsed", collapsed());
+  paint();
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", wire);
+else wire();
 })();
 </script>
 </body>
