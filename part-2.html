@@ -588,17 +588,6 @@ footer.colophon{border-top:1px solid var(--rule);padding-block:38px;background:v
 .office.safe{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
 .office.hq{border-color:var(--pay);background:var(--pay-bg);color:var(--pay)}
 
-/* switch */
-.switch{display:inline-flex;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden}
-.switch button{
-  all:unset;cursor:pointer;padding:8px 16px;font-size:.83rem;font-weight:600;
-  border-right:1px solid var(--rule-2);transition:background .15s,color .15s;
-}
-.switch button:last-child{border-right:0}
-.switch button:hover{background:var(--paper-3)}
-.switch button:focus-visible{outline:2px solid var(--pay);outline-offset:-2px}
-.switch button[aria-pressed="true"]{background:var(--pay);color:var(--paper-2)}
-
 /* direction table */
 .dirtable{width:100%;border-collapse:collapse;font-size:.87rem}
 .dirtable th,.dirtable td{padding:10px 13px;border:1px solid var(--rule);text-align:left}
@@ -868,7 +857,6 @@ window.FlowKit = (function(){
 body{
   font-family:var(--sans);font-size:var(--step);line-height:1.65;
   letter-spacing:-.004em;font-weight:400;
-  padding-bottom:76px;                       /* room for the sticky bar */
 }
 h1,h2,h3,h4{font-family:var(--sans);text-wrap:balance}
 h1{font-weight:800;letter-spacing:-.038em;line-height:1.01;font-size:clamp(2.5rem,6.2vw,4.4rem)}
@@ -1017,7 +1005,6 @@ label.fld .lb{font-weight:500;letter-spacing:.13em}
   .sb-mid{display:none}
   .sb-in{gap:var(--s3);padding-inline:var(--s4)}
   .sb-actions .btn.ghost{display:none}
-  body{padding-bottom:70px}
 }
 
 /* ================= chapter marker ================= */
@@ -1412,8 +1399,6 @@ body,.topbar,.panel,.tokenbox,.stickybar{transition:background-color .25s ease,b
   :root.sb-collapsed body{padding-left:0}
 }
 @media (prefers-reduced-motion:reduce){ .progressbar{transition:none} }
-@media (max-width:620px){
-      }
 
 /* chip control: label plus what it is for, on one button */
 .caseb{
